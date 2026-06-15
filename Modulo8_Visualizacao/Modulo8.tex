@@ -1,0 +1,664 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,shapes.geometric,positioning,fit,backgrounds,calc,shadows.blur,decorations.pathmorphing,mindmap,trees,patterns,matrix}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{fontawesome5}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins,theorems}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\setlength{\headheight}{14pt}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{caption}
+\definecolor{mineblue}{RGB}{0,90,180}
+\definecolor{mineorange}{RGB}{230,115,0}
+\definecolor{minegreen}{RGB}{34,139,34}
+\definecolor{minered}{RGB}{180,20,40}
+\definecolor{minegray}{RGB}{100,100,100}
+\definecolor{codebg}{RGB}{250,250,250}
+\newtcolorbox{definicaobox}[1]{title={\faIcon{book} #1},colback=blue!4!white,colframe=mineblue,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{exemplobox}[1]{title={\faIcon{lightbulb} #1},colback=orange!4!white,colframe=mineorange,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{dicabox}[1]{title={\faIcon{info-circle} #1},colback=green!4!white,colframe=minegreen,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{atencaobox}[1]{title={\faIcon{exclamation-triangle} #1},colback=red!4!white,colframe=minered,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{estadoartebox}[1]{title={\faIcon{rocket} #1},colback=purple!4!white,colframe=purple!60!black,fonttitle=\bfseries,breakable,enhanced}
+\lstdefinestyle{mypython}{language=Python,backgroundcolor=\color{codebg},commentstyle=\color{minegray}\itshape,keywordstyle=\color{mineblue}\bfseries,stringstyle=\color{minegreen},basicstyle=\ttfamily\footnotesize,breaklines=true,frame=single,rulecolor=\color{minegray!40},numbers=left,numberstyle=\tiny\color{minegray},tabsize=4,showstringspaces=false}
+\lstset{style=mypython}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small \textcolor{mineblue}{\textbf{Mineração de Dados}} | UEPA -- CCNT}
+\fancyhead[R]{\small Módulo 8: Visualização de Dados}
+\fancyfoot[C]{\small \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\titleformat{\section}{\large\bfseries\color{mineblue}}{\thesection}{0.8em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{mineorange}}{\thesubsection}{0.8em}{}
+\titleformat{\subsubsection}{\small\bfseries\color{minegray}}{\thesubsubsection}{0.8em}{}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{mineblue} Módulo 8}\\[0.4em]
+  {\large\bfseries Técnicas de Visualização de Dados}\\[0.6em]
+  {\small Mineração de Dados $\cdot$ 8.º Semestre $\cdot$ Engenharia de Software $\cdot$ UEPA/CCNT}\\[0.3em]
+  {\small Carga horária do módulo: \textasciitilde{}10 horas}
+\end{center}
+\vspace{0.5em}
+\hrule height 1.5pt
+\vspace{1em}
+
+% ============================================================
+\section{Objetivos de Aprendizagem}
+% ============================================================
+
+Ao concluir este módulo, o estudante será capaz de:
+
+\begin{enumerate}[label=\faIcon{check-circle}~\textbf{\arabic*.}, leftmargin=2cm, itemsep=0.3em]
+  \item Compreender os princípios fundamentais de visualização de dados segundo Tufte e a Gramática dos Gráficos de Wilkinson.
+  \item Selecionar o tipo de gráfico mais adequado para cada combinação de tipo de dado e objetivo comunicativo.
+  \item Implementar gráficos estatísticos fundamentais (distribuição, relação, comparação, composição) com Matplotlib e Seaborn.
+  \item Aplicar técnicas de redução de dimensionalidade (PCA, t-SNE, UMAP) para visualização de dados de alta dimensão.
+  \item Criar visualizações interativas com Plotly e construir dashboards analíticos básicos com Dash e Streamlit.
+  \item Visualizar resultados de modelos de mineração de dados: curvas ROC, matrizes de confusão, importância de atributos e gráficos SHAP.
+  \item Identificar e evitar armadilhas comuns de visualização (eixos truncados, distorção 3D, excesso de informação).
+  \item Aplicar boas práticas de acessibilidade em visualizações, incluindo paletas acessíveis a daltônicos e uso de texto alternativo.
+\end{enumerate}
+
+% ============================================================
+\section{Princípios de Visualização de Dados}
+% ============================================================
+
+A visualização de dados é a representação gráfica de informação com o objetivo de comunicar padrões, tendências e anomalias de forma eficiente ao cérebro humano. Ela é simultaneamente uma ferramenta de \textbf{exploração} (EDA) e de \textbf{comunicação} (relatórios, dashboards).
+
+\subsection{Por que Visualizar?}
+
+\begin{exemplobox}{Quarteto de Anscombe (1973)}
+Francis Anscombe demonstrou que quatro conjuntos de dados podem ter médias, variâncias, correlações e linhas de regressão idênticas, mas padrões completamente diferentes quando visualizados. Isso ilustra que estatísticas resumidas \textbf{nunca substituem} a visualização dos dados.
+
+\begin{center}
+\begin{tikzpicture}[scale=0.6]
+  % Dataset I - linear
+  \begin{scope}[xshift=0cm]
+    \draw[->] (0,0)--(4,0); \draw[->] (0,0)--(0,4);
+    \node[font=\tiny] at (2,-0.4) {Dataset I};
+    \foreach \x/\y in {0.5/1.2,1.0/2.0,1.5/2.5,2.0/2.8,2.5/3.2,3.0/3.5,3.5/3.8}{
+      \fill[mineblue] (\x,\y) circle(1.5pt);
+    }
+    \draw[mineorange,thick] (0,0.8)--(4,3.9);
+  \end{scope}
+  % Dataset II - curvilinear
+  \begin{scope}[xshift=5cm]
+    \draw[->] (0,0)--(4,0); \draw[->] (0,0)--(0,4);
+    \node[font=\tiny] at (2,-0.4) {Dataset II};
+    \foreach \x/\y in {0.3/0.6,0.8/1.8,1.3/2.7,1.8/3.2,2.3/3.4,2.8/3.2,3.3/2.8,3.8/1.8}{
+      \fill[mineblue] (\x,\y) circle(1.5pt);
+    }
+    \draw[mineorange,thick] (0,0.9)--(4,3.8);
+  \end{scope}
+  % Dataset III - outlier
+  \begin{scope}[xshift=10cm]
+    \draw[->] (0,0)--(4,0); \draw[->] (0,0)--(0,4);
+    \node[font=\tiny] at (2,-0.4) {Dataset III};
+    \foreach \x/\y in {0.5/1.0,1.0/1.5,1.5/2.0,2.0/2.5,2.5/3.0,3.0/3.5,3.5/3.8}{
+      \fill[mineblue] (\x,\y) circle(1.5pt);
+    }
+    \fill[minered] (1.8,3.9) circle(2pt);
+    \draw[mineorange,thick] (0,0.8)--(4,3.7);
+  \end{scope}
+  % Dataset IV - vertical cluster
+  \begin{scope}[xshift=15cm]
+    \draw[->] (0,0)--(4,0); \draw[->] (0,0)--(0,4);
+    \node[font=\tiny] at (2,-0.4) {Dataset IV};
+    \foreach \y in {0.6,1.1,1.6,2.0,2.5,2.9,3.4}{
+      \fill[mineblue] (2.0,\y) circle(1.5pt);
+    }
+    \fill[minered] (3.8,2.0) circle(2pt);
+    \draw[mineorange,thick] (0,1.2)--(4,2.8);
+  \end{scope}
+\end{tikzpicture}
+\end{center}
+Todos têm: $\bar{x} \approx 9$, $\bar{y} \approx 7{,}5$, $r \approx 0{,}816$, mesma reta de regressão.
+\end{exemplobox}
+
+\textbf{Atributos pré-atentivos} são propriedades visuais detectadas pelo sistema nervoso humano antes do processamento consciente ($< 200$\,ms): cor, tamanho, orientação, posição, forma, movimento. Usá-los corretamente aumenta dramaticamente a eficiência da visualização.
+
+\subsection{Princípios de Tufte (1983)}
+
+Edward Tufte, no seminal \textit{The Visual Display of Quantitative Information}, estabelece princípios que guiam o design de visualizações eficientes:
+
+\begin{itemize}
+  \item \textbf{Data-ink ratio:} maximize a proporção de tinta usada para representar dados versus tinta decorativa. $\text{Data-ink ratio} = \frac{\text{tinta de dados}}{\text{tinta total}}$. Elimine grades desnecessárias, bordas, sombras.
+  \item \textbf{Chartjunk:} evite elementos decorativos que não transmitem informação (padrões de preenchimento excessivos, imagens embutidas, perspectiva 3D desnecessária).
+  \item \textbf{Lie Factor:} razão entre o efeito visual e o efeito real nos dados:
+    \begin{equation}
+      LF = \frac{\text{tamanho do efeito no gráfico}}{\text{tamanho do efeito nos dados}}
+    \end{equation}
+    $LF = 1$ é ideal; desvios sistemáticos configuram manipulação visual.
+  \item \textbf{Small multiples:} conjuntos de gráficos com a mesma escala e estrutura para facilitar comparação temporal ou entre grupos.
+  \item \textbf{Densidade de dados:} maximize a quantidade de informação por unidade de área.
+\end{itemize}
+
+\subsection{Grammar of Graphics (Wilkinson, 2005)}
+
+Leland Wilkinson formalizou a \textbf{Gramática dos Gráficos} como um sistema composicional com sete componentes:
+
+\begin{enumerate}
+  \item \textbf{Data:} conjunto de dados subjacente.
+  \item \textbf{Aesthetics (aes):} mapeamento de variáveis a propriedades visuais (x, y, cor, tamanho, forma, opacidade).
+  \item \textbf{Geometry (geom):} tipo de elemento geométrico (ponto, linha, barra, polígono).
+  \item \textbf{Facets:} subdivisão em painéis por variável categórica.
+  \item \textbf{Statistics (stat):} transformações estatísticas (binning, suavização, contagem).
+  \item \textbf{Coordinates (coord):} sistema de coordenadas (cartesiano, polar, mapa).
+  \item \textbf{Themes:} aparência visual não-data (fonte, cor de fundo, grade).
+\end{enumerate}
+
+Implementações: \textbf{ggplot2} (R, Wickham 2010), \textbf{plotnine} (Python), \textbf{Plotly} (implementa parcialmente a gramática via \texttt{go.Figure}).
+
+\subsection{Escolha do Tipo de Gráfico}
+
+\begin{center}
+\begin{tikzpicture}[
+  question/.style={diamond,draw=mineblue,fill=mineblue!10,minimum width=2.8cm,minimum height=1cm,align=center,font=\tiny,aspect=2.5},
+  answer/.style={rectangle,rounded corners,draw=minegreen,fill=minegreen!10,minimum width=2.5cm,minimum height=0.7cm,align=center,font=\tiny},
+  arr/.style={->,thick,minegray}]
+
+\node[question] (q1) at (0,0) {O que quer\\mostrar?};
+\node[question] (q2) at (-4.5,-2.5) {Número de\\variáveis?};
+\node[question] (q3) at (4.5,-2.5) {Tipo de\\comparação?};
+
+\node[answer] (a1) at (-6.5,-5) {Histograma\\Boxplot / Violino};
+\node[answer] (a2) at (-2.5,-5) {Scatter / Hexbin\\Heatmap de Corr.};
+\node[answer] (a3) at (2.5,-5) {Barras / Linhas\\Radar / Strip};
+\node[answer] (a4) at (6.5,-5) {Treemap\\Sunburst / Waffle};
+
+\draw[arr] (q1)--(-3.5,0)--(-4.5,-1.8) node[pos=0.3,above,font=\tiny]{Distribuição};
+\draw[arr] (q1)--(3.5,0)--(4.5,-1.8) node[pos=0.3,above,font=\tiny]{Comparação};
+\draw[arr] (q2)--(-6.5,-4.3) node[midway,left,font=\tiny]{1 variável};
+\draw[arr] (q2)--(-2.5,-4.3) node[midway,right,font=\tiny]{2+ variáveis};
+\draw[arr] (q3)--(2.5,-4.3) node[midway,left,font=\tiny]{Temporal};
+\draw[arr] (q3)--(6.5,-4.3) node[midway,right,font=\tiny]{Composição};
+\end{tikzpicture}
+\end{center}
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Guia de seleção de tipos de gráfico}
+\begin{tabular}{@{}p{2.8cm}p{2.2cm}p{3cm}p{2.5cm}p{2.5cm}@{}}
+\toprule
+\textbf{Tipo de Gráfico} & \textbf{Tipo de Dado} & \textbf{Caso de Uso} & \textbf{Exemplo} & \textbf{Ferramentas} \\
+\midrule
+Histograma & Numérico & Distribuição univariada & Distribuição de idades & matplotlib, seaborn \\
+Boxplot & Num.\ por categ. & Comparar distribuições & Notas por turma & seaborn, plotly \\
+Scatter Plot & 2 Numéricos & Relação/correlação & Renda vs consumo & matplotlib, plotly \\
+Heatmap & Matriz & Correlações, matrizes & Corr.\ de features & seaborn, plotly \\
+Barras & Categ.\ + Num. & Comparação de grupos & Vendas por região & matplotlib, plotly \\
+Linha & Temporal & Séries temporais & Acurácia por época & matplotlib, plotly \\
+Treemap & Hierárquico & Composição aninhada & Receita por produto & plotly, squarify \\
+Violino & Num.\ por categ. & Distribuição + densidade & Salário por cargo & seaborn \\
+Choropleth & Geoespacial & Distribuição geográfica & IDH por estado & plotly, folium \\
+Parallel Coord. & Multivariado & Alta dimensão & Comparar clusters & plotly \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+\section{Gráficos Estatísticos Fundamentais}
+% ============================================================
+
+\subsection{Distribuição}
+
+\begin{itemize}
+  \item \textbf{Histograma:} divide dados em bins e conta frequência. Use para exploração inicial e detecção de bimodalidade. Cuidado com número de bins.
+  \item \textbf{KDE (Kernel Density Estimate):} versão suavizada do histograma, sem a arbitrariedade do binning.
+  \item \textbf{Boxplot:} mediana, IQR, whiskers ($\pm 1{,}5 \times IQR$) e outliers. Excelente para comparação de grupos.
+  \item \textbf{Violin Plot:} combina boxplot com KDE; mostra a distribuição completa, especialmente útil quando bimodal.
+  \item \textbf{Q-Q Plot:} compara a distribuição observada com uma teórica (e.g., normal); pontos na diagonal indicam ajuste.
+\end{itemize}
+
+\begin{lstlisting}[caption={Gráficos de distribuição com seaborn}]
+import seaborn as sns, matplotlib.pyplot as plt
+
+fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+sns.histplot(data=df, x='feature', kde=True, ax=axes[0])
+axes[0].set_title('Histograma + KDE')
+
+sns.boxplot(data=df, x='category', y='feature', ax=axes[1])
+axes[1].set_title('Boxplot por Grupo')
+
+sns.violinplot(data=df, x='category', y='feature',
+               inner='quartile', ax=axes[2])
+axes[2].set_title('Violin Plot')
+plt.tight_layout(); plt.show()
+\end{lstlisting}
+
+\subsection{Relação entre Variáveis}
+
+\begin{itemize}
+  \item \textbf{Scatter Plot:} relação entre duas variáveis contínuas. Adicione cor/tamanho para terceira/quarta dimensão.
+  \item \textbf{Bubble Chart:} scatter com tamanho proporcional a uma terceira variável quantitativa.
+  \item \textbf{Hexbin:} versão do scatter para grandes datasets (evita overplotting com contagem por célula hexagonal).
+  \item \textbf{Joint Plot:} scatter central + distribuições marginais. Seaborn \texttt{JointGrid}.
+  \item \textbf{Correlation Heatmap:} matriz de correlações com codificação de cor; use máscara para triângulo superior.
+  \item \textbf{Pair Plot (SPLOM):} todos os scatter plots par a par em uma grade. Ideal para EDA inicial.
+\end{itemize}
+
+\subsection{Comparação}
+
+\begin{itemize}
+  \item \textbf{Gráfico de barras agrupado:} compara múltiplos grupos por categoria. Evite mais de 5 grupos.
+  \item \textbf{Gráfico de barras empilhado:} mostra contribuição de subgrupos ao total.
+  \item \textbf{Lollipop chart:} alternativa mais limpa ao gráfico de barras, alta data-ink ratio.
+  \item \textbf{Radar / Spider Chart:} compara perfis multivariados em múltiplos eixos radiais; bom para comparação de clusters.
+  \item \textbf{Time Series Line Plot:} tendências temporais com múltiplas séries. Adicione bandas de confiança.
+  \item \textbf{Strip / Swarm Plot:} mostra todos os pontos individuais, complementa o boxplot.
+\end{itemize}
+
+\subsection{Composição}
+
+\begin{itemize}
+  \item \textbf{Gráfico de pizza:} use com moderação -- apenas com 2--4 categorias, quando a proporção relativa ao todo é o foco. \textbf{Nunca use 3D.}
+  \item \textbf{Treemap:} área proporcional ao valor; excelente para dados hierárquicos.
+  \item \textbf{Sunburst:} versão radial do treemap para hierarquias multinível.
+  \item \textbf{Waffle Chart:} grade de quadrados onde cada quadrado representa percentual; mais preciso visualmente que pizza.
+\end{itemize}
+
+\subsection{Geoespacial}
+
+\begin{itemize}
+  \item \textbf{Choropleth Maps:} polígonos geográficos coloridos por valor (e.g., IDH por estado). Implementação com Plotly ou Folium.
+  \item \textbf{Scatter Geo:} pontos em mapa para dados com coordenadas (lat/lon).
+  \item \textbf{Folium/Leaflet:} mapas interativos no browser com layers, clusters e tooltips.
+  \item \textbf{Cartopy:} projeções cartográficas científicas integradas ao Matplotlib.
+\end{itemize}
+
+% ============================================================
+\section{Visualização de Alta Dimensão}
+% ============================================================
+
+Datasets de mineração de dados frequentemente possuem dezenas ou centenas de features. A visualização direta é impossível em $d > 3$, tornando necessárias técnicas de redução de dimensionalidade para projeção em 2D ou 3D.
+
+\subsection{Redução para 2D/3D}
+
+\subsubsection{PCA (Principal Component Analysis)}
+
+A PCA projeta os dados nas direções de máxima variância:
+\begin{equation}
+  \mathbf{Z} = \mathbf{X} \mathbf{W}, \quad \text{onde } \mathbf{W} = \text{eigenvectors de } \mathbf{X}^T\mathbf{X}
+\end{equation}
+
+O \textbf{PCA biplot} mostra simultaneamente as observações (pontos) e os loadings das variáveis originais (vetores), revelando quais variáveis mais contribuem para cada componente principal.
+
+\subsubsection{t-SNE (van der Maaten \& Hinton, 2008)}
+
+t-SNE minimiza a divergência KL entre a distribuição de pares no espaço original (Gaussiana) e no espaço reduzido (t-Student):
+\begin{equation}
+  KL(P \| Q) = \sum_i \sum_j p_{ij} \log \frac{p_{ij}}{q_{ij}}
+\end{equation}
+
+\textbf{Características:} não-linear, estocástico, excelente para visualizar clusters. \textbf{Parâmetro crítico:} perplexidade (5--50). \textbf{Limitação:} lento para $n > 10.000$, não preserva estrutura global.
+
+\subsubsection{UMAP (McInnes et al., 2018)}
+
+UMAP baseia-se em geometria Riemanniana e teoria de topologia fuzzy. Preserva tanto estrutura local quanto global, é mais rápido que t-SNE e permite transformar novos pontos (fit/transform).
+
+\begin{table}[ht]
+\centering
+\caption{Comparação: PCA vs t-SNE vs UMAP}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Critério} & \textbf{PCA} & \textbf{t-SNE} & \textbf{UMAP} \\
+\midrule
+Tipo & Linear & Não-linear & Não-linear \\
+Velocidade & Muito rápido & Lento ($O(n^2)$) & Rápido ($O(n \log n)$) \\
+Estrutura global & Boa & Ruim & Boa \\
+Estrutura local & Moderada & Excelente & Excelente \\
+Determinismo & Sim & Não & Não (seed fix) \\
+Parâmetros & Nenhum & Perplexidade & n\_neighbors, min\_dist \\
+Transform novos & Sim & Não & Sim \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{lstlisting}[caption={Comparação PCA, t-SNE, UMAP para visualização}]
+from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
+import umap
+
+# PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+# t-SNE
+tsne = TSNE(n_components=2, perplexity=30, random_state=42)
+X_tsne = tsne.fit_transform(X_scaled)
+
+# UMAP
+reducer = umap.UMAP(n_neighbors=15, min_dist=0.1, random_state=42)
+X_umap = reducer.fit_transform(X_scaled)
+\end{lstlisting}
+
+\subsection{Parallel Coordinates}
+
+Cada variável é representada como um eixo vertical paralelo, e cada observação é uma linha poligonal que cruza todos os eixos. Permite identificar clusters, outliers e correlações em dados de alta dimensão. Plotly oferece \texttt{go.Parcoords} com interatividade (brushing por eixo).
+
+\subsection{Matriz de Dispersão (SPLOM)}
+
+Todos os scatter plots pairwise em uma grade $d \times d$. Diagonal pode mostrar histogramas ou KDE. Codificação por cor revela separação de classes. \texttt{plotly.express.scatter\_matrix()} gera SPLOM interativo com hover e seleção.
+
+% ============================================================
+\section{Visualização Interativa}
+% ============================================================
+
+\subsection{Plotly}
+
+Plotly é a biblioteca de visualização interativa mais popular para Python, gerando gráficos baseados em D3.js:
+
+\begin{itemize}
+  \item \textbf{Plotly Express:} API de alto nível para gráficos com uma linha de código. \texttt{px.scatter(), px.bar(), px.choropleth()}.
+  \item \textbf{go.Figure:} API de baixo nível para layouts customizados, múltiplos eixos, anotações.
+  \item \textbf{Animações:} parâmetro \texttt{animation\_frame} em Express ou \texttt{frames} em Figure.
+  \item \textbf{Subplots:} \texttt{make\_subplots(rows, cols)} com compartilhamento de eixos.
+\end{itemize}
+
+\begin{lstlisting}[caption={Dashboard interativo com Plotly subplots}]
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+fig = make_subplots(rows=2, cols=2,
+    subplot_titles=["ROC Curve", "Confusion Matrix",
+                    "Feature Importance", "Learning Curve"])
+
+fig.add_trace(go.Scatter(x=fpr, y=tpr, name=f"AUC={auc:.2f}"),
+              row=1, col=1)
+fig.add_trace(go.Heatmap(z=cm, colorscale="Blues"), row=1, col=2)
+fig.add_trace(go.Bar(x=importances, y=features, orientation='h'),
+              row=2, col=1)
+fig.update_layout(title="Dashboard de Avaliacao de Modelo",
+                  height=700)
+fig.show()
+\end{lstlisting}
+
+\subsection{Bokeh}
+
+Bokeh oferece interatividade server-side avançada:
+\begin{itemize}
+  \item \textbf{Linked plots (brushing):} seleção em um gráfico reflete em todos os outros conectados.
+  \item \textbf{Bokeh Server:} callbacks Python ativados por interações do usuário.
+  \item \textbf{Hover tools:} tooltips customizados com HTML.
+\end{itemize}
+
+\subsection{Dash}
+
+Dash (Plotly) é um framework para construção de aplicações analíticas web em Python puro:
+
+\begin{lstlisting}[caption={Aplicação Dash básica com callback}]
+import dash
+from dash import dcc, html, Input, Output
+import plotly.express as px
+
+app = dash.Dash(__name__)
+app.layout = html.Div([
+    dcc.Dropdown(id='x-axis', options=['feature1','feature2'], value='feature1'),
+    dcc.Graph(id='scatter-plot')
+])
+
+@app.callback(Output('scatter-plot', 'figure'),
+              Input('x-axis', 'value'))
+def update_figure(x_col):
+    return px.scatter(df, x=x_col, y='target', color='cluster')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+\end{lstlisting}
+
+\subsection{Streamlit}
+
+Streamlit permite criar dashboards analíticos em minutos:
+\begin{lstlisting}[caption={Dashboard Streamlit para resultados de DM}]
+import streamlit as st
+import plotly.express as px
+
+st.title("Dashboard: Mineracao de Dados - UEPA")
+with st.sidebar:
+    k = st.slider("Numero de clusters", 2, 10, 4)
+
+tab1, tab2 = st.tabs(["Clustering", "Classificacao"])
+with tab1:
+    st.plotly_chart(px.scatter(df_tsne, x='x', y='y', color=f'cluster_{k}'))
+with tab2:
+    st.dataframe(df_metrics, use_container_width=True)
+\end{lstlisting}
+
+% ============================================================
+\section{Visualização de Resultados de Mineração de Dados}
+% ============================================================
+
+\subsection{Avaliação de Modelos}
+
+\begin{itemize}
+  \item \textbf{Curva ROC:} True Positive Rate vs False Positive Rate para diferentes thresholds. AUC-ROC mede a área sob a curva; AUC $= 1$ é perfeito, $0{,}5$ é aleatório.
+  \item \textbf{Curva Precision-Recall:} preferível à ROC em datasets muito desbalanceados. AUC-PR é mais informativa quando a classe positiva é rara.
+  \item \textbf{Matriz de Confusão (Heatmap):} visualização de TP, FP, FN, TN. Normalize por linha para mostrar taxas de acerto por classe.
+  \item \textbf{Curvas de Aprendizagem:} desempenho no treino e validação em função do tamanho do dataset. Diagnostica underfitting (ambas baixas) e overfitting (treino alta, validação baixa).
+\end{itemize}
+
+\subsection{Interpretabilidade Visual}
+
+\subsubsection{SHAP (SHapley Additive exPlanations)}
+
+SHAP (Lundberg \& Lee, 2017) atribui a cada feature a contribuição marginal para a predição individual:
+
+\begin{itemize}
+  \item \textbf{Summary Plot (Beeswarm):} todos os pontos de todos os exemplos; cor = valor da feature, eixo x = impacto SHAP. Revela distribuição de importância.
+  \item \textbf{Bar Summary:} média do valor absoluto SHAP por feature; ranking global.
+  \item \textbf{Waterfall Plot:} para uma predição individual; detalha contribuição de cada feature a partir do valor base.
+  \item \textbf{Dependence Plot:} SHAP value vs valor da feature, colorido por feature de interação.
+\end{itemize}
+
+\begin{lstlisting}[caption={Visualizações SHAP para interpretabilidade}]
+import shap
+
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(X_test)
+
+# Summary beeswarm
+shap.summary_plot(shap_values, X_test, feature_names=feature_names)
+
+# Waterfall para observacao 0
+shap.waterfall_plot(shap.Explanation(
+    values=shap_values[0],
+    base_values=explainer.expected_value,
+    data=X_test.iloc[0],
+    feature_names=feature_names))
+\end{lstlisting}
+
+\subsubsection{LIME}
+
+LIME (Ribeiro et al., 2016) explica predições individuais aproximando o modelo com um modelo linear local. A visualização mostra features com contribuição positiva (verde) e negativa (vermelho) para a predição.
+
+\subsection{Clustering Visualization}
+
+\begin{itemize}
+  \item \textbf{t-SNE / UMAP colorido por cluster:} visualização 2D dos clusters descobertos.
+  \item \textbf{Dendrograma:} hierarquia de fusões no clustering aglomerativo.
+  \item \textbf{Silhouette Plot:} gráfico de coeficientes de silhueta por amostra e cluster. Coeficiente $s_i \in [-1, 1]$; $s_i > 0$ bem clustered, $s_i < 0$ mal clustered.
+  \item \textbf{Elbow Curve:} inércia vs $k$; o ``cotovelo'' sugere o $k$ ótimo.
+  \item \textbf{Radar Chart dos Centroides:} perfil multivariado de cada cluster em gráfico radial.
+\end{itemize}
+
+\subsection{Associação}
+
+\begin{itemize}
+  \item \textbf{Grafo de regras:} nós são itemsets, arestas são regras; espessura = confiança, cor = lift.
+  \item \textbf{Heatmap de co-ocorrência:} frequência de pares de itens.
+  \item \textbf{Bubble Chart:} suporte (eixo x) vs confiança (eixo y), tamanho da bolha = lift. Permite identificar regras interessantes visualmente.
+\end{itemize}
+
+% ============================================================
+\section{Dashboards Analíticos}
+% ============================================================
+
+\begin{definicaobox}{Dashboard Analítico}
+Um dashboard é uma interface visual que consolida múltiplos indicadores e gráficos em uma única tela, permitindo monitoramento de KPIs e análise exploratória em tempo real.
+\end{definicaobox}
+
+\textbf{Princípios de design de dashboards:}
+\begin{enumerate}
+  \item \textbf{Hierarquia visual:} os itens mais importantes devem ser maiores e mais proeminentes (KPI cards no topo).
+  \item \textbf{Alinhamento:} alinhe elementos em uma grade para criar ordem visual.
+  \item \textbf{Proximidade:} agrupe elementos relacionados visualmente.
+  \item \textbf{Contraste:} diferencie seções com cor ou espaço.
+  \item \textbf{Drill-down:} permita ao usuário navegar do macro para o micro.
+  \item \textbf{Mobile responsiveness:} layouts que se adaptam a telas menores.
+\end{enumerate}
+
+\paragraph{Mockup de Dashboard Analítico para DM}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7]
+% Header
+\fill[mineblue] (0,9) rectangle (16,10);
+\node[text=white,font=\bfseries] at (8,9.5) {Dashboard: Mineração de Dados -- UEPA};
+
+% KPI cards (top row)
+\foreach \x/\label/\val/\col in {0.3/Acurácia/92\%/minegreen, 4.3/Precisão/89\%/mineblue, 8.3/Recall/91\%/mineorange, 12.3/F1-Score/90\%/purple}{
+  \fill[\col!20,draw=\col] (\x,7.2) rectangle (\x+3.4,8.8);
+  \node[font=\small\bfseries] at (\x+1.7,8.3) {\val};
+  \node[font=\tiny] at (\x+1.7,7.6) {\label};
+}
+
+% Left chart
+\fill[minegray!10,draw=minegray!40] (0.3,3.5) rectangle (7.8,7.0);
+\node[font=\small,minegray] at (4,5.2) {Importância de Atributos};
+% Bar chart sketch
+\foreach \bx/\bh in {1.0/2.0, 1.8/1.4, 2.6/1.8, 3.4/1.1, 4.2/0.8}{
+  \fill[mineblue!50] (\bx,3.8) rectangle (\bx+0.6,3.8+\bh*0.9);
+}
+
+% Right chart
+\fill[minegray!10,draw=minegray!40] (8.2,3.5) rectangle (15.7,7.0);
+\node[font=\small,minegray] at (12,5.2) {Curva ROC};
+\draw[mineblue,thick] (9.0,3.8) .. controls (10,5.5) and (11,6.2) .. (15.0,6.7);
+\draw[minegray,dashed] (9.0,3.8)--(15.0,6.7);
+
+% Bottom charts
+\fill[minegray!10,draw=minegray!40] (0.3,0.3) rectangle (5.0,3.2);
+\node[font=\small,minegray] at (2.65,1.7) {Distribuição};
+
+\fill[minegray!10,draw=minegray!40] (5.4,0.3) rectangle (10.1,3.2);
+\node[font=\small,minegray] at (7.75,1.7) {Matriz de Confusão};
+
+\fill[minegray!10,draw=minegray!40] (10.5,0.3) rectangle (15.7,3.2);
+\node[font=\small,minegray] at (13.1,1.7) {Clustering};
+\end{tikzpicture}
+\end{center}
+
+% ============================================================
+\section{Boas Práticas e Armadilhas Comuns}
+% ============================================================
+
+\subsection{Erros Comuns}
+
+\begin{atencaobox}{Principais Armadilhas na Visualização}
+\begin{itemize}
+  \item \textbf{Eixo y truncado:} cortar o eixo y para exagerar diferenças pequenas. Lie Factor elevado. Sempre comece o eixo y em zero para gráficos de barra.
+  \item \textbf{Gráfico de pizza 3D:} perspectiva deforma as áreas, impossibilitando comparação precisa.
+  \item \textbf{Excesso de cores:} mais de 7 categorias em uma legenda de cor torna o gráfico ilegível. Agrupe categorias menores em ``Outros''.
+  \item \textbf{Ausência de unidades e rótulos:} eixos sem título e unidade tornam o gráfico ininterpretável.
+  \item \textbf{Gráficos de duplo eixo:} dois eixos y diferentes permitem manipulação visual da correlação aparente entre séries.
+  \item \textbf{Overplotting:} em scatter com muitos pontos, use transparência (\texttt{alpha}) ou hexbin.
+  \item \textbf{Rainbow colormap:} \textit{jet}/\textit{rainbow} não são perceptualmente uniformes; use \textit{viridis} ou \textit{plasma}.
+\end{itemize}
+\end{atencaobox}
+
+\subsection{Acessibilidade}
+
+\begin{itemize}
+  \item \textbf{Daltonismo:} cerca de 8\% dos homens têm dificuldade de distinguir vermelho e verde. Use paletas acessíveis: \textbf{ColorBrewer}, \textbf{viridis}, \textbf{cividis}, \textbf{Wong} (8 cores acessíveis).
+  \item \textbf{Alto contraste:} razão mínima de 4,5:1 entre texto e fundo (WCAG 2.1 nível AA).
+  \item \textbf{Alt text:} para imagens em relatórios web/PDF, descreva o padrão principal do gráfico.
+  \item \textbf{Não dependência de cor exclusiva:} use combinação de cor + forma + padrão para codificar categorias.
+\end{itemize}
+
+% ============================================================
+\section{Estado da Arte (2020--2024)}
+% ============================================================
+
+\begin{estadoartebox}{Visualização Exploratória Automática (Auto-EDA)}
+Ferramentas de EDA automatizada eliminam a necessidade de escrever código para a exploração inicial de datasets. \textbf{ydata-profiling} (ex-Pandas Profiling) gera relatórios HTML completos com estatísticas, correlações, valores ausentes e alertas de qualidade. \textbf{Sweetviz} compara dois datasets (treino vs teste) destacando diferenças de distribuição. \textbf{AutoViz} gera automaticamente os gráficos mais relevantes. \textbf{lux} recomenda visualizações contextuais no Jupyter Notebook. \textbf{D-Tale} oferece exploração interativa com manipulação point-and-click.
+\end{estadoartebox}
+
+\begin{estadoartebox}{Visualização Explicável (XAI Viz)}
+SHAP tornou-se o padrão da indústria para explicabilidade de modelos de ML, com plots integrados ao scikit-learn e XGBoost. \textbf{DiCE} (Diverse Counterfactual Explanations) gera exemplos contrafactuais visuais: ``o que precisaria mudar para inverter a predição?''. O \textbf{What-if Tool} do Google permite exploração visual interativa de modelos no TensorBoard. \textbf{Alibi} oferece explicações anchor e contrafactuais. A tendência é integrar XAI diretamente nos dashboards de produção para auditoria contínua.
+\end{estadoartebox}
+
+\begin{estadoartebox}{BI Moderno e DataViz}
+\textbf{Apache Superset} (open-source) compete com Tableau e Power BI para dashboards corporativos. \textbf{Metabase} simplifica o acesso de usuários não técnicos a dados. \textbf{Grafana} tornou-se padrão para dados de séries temporais e monitoramento de sistemas. \textbf{Observable Plot} (JavaScript, 2022) é a evolução do D3.js, mais acessível. \textbf{Evidence} e \textbf{Rill} emergem como ferramentas de BI baseadas em SQL com output estático. Vibe-coded dashboards com LLMs (Text-to-Viz) começam a democratizar a criação de visualizações para usuários não programadores.
+\end{estadoartebox}
+
+% ============================================================
+\section{Exercícios}
+% ============================================================
+
+\begin{enumerate}[label=\textbf{\arabic*.}, itemsep=0.5em]
+  \item \textbf{[Quarteto de Anscombe]} Crie manualmente os quatro datasets do Quarteto de Anscombe usando NumPy. Calcule e imprima as estatísticas de cada um (média, variância, correlação, coeficientes de regressão linear). Em seguida, plote todos em um grid $2 \times 2$ com matplotlib. O que esse exercício ensina sobre a necessidade de visualização?
+
+  \item \textbf{[Design de Dashboard]} Para o projeto de DM do módulo anterior (classificação ou clustering), projete um dashboard analítico no papel (wireframe) com: (a) 4 KPI cards no topo, (b) gráfico de avaliação do modelo, (c) visualização dos dados com PCA/t-SNE, (d) importância de atributos. Implemente o wireframe como figura Plotly \texttt{make\_subplots}.
+
+  \item \textbf{[Plotly Interativo]} Crie um scatter plot interativo com Plotly Express usando o dataset Iris: (a) cores por espécie, (b) tamanho dos pontos proporcional ao comprimento da pétala, (c) hover customizado mostrando todas as 4 features, (d) botões de animação para alternar entre pares de features.
+
+  \item \textbf{[Visualização SHAP]} Treine um XGBoost no dataset de câncer de mama (sklearn). Gere: (a) beeswarm summary plot, (b) bar summary plot, (c) waterfall plot para 3 exemplos (um verdadeiro positivo, um falso positivo, um verdadeiro negativo). Interprete cada plot em 3 frases.
+
+  \item \textbf{[t-SNE vs UMAP]} Carregue o dataset MNIST (use \texttt{fetch\_openml('mnist\_784')} ou uma amostra de 5000 pontos). Aplique PCA (primeiro reduzir a 50D), depois t-SNE e UMAP. Compare visualmente a separação das 10 classes. Meça o tempo de execução de cada método. Qual preserva melhor a estrutura global?
+
+  \item \textbf{[Auto-EDA Report]} Carregue qualquer dataset com pelo menos 10 colunas e 500 linhas. Execute \texttt{ydata\_profiling.ProfileReport} e salve o relatório HTML. Identifique: (a) 3 problemas de qualidade de dados detectados automaticamente, (b) 2 correlações interessantes entre variáveis, (c) distribu\-ições problemáticas (multimodal, skewed, outliers).
+
+  \item \textbf{[Acessibilidade]} Crie o mesmo gráfico de barras em três versões: (a) versão padrão com cores arbitrárias, (b) versão com paleta ColorBrewer acessível a daltônicos, (c) versão com hachuras (patterns) além de cores. Use o simulador de daltonismo Coblis ou matplotlib.colors para verificar a acessibilidade. Documente as diferenças.
+\end{enumerate}
+
+% ============================================================
+\section{Referências}
+% ============================================================
+
+\begin{thebibliography}{99}
+
+\bibitem{tufte1983} Tufte, E. R. (1983). \textit{The Visual Display of Quantitative Information}. Graphics Press.
+
+\bibitem{wilkinson2005} Wilkinson, L. (2005). \textit{The Grammar of Graphics} (2nd ed.). Springer.
+
+\bibitem{vandermaaten2008} van der Maaten, L., \& Hinton, G. (2008). Visualizing data using t-SNE. \textit{Journal of Machine Learning Research}, 9, 2579--2605.
+
+\bibitem{mcinnes2018} McInnes, L., Healy, J., \& Melville, J. (2018). UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction. \textit{arXiv:1802.03426}.
+
+\bibitem{wickham2010} Wickham, H. (2010). A layered grammar of graphics. \textit{Journal of Computational and Graphical Statistics}, 19(1), 3--28.
+
+\bibitem{cairo2016} Cairo, A. (2016). \textit{The Truthful Art: Data, Charts, and Maps for Communication}. New Riders.
+
+\bibitem{munzner2014} Munzner, T. (2014). \textit{Visualization Analysis and Design}. CRC Press.
+
+\bibitem{few2012} Few, S. (2012). \textit{Show Me the Numbers: Designing Tables and Graphs to Enlighten} (2nd ed.). Analytics Press.
+
+\bibitem{lundberg2017} Lundberg, S. M., \& Lee, S. I. (2017). A unified approach to interpreting model predictions. In \textit{Advances in Neural Information Processing Systems 30} (NIPS 2017).
+
+\bibitem{ribeiro2016} Ribeiro, M. T., Singh, S., \& Guestrin, C. (2016). ``Why should I trust you?'': Explaining the predictions of any classifier. In \textit{Proceedings of KDD 2016} (pp. 1135--1144).
+
+\bibitem{anscombe1973} Anscombe, F. J. (1973). Graphs in statistical analysis. \textit{The American Statistician}, 27(1), 17--21.
+
+\end{thebibliography}
+
+\end{document}

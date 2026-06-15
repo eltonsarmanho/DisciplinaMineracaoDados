@@ -1,0 +1,722 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,shapes.geometric,positioning,fit,backgrounds,calc,shadows.blur,decorations.pathmorphing,mindmap,trees,patterns,matrix}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{fontawesome5}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins,theorems}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\setlength{\headheight}{14pt}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{caption}
+\definecolor{mineblue}{RGB}{0,90,180}
+\definecolor{mineorange}{RGB}{230,115,0}
+\definecolor{minegreen}{RGB}{34,139,34}
+\definecolor{minered}{RGB}{180,20,40}
+\definecolor{minegray}{RGB}{100,100,100}
+\definecolor{codebg}{RGB}{250,250,250}
+\newtcolorbox{definicaobox}[1]{title={\faIcon{book} #1},colback=blue!4!white,colframe=mineblue,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{exemplobox}[1]{title={\faIcon{lightbulb} #1},colback=orange!4!white,colframe=mineorange,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{dicabox}[1]{title={\faIcon{info-circle} #1},colback=green!4!white,colframe=minegreen,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{atencaobox}[1]{title={\faIcon{exclamation-triangle} #1},colback=red!4!white,colframe=minered,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{estadoartebox}[1]{title={\faIcon{rocket} #1},colback=purple!4!white,colframe=purple!60!black,fonttitle=\bfseries,breakable,enhanced}
+\lstdefinestyle{mypython}{language=Python,backgroundcolor=\color{codebg},commentstyle=\color{minegray}\itshape,keywordstyle=\color{mineblue}\bfseries,stringstyle=\color{minegreen},basicstyle=\ttfamily\footnotesize,breaklines=true,frame=single,rulecolor=\color{minegray!40},numbers=left,numberstyle=\tiny\color{minegray},tabsize=4,showstringspaces=false}
+\lstset{style=mypython}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small \textcolor{mineblue}{\textbf{Mineração de Dados}} | UEPA -- CCNT}
+\fancyhead[R]{\small Módulo 5: Inteligência Computacional}
+\fancyfoot[C]{\small \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\titleformat{\section}{\large\bfseries\color{mineblue}}{\thesection}{0.8em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{mineorange}}{\thesubsection}{0.8em}{}
+\titleformat{\subsubsection}{\small\bfseries\color{minegray}}{\thesubsubsection}{0.8em}{}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{mineblue} Módulo 5: Inteligência Computacional}\\[0.4em]
+  {\large\color{mineorange} Aplicada à Mineração de Dados}\\[0.6em]
+  {\normalsize Universidade do Estado do Pará (UEPA) -- CCNT\\
+  Curso: Engenharia de Software, 8$^{\circ}$ Semestre\\
+  Disciplina: Mineração de Dados | Carga Horária: 80h}\\[0.3em]
+  \rule{\linewidth}{0.8pt}
+\end{center}
+
+% ============================================================
+\section{Objetivos de Aprendizagem}
+% ============================================================
+
+Ao final deste módulo, o estudante será capaz de:
+
+\begin{itemize}[leftmargin=2em]
+  \item[\faIcon{check-circle}] \textbf{Compreender} os fundamentos das Redes Neurais Artificiais, desde o neurônio de McCulloch-Pitts até arquiteturas modernas de Deep Learning.
+  \item[\faIcon{check-circle}] \textbf{Implementar} o algoritmo de retropropagação (backpropagation) e entender o papel das funções de ativação e otimizadores no treinamento.
+  \item[\faIcon{check-circle}] \textbf{Aplicar} técnicas de regularização (Dropout, BatchNorm, L1/L2) para evitar overfitting em redes neurais.
+  \item[\faIcon{check-circle}] \textbf{Explorar} arquiteturas de Deep Learning (CNN, RNN, LSTM, Transformers) e suas aplicações na mineração de dados.
+  \item[\faIcon{check-circle}] \textbf{Utilizar} algoritmos evolutivos (Algoritmos Genéticos, PSO) para otimização de hiperparâmetros e seleção de features.
+  \item[\faIcon{check-circle}] \textbf{Compreender} os princípios da Lógica Fuzzy e do Fuzzy C-Means para agrupamento com pertinência gradual.
+  \item[\faIcon{check-circle}] \textbf{Avaliar} e comparar abordagens de AutoML e Neural Architecture Search para automação do processo de modelagem.
+  \item[\faIcon{check-circle}] \textbf{Identificar} as tendências do estado da arte (2020--2024) em inteligência computacional aplicada à mineração de dados.
+\end{itemize}
+
+% ============================================================
+\section{Redes Neurais Artificiais}
+% ============================================================
+
+\subsection{Neurônio Biológico vs.\ Artificial}
+
+O sistema nervoso humano contém aproximadamente $86 \times 10^9$ neurônios, cada um conectado a milhares de outros por meio de sinapses. O neurônio biológico recebe sinais elétricos pelos \textbf{dendritos}, integra-os no \textbf{soma} (corpo celular) e, se o potencial de membrana ultrapassa um limiar, dispara um sinal pelo \textbf{axônio}.
+
+Em 1943, \textbf{McCulloch \& Pitts} propuseram o primeiro modelo matemático de neurônio artificial: um dispositivo binário que computa a soma ponderada das entradas e dispara (saída 1) se a soma excede um limiar $\theta$:
+\[
+  y = \begin{cases} 1, & \sum_i w_i x_i \geq \theta \\ 0, & \text{caso contrário} \end{cases}
+\]
+
+Em 1958, \textbf{Frank Rosenblatt} introduziu o \textbf{Perceptron}, adicionando pesos ajustáveis por aprendizado supervisionado. O modelo geral do neurônio artificial é:
+\[
+  y = f\!\left(\sum_{i=1}^{n} w_i x_i + b\right) = f\!\left(\mathbf{w}^T \mathbf{x} + b\right)
+\]
+onde $\mathbf{w} \in \mathbb{R}^n$ são os pesos, $b$ é o viés (\textit{bias}), e $f(\cdot)$ é a \textbf{função de ativação}.
+
+\begin{definicaobox}{Neurônio Artificial}
+Um neurônio artificial é uma unidade computacional que realiza duas operações: (1) \textbf{pré-ativação} $z = \mathbf{w}^T\mathbf{x} + b$ (combinação linear) e (2) \textbf{ativação} $y = f(z)$ (não-linearidade). A composição de múltiplos neurônios em camadas forma uma Rede Neural Artificial (RNA).
+\end{definicaobox}
+
+\subsection{Funções de Ativação}
+
+A não-linearidade introduzida pelas funções de ativação é o que permite às redes neurais aproximar funções arbitrariamente complexas. A Tabela~\ref{tab:ativacoes} resume as principais funções.
+
+\begin{table}[h!]
+\centering
+\caption{Principais funções de ativação e suas propriedades.}
+\label{tab:ativacoes}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{>{\bfseries}p{2.2cm} p{4.5cm} p{1.6cm} p{2.5cm} p{3.4cm}}
+\toprule
+Função & Fórmula & Intervalo & Propriedades & Uso Principal \\
+\midrule
+Sigmoid & $\sigma(z) = \dfrac{1}{1+e^{-z}}$ & $(0, 1)$ & Diferenciável; vanishing gradient & Saída binária \\
+Tanh & $\tanh(z) = \dfrac{e^z - e^{-z}}{e^z + e^{-z}}$ & $(-1, 1)$ & Zero-centrada; vanishing gradient & Camadas ocultas \\
+ReLU & $\max(0, z)$ & $[0,+\infty)$ & Eficiente; dying ReLU & Camadas ocultas (padrão) \\
+Leaky ReLU & $\max(\alpha z, z)$, $\alpha{=}0.01$ & $(-\infty,+\infty)$ & Evita dying ReLU & Alternativa ao ReLU \\
+ELU & $z$ se $z>0$; $\alpha(e^z{-}1)$ se $z \leq 0$ & $(-\alpha,+\infty)$ & Suave; outputs negativos & Regularização implícita \\
+Softmax & $\dfrac{e^{z_i}}{\sum_j e^{z_j}}$ & $(0,1)$; soma 1 & Distribuição de probabilidade & Saída multiclasse \\
+GELU & $z \cdot \Phi(z)$ & $\approx(-0.17,+\infty)$ & Suave; estocástica & Transformers, BERT \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A figura abaixo compara as formas das funções de ativação mais comuns:
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=13cm,height=5.5cm,
+  xlabel={$z$},ylabel={$f(z)$},
+  legend pos=outer north east,
+  grid=major,grid style={minegray!20},
+  domain=-3:3,samples=100,
+  tick label style={font=\small}]
+\addplot[mineblue,thick] {1/(1+exp(-x))}; \addlegendentry{Sigmoid}
+\addplot[mineorange,thick] {tanh(x)}; \addlegendentry{Tanh}
+\addplot[minegreen,thick] {max(0,x)}; \addlegendentry{ReLU}
+\addplot[minered,thick,dashed] {(x>0)*x + (x<=0)*0.1*x}; \addlegendentry{Leaky ReLU ($\alpha=0.1$)}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\begin{atencaobox}{Vanishing Gradient}
+Sigmoid e Tanh sofrem do problema do \textit{vanishing gradient}: suas derivadas se aproximam de zero para valores extremos de $z$, fazendo com que o gradiente ``desapareça'' nas camadas iniciais durante o backpropagation. O ReLU mitiga esse problema, mas pode sofrer do \textit{dying ReLU} (neurônios que sempre retornam zero). Leaky ReLU, ELU e GELU são alternativas robustas.
+\end{atencaobox}
+
+\subsection{Perceptron Multicamadas (MLP)}
+
+Um \textbf{Perceptron Multicamadas} (MLP -- \textit{Multilayer Perceptron}) organiza neurônios em camadas: \textbf{entrada}, uma ou mais camadas \textbf{ocultas} e \textbf{saída}. Cada neurônio em uma camada está conectado a todos os neurônios da camada seguinte (\textit{fully connected} ou \textit{dense}).
+
+\textbf{Notação:} Para uma rede com $L$ camadas, seja $\mathbf{a}^{(l)}$ a ativação da camada $l$, $\mathbf{W}^{(l)}$ a matriz de pesos e $\mathbf{b}^{(l)}$ o vetor de vieses:
+\[
+  \mathbf{z}^{(l)} = \mathbf{W}^{(l)} \mathbf{a}^{(l-1)} + \mathbf{b}^{(l)}, \qquad
+  \mathbf{a}^{(l)} = f^{(l)}\!\left(\mathbf{z}^{(l)}\right)
+\]
+com $\mathbf{a}^{(0)} = \mathbf{x}$ (entrada) e $\hat{\mathbf{y}} = \mathbf{a}^{(L)}$ (saída).
+
+\begin{center}
+\begin{tikzpicture}[
+  neuron/.style={circle,draw=mineblue,fill=mineblue!15,minimum size=0.65cm,font=\tiny},
+  hneuron/.style={circle,draw=mineorange,fill=mineorange!15,minimum size=0.65cm,font=\tiny},
+  oneuron/.style={circle,draw=minegreen,fill=minegreen!15,minimum size=0.65cm,font=\tiny}]
+
+% Input layer (4 neurons)
+\foreach \i in {1,2,3,4}{
+  \node[neuron] (i\i) at (0, {-\i*1.2+3}) {$x_{\i}$};
+}
+\node[above,font=\small\bfseries,mineblue] at (0,2.0) {Entrada};
+
+% Hidden layer 1 (5 neurons)
+\foreach \i in {1,...,5}{
+  \node[hneuron] (h1\i) at (3, {-\i*1.1+3.3}) {$h_{\i}$};
+}
+\node[above,font=\small\bfseries,mineorange] at (3,2.3) {Oculta 1};
+
+% Hidden layer 2 (4 neurons)
+\foreach \i in {1,...,4}{
+  \node[hneuron] (h2\i) at (6, {-\i*1.2+2.8}) {$h_{\i}$};
+}
+\node[above,font=\small\bfseries,mineorange] at (6,2.0) {Oculta 2};
+
+% Output layer (2 neurons)
+\foreach \i in {1,2}{
+  \node[oneuron] (o\i) at (9, {-\i*1.5+1.5}) {$y_{\i}$};
+}
+\node[above,font=\small\bfseries,minegreen] at (9,0.5) {Saída};
+
+% Connections (input to hidden1)
+\foreach \i in {1,2,3,4}{
+  \foreach \j in {1,...,5}{
+    \draw[minegray!30,->,thin] (i\i)--(h1\j);
+  }
+}
+% Connections (hidden1 to hidden2)
+\foreach \i in {1,...,5}{
+  \foreach \j in {1,...,4}{
+    \draw[minegray!30,->,thin] (h1\i)--(h2\j);
+  }
+}
+% Connections (hidden2 to output)
+\foreach \i in {1,...,4}{
+  \foreach \j in {1,2}{
+    \draw[minegray!50,->,thin] (h2\i)--(o\j);
+  }
+}
+\end{tikzpicture}
+\end{center}
+
+\begin{dicabox}{Teorema da Aproximação Universal}
+\textbf{Hornik (1989)}: Uma rede neural com uma única camada oculta de tamanho suficiente e função de ativação não-linear pode aproximar qualquer função contínua em um subconjunto compacto de $\mathbb{R}^n$ com precisão arbitrária. Isso garante o poder expressivo das MLPs, mas não diz como treinar a rede ou quantos neurônios são necessários.
+\end{dicabox}
+
+\subsection{Algoritmo de Retropropagação (Backpropagation)}
+
+O \textbf{backpropagation} (Rumelhart, Hinton \& Williams, 1986) é o algoritmo que viabilizou o treinamento de MLPs profundas, aplicando a \textbf{regra da cadeia} do cálculo para computar os gradientes da função de perda em relação a todos os pesos da rede.
+
+\textbf{Passo Forward:} Dado um exemplo $(\mathbf{x}, y)$, computa-se as ativações camada a camada:
+\[
+  \mathbf{z}^{(l)} = \mathbf{W}^{(l)} \mathbf{a}^{(l-1)} + \mathbf{b}^{(l)}, \quad
+  \mathbf{a}^{(l)} = f\!\left(\mathbf{z}^{(l)}\right), \quad l = 1, \ldots, L
+\]
+
+\textbf{Função de Perda:} Para regressão usa-se MSE; para classificação binária, cross-entropy:
+\[
+  \mathcal{L}(\hat{y}, y) = -y\log\hat{y} - (1-y)\log(1-\hat{y})
+\]
+
+\textbf{Passo Backward:} Pelo teorema da cadeia, o gradiente em relação ao peso $w_{jk}^{(l)}$ é:
+\[
+  \frac{\partial \mathcal{L}}{\partial w_{jk}^{(l)}} =
+  \frac{\partial \mathcal{L}}{\partial \hat{y}} \cdot
+  \frac{\partial \hat{y}}{\partial z^{(L)}} \cdot \cdots \cdot
+  \frac{\partial z^{(l+1)}}{\partial a^{(l)}} \cdot
+  \frac{\partial a^{(l)}}{\partial z^{(l)}} \cdot
+  \frac{\partial z^{(l)}}{\partial w_{jk}^{(l)}}
+\]
+
+Definindo o \textbf{erro local} $\boldsymbol{\delta}^{(l)} = \frac{\partial \mathcal{L}}{\partial \mathbf{z}^{(l)}}$:
+\[
+  \boldsymbol{\delta}^{(L)} = \frac{\partial \mathcal{L}}{\partial \mathbf{a}^{(L)}} \odot f'\!\left(\mathbf{z}^{(L)}\right),
+  \quad
+  \boldsymbol{\delta}^{(l)} = \left(\mathbf{W}^{(l+1)}\right)^T \boldsymbol{\delta}^{(l+1)} \odot f'\!\left(\mathbf{z}^{(l)}\right)
+\]
+
+\textbf{Atualização de pesos} (gradiente descendente):
+\[
+  \mathbf{W}^{(l)} \leftarrow \mathbf{W}^{(l)} - \eta \, \boldsymbol{\delta}^{(l)} \left(\mathbf{a}^{(l-1)}\right)^T,
+  \qquad
+  \mathbf{b}^{(l)} \leftarrow \mathbf{b}^{(l)} - \eta \, \boldsymbol{\delta}^{(l)}
+\]
+
+\begin{algorithm}[H]
+\caption{Backpropagation -- Treinamento de MLP}
+\KwIn{Dados $\{(\mathbf{x}_i, y_i)\}_{i=1}^N$; taxa de aprendizado $\eta$; épocas $E$}
+\KwOut{Pesos $\mathbf{W}^{(1)},\ldots,\mathbf{W}^{(L)}$ e vieses $\mathbf{b}^{(1)},\ldots,\mathbf{b}^{(L)}$ treinados}
+Inicializar pesos aleatoriamente (ex.\ Xavier/He initialization)\;
+\For{época $= 1$ \KwTo $E$}{
+  Embaralhar os dados de treinamento\;
+  \ForEach{mini-batch $\mathcal{B} \subset \{1,\ldots,N\}$}{
+    \tcp{Passo Forward}
+    \For{$l = 1$ \KwTo $L$}{
+      $\mathbf{z}^{(l)} \leftarrow \mathbf{W}^{(l)} \mathbf{a}^{(l-1)} + \mathbf{b}^{(l)}$\;
+      $\mathbf{a}^{(l)} \leftarrow f^{(l)}(\mathbf{z}^{(l)})$\;
+    }
+    Calcular perda $\mathcal{L} = \frac{1}{|\mathcal{B}|}\sum_{i \in \mathcal{B}} \ell(\hat{y}_i, y_i)$\;
+    \tcp{Passo Backward}
+    $\boldsymbol{\delta}^{(L)} \leftarrow \nabla_{\mathbf{a}^{(L)}} \mathcal{L} \odot f'^{(L)}(\mathbf{z}^{(L)})$\;
+    \For{$l = L-1$ \KwTo $1$}{
+      $\boldsymbol{\delta}^{(l)} \leftarrow (\mathbf{W}^{(l+1)})^T \boldsymbol{\delta}^{(l+1)} \odot f'^{(l)}(\mathbf{z}^{(l)})$\;
+    }
+    \tcp{Atualização de parâmetros}
+    \For{$l = 1$ \KwTo $L$}{
+      $\mathbf{W}^{(l)} \leftarrow \mathbf{W}^{(l)} - \eta \cdot \boldsymbol{\delta}^{(l)}(\mathbf{a}^{(l-1)})^T / |\mathcal{B}|$\;
+      $\mathbf{b}^{(l)} \leftarrow \mathbf{b}^{(l)} - \eta \cdot \boldsymbol{\delta}^{(l)} / |\mathcal{B}|$\;
+    }
+  }
+}
+\end{algorithm}
+
+\subsection{Otimizadores}
+
+A escolha do otimizador afeta significativamente a velocidade de convergência e a qualidade da solução encontrada.
+
+\textbf{SGD (Gradiente Descendente Estocástico):}
+\[
+  \mathbf{w}_t = \mathbf{w}_{t-1} - \eta \, \mathbf{g}_t
+\]
+
+\textbf{SGD com Momentum:} Acumula a velocidade na direção do gradiente:
+\[
+  \mathbf{v}_t = \beta \mathbf{v}_{t-1} + (1-\beta)\mathbf{g}_t, \qquad \mathbf{w}_t = \mathbf{w}_{t-1} - \eta \mathbf{v}_t
+\]
+
+\textbf{Adam (Kingma \& Ba, 2015):} Combina Momentum e RMSProp com correção de viés:
+\begin{align}
+  m_t &= \beta_1 m_{t-1} + (1-\beta_1) g_t \quad \text{(1$^\circ$ momento)}\\
+  v_t &= \beta_2 v_{t-1} + (1-\beta_2) g_t^2 \quad \text{(2$^\circ$ momento)}\\
+  \hat{m}_t &= \frac{m_t}{1-\beta_1^t}, \quad \hat{v}_t = \frac{v_t}{1-\beta_2^t} \quad \text{(correção de viés)}\\
+  \mathbf{w}_t &= \mathbf{w}_{t-1} - \frac{\eta \, \hat{m}_t}{\sqrt{\hat{v}_t} + \varepsilon}
+\end{align}
+
+com $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\varepsilon = 10^{-8}$.
+
+\textbf{Comparativo de otimizadores:}
+\begin{itemize}
+  \item \textbf{AdaGrad}: Adapta taxa de aprendizado por parâmetro; bom para dados esparsos; taxa decresce monotonamente.
+  \item \textbf{RMSProp}: Variante do AdaGrad com janela deslizante; corrige o decaimento excessivo.
+  \item \textbf{AdamW}: Adam com weight decay desacoplado (Loshchilov \& Hutter, 2019); preferido em Transformers.
+\end{itemize}
+
+\subsection{Regularização em Redes Neurais}
+
+Redes neurais profundas são propensas ao overfitting. As principais técnicas de regularização são:
+
+\begin{itemize}
+  \item \textbf{Dropout} (Srivastava et al., 2014): Durante o treinamento, cada neurônio é desligado com probabilidade $p$ (tipicamente $p = 0.5$). Funciona como uma média de ensemble implícita.
+  \item \textbf{L2 Weight Decay}: Adiciona $\frac{\lambda}{2}\|\mathbf{w}\|_2^2$ à função de perda; incentiva pesos pequenos.
+  \item \textbf{L1 Regularization}: Adiciona $\lambda\|\mathbf{w}\|_1$; incentiva esparsidade nos pesos.
+  \item \textbf{Batch Normalization} (Ioffe \& Szegedy, 2015): Normaliza as ativações em cada mini-batch:
+  \[
+    \hat{z}^{(l)} = \frac{z^{(l)} - \mu_\mathcal{B}}{\sqrt{\sigma_\mathcal{B}^2 + \varepsilon}} \cdot \gamma + \beta
+  \]
+  Acelera o treinamento e reduz a sensibilidade à inicialização.
+  \item \textbf{Early Stopping}: Monitora a perda de validação; interrompe o treinamento quando ela começa a aumentar.
+  \item \textbf{Data Augmentation}: Aumenta artificialmente o conjunto de treino (rotações, flips, ruído, etc.).
+\end{itemize}
+
+% ============================================================
+\section{Deep Learning para Mineração de Dados}
+% ============================================================
+
+\subsection{Redes Convolucionais (CNN)}
+
+As Redes Neurais Convolucionais (LeCun et al., 1998) exploram a \textbf{localidade} e a \textbf{invariância à translação} presentes em dados estruturados em grades (imagens, séries temporais).
+
+\textbf{Componentes principais:}
+\begin{itemize}
+  \item \textbf{Camada Convolucional}: Aplica filtros $\mathbf{K}$ (kernels) deslizantes: $(f * \mathbf{K})(i,j) = \sum_m \sum_n f(i+m, j+n) \cdot \mathbf{K}(m,n)$. Extrai mapas de características locais.
+  \item \textbf{Camada de Pooling}: Reduz a dimensionalidade (Max Pooling, Average Pooling). Introduz invariância.
+  \item \textbf{Camada Fully Connected}: Classificador no topo da rede, após achatar (\textit{flatten}) as features extraídas.
+\end{itemize}
+
+\textbf{Aplicações em Mineração de Dados:} Extração de features de imagens para classificação, análise de sentimentos com Conv1D sobre texto, detecção de anomalias em séries temporais com Conv1D, reconhecimento de padrões em EEG e sinais biomédicos.
+
+\subsection{Redes Recorrentes (RNN, LSTM, GRU)}
+
+Redes Recorrentes processam \textbf{sequências} mantendo um estado oculto $\mathbf{h}_t$ que captura dependências temporais:
+\[
+  \mathbf{h}_t = f\!\left(\mathbf{W}_h \mathbf{h}_{t-1} + \mathbf{W}_x \mathbf{x}_t + \mathbf{b}\right)
+\]
+
+O problema do \textit{vanishing gradient} nas RNN básicas é resolvido pelas \textbf{Long Short-Term Memory (LSTM)} (Hochreiter \& Schmidhuber, 1997) com quatro portões:
+
+\begin{align}
+  f_t &= \sigma\!\left(\mathbf{W}_f[\mathbf{h}_{t-1}, \mathbf{x}_t] + \mathbf{b}_f\right) & &\text{(portão de esquecimento)}\\
+  i_t &= \sigma\!\left(\mathbf{W}_i[\mathbf{h}_{t-1}, \mathbf{x}_t] + \mathbf{b}_i\right) & &\text{(portão de entrada)}\\
+  \tilde{C}_t &= \tanh\!\left(\mathbf{W}_C[\mathbf{h}_{t-1}, \mathbf{x}_t] + \mathbf{b}_C\right) & &\text{(candidatos ao estado)}\\
+  C_t &= f_t \odot C_{t-1} + i_t \odot \tilde{C}_t & &\text{(estado da célula)}\\
+  o_t &= \sigma\!\left(\mathbf{W}_o[\mathbf{h}_{t-1}, \mathbf{x}_t] + \mathbf{b}_o\right) & &\text{(portão de saída)}\\
+  \mathbf{h}_t &= o_t \odot \tanh(C_t) & &\text{(saída)}
+\end{align}
+
+As \textbf{Gated Recurrent Units (GRU)} (Cho et al., 2014) simplificam a LSTM com apenas dois portões (atualização e reset), com desempenho comparável em muitas tarefas.
+
+\textbf{Aplicações:} Predição de séries temporais, modelagem de linguagem, análise de sentimentos sequencial, detecção de anomalias temporais.
+
+\subsection{Attention e Transformers}
+
+O mecanismo de \textbf{Atenção} (Bahdanau et al., 2015) permite que o modelo pondere dinamicamente partes da entrada. O \textbf{Self-Attention} do Transformer (Vaswani et al., 2017) computa:
+\[
+  \text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right) V
+\]
+onde $Q$ (queries), $K$ (keys) e $V$ (values) são projeções lineares da entrada, e $d_k$ é a dimensão das queries/keys (fator de escala).
+
+\textbf{Modelos pré-treinados relevantes para DM:}
+\begin{itemize}
+  \item \textbf{BERT} (Devlin et al., 2019): Encoder bidirecional; embeddings de texto de alta qualidade para classificação e busca.
+  \item \textbf{GPT} (Radford et al., 2018): Decoder autoregressivo; geração de texto e few-shot learning.
+  \item \textbf{TabNet} (Arik \& Pfister, 2021): Arquitetura Transformer adaptada para dados tabulares; atenção sequencial em features; interpretável.
+\end{itemize}
+
+% ============================================================
+\section{Computação Evolutiva}
+% ============================================================
+
+\subsection{Algoritmos Genéticos}
+
+Inspirados na evolução biológica darwiniana, os \textbf{Algoritmos Genéticos} (Holland, 1975) mantêm uma população de soluções candidatas e as evoluem por operadores de seleção, crossover e mutação.
+
+\textbf{Componentes:}
+\begin{itemize}
+  \item \textbf{Cromossomo}: Codificação de uma solução candidata (binária, real, permutação).
+  \item \textbf{População}: Conjunto de $N$ cromossomos (tipicamente $N = 50$--$500$).
+  \item \textbf{Função de Fitness}: Avalia a qualidade de cada indivíduo.
+  \item \textbf{Seleção}: Escolhe pais; métodos: torneio, roleta, ranque.
+  \item \textbf{Crossover}: Combina material genético de dois pais com probabilidade $p_c$ (tipicamente $0.6$--$0.9$).
+  \item \textbf{Mutação}: Altera genes aleatoriamente com probabilidade $p_m$ (tipicamente $0.001$--$0.01$).
+  \item \textbf{Elitismo}: Preserva os melhores indivíduos para a próxima geração.
+\end{itemize}
+
+\begin{algorithm}[H]
+\caption{Algoritmo Genético}
+\KwIn{$N$ (tamanho da população), $G$ (gerações), $p_c$ (prob.\ crossover), $p_m$ (prob.\ mutação)}
+\KwOut{Melhor solução encontrada}
+$P \leftarrow$ InitializePopulation($N$) \tcp{cromossomos aleatórios}
+$F \leftarrow$ EvaluateFitness($P$)\;
+\For{$g = 1$ \KwTo $G$}{
+  $P_{\text{elite}} \leftarrow$ SelectElite($P$, $F$)\;
+  $P' \leftarrow \emptyset$\;
+  \While{$|P'| < N - |P_{\text{elite}}|$}{
+    $p_1, p_2 \leftarrow$ TournamentSelection($P$, $F$)\;
+    \If{$\text{random}() < p_c$}{
+      $c_1, c_2 \leftarrow$ Crossover($p_1$, $p_2$)\;
+    }\Else{
+      $c_1, c_2 \leftarrow p_1, p_2$\;
+    }
+    $c_1 \leftarrow$ Mutate($c_1$, $p_m$); $c_2 \leftarrow$ Mutate($c_2$, $p_m$)\;
+    $P' \leftarrow P' \cup \{c_1, c_2\}$\;
+  }
+  $P \leftarrow P_{\text{elite}} \cup P'$\;
+  $F \leftarrow$ EvaluateFitness($P$)\;
+}
+\Return{$\arg\max_i F(P_i)$}\;
+\end{algorithm}
+
+\textbf{Aplicações em Mineração de Dados:}
+\begin{itemize}
+  \item \textbf{Seleção de Features}: Cromossomo binário indica quais features usar; fitness = acurácia em validação cruzada.
+  \item \textbf{Otimização de Hiperparâmetros}: Evolui configurações de modelos (profundidade de árvore, taxa de aprendizado etc.).
+  \item \textbf{Evolução de Regras}: Evolui conjuntos de regras de classificação (Pittsburgh approach).
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={rectangle,draw=mineblue,fill=mineblue!10,rounded corners=3pt,minimum width=2.8cm,minimum height=0.8cm,font=\small\bfseries,align=center},
+  arrow/.style={-{Stealth[length=6pt]},mineblue,thick}]
+
+\node[box] (init)   at (0,0)   {Inicialização\\da População};
+\node[box] (eval)   at (3.5,0) {Avaliação do\\Fitness};
+\node[box] (sel)    at (7,0)   {Seleção de\\Pais};
+\node[box] (cross)  at (7,-2)  {Crossover\\(Recombinação)};
+\node[box] (mut)    at (3.5,-2){Mutação};
+\node[box] (new)    at (0,-2)  {Nova\\Geração};
+\node[box,fill=minegreen!15,draw=minegreen] (fim) at (0,-4) {Critério de\\Parada?};
+\node[box,fill=mineorange!15,draw=mineorange] (out) at (3.5,-4) {Melhor\\Indivíduo};
+
+\draw[arrow] (init)--(eval);
+\draw[arrow] (eval)--(sel);
+\draw[arrow] (sel)--(cross);
+\draw[arrow] (cross)--(mut);
+\draw[arrow] (mut)--(new);
+\draw[arrow] (new)--(fim);
+\draw[arrow] (fim) -- node[right,font=\tiny,minegray]{Sim} (out);
+\draw[arrow] (fim.west) -- ++(-0.8,0) |- node[left,font=\tiny,minegray,pos=0.25]{Não} (eval.west);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Programação Genética}
+
+A \textbf{Programação Genética} (Koza, 1992) estende o AG evoluindo \textbf{programas} representados como \textbf{árvores de expressão}, ao invés de cromossomos de tamanho fixo.
+
+Cada nó interno é um operador ($+, -, \times, \div, \sin, \log, \ldots$) e cada folha é uma variável ou constante. O crossover troca subárvores entre indivíduos.
+
+\textbf{Aplicação principal}: \textbf{Regressão Simbólica} -- descobrir a equação matemática que melhor descreve os dados (ex.\ descobrir $y = 3x^2 + 2x - 1$ a partir de amostras ruidosas).
+
+\subsection{Particle Swarm Optimization (PSO)}
+
+O \textbf{PSO} (Kennedy \& Eberhart, 1995) simula o comportamento coletivo de um bando de pássaros. Cada partícula $i$ tem posição $\mathbf{x}_i$ e velocidade $\mathbf{v}_i$ no espaço de busca.
+
+\textbf{Equações de atualização:}
+\begin{align}
+  \mathbf{v}_{t+1} &= \underbrace{\omega \mathbf{v}_t}_{\text{inércia}} + \underbrace{c_1 r_1 (p_{best} - \mathbf{x}_t)}_{\text{cognitivo}} + \underbrace{c_2 r_2 (g_{best} - \mathbf{x}_t)}_{\text{social}}\\
+  \mathbf{x}_{t+1} &= \mathbf{x}_t + \mathbf{v}_{t+1}
+\end{align}
+
+onde $\omega \approx 0.7$ (inércia), $c_1 = c_2 \approx 1.5$ (acelerações), $r_1, r_2 \sim U(0,1)$, $p_{best}$ = melhor posição da partícula, $g_{best}$ = melhor posição do enxame.
+
+\textbf{Aplicações em DM:}
+\begin{itemize}
+  \item Otimização dos pesos de redes neurais.
+  \item Busca de centróides iniciais para K-Means.
+  \item Otimização de hiperparâmetros de SVMs.
+  \item Seleção de features com codificação contínua.
+\end{itemize}
+
+% ============================================================
+\section{Sistemas Fuzzy}
+% ============================================================
+
+\subsection{Lógica Fuzzy}
+
+A \textbf{Lógica Fuzzy} (Zadeh, 1965) generaliza a lógica binária permitindo graus de pertinência $\mu_A(x) \in [0,1]$ para conjuntos fuzzy. Um elemento pode pertencer parcialmente a um conjunto.
+
+\textbf{Funções de pertinência comuns:}
+\begin{align}
+  \mu_{\text{tri}}(x; a,b,c) &= \max\!\left(0, \min\!\left(\frac{x-a}{b-a}, \frac{c-x}{c-b}\right)\right) && \text{(triangular)}\\
+  \mu_{\text{trap}}(x; a,b,c,d) &= \max\!\left(0, \min\!\left(\frac{x-a}{b-a}, 1, \frac{d-x}{d-c}\right)\right) && \text{(trapezoidal)}\\
+  \mu_{\text{gauss}}(x; c,\sigma) &= \exp\!\left(-\frac{(x-c)^2}{2\sigma^2}\right) && \text{(Gaussiana)}
+\end{align}
+
+\textbf{Variáveis Linguísticas:} Permitem raciocinar com termos como ``temperatura \textbf{alta}'', ``pressão \textbf{média}'', onde cada termo é um conjunto fuzzy. Regras fuzzy: ``\textit{SE temperatura é alta E pressão é média, ENTÃO velocidade é baixa}''.
+
+\textbf{Sistema de Inferência Fuzzy} (Mamdani ou Takagi-Sugeno): Fuzzificação $\to$ Avaliação das Regras $\to$ Agregação $\to$ Defuzzificação.
+
+\subsection{Fuzzy Mining}
+
+O \textbf{Fuzzy C-Means (FCM)} é uma extensão do K-Means onde cada ponto pode pertencer a múltiplos clusters com graus de pertinência. Minimiza a função objetivo:
+\[
+  J = \sum_{i=1}^{N} \sum_{k=1}^{K} u_{ik}^m \|x_i - c_k\|^2
+\]
+onde $u_{ik} \in [0,1]$ é o grau de pertinência do ponto $x_i$ ao cluster $k$, $m > 1$ é o coeficiente de fuzzificação, e $c_k$ são os centróides.
+
+A atualização dos graus de pertinência é:
+\[
+  u_{ik} = \left(\sum_{j=1}^{K} \left(\frac{\|x_i - c_k\|}{\|x_i - c_j\|}\right)^{\frac{2}{m-1}}\right)^{-1}
+\]
+
+e a atualização dos centróides:
+\[
+  c_k = \frac{\sum_{i=1}^{N} u_{ik}^m x_i}{\sum_{i=1}^{N} u_{ik}^m}
+\]
+
+\begin{exemplobox}{Aplicação do FCM}
+Em segmentação de clientes, o FCM permite que um cliente pertença parcialmente a dois segmentos (ex.\ 60\% ``jovem digital'' e 40\% ``econômico tradicional''), capturando melhor a realidade do que clusters exclusivos do K-Means.
+\end{exemplobox}
+
+% ============================================================
+\section{AutoML e Neural Architecture Search}
+% ============================================================
+
+\subsection{AutoML}
+
+\textbf{AutoML} automatiza o processo KDD, permitindo que não-especialistas construam modelos competitivos e acelerando o trabalho de cientistas de dados.
+
+\begin{itemize}
+  \item \textbf{TPOT} (Olson et al., 2016): Usa Programação Genética para otimizar pipelines completos de ML (pré-processamento + seleção de modelo + hiperparâmetros). Representa pipelines como árvores.
+  \item \textbf{Auto-sklearn} (Feurer et al., 2015): Combina \textbf{Otimização Bayesiana} (SMAC) com \textbf{meta-learning} (warm-starting com base em datasets similares) e \textbf{ensemble automático}. Vencedor de competições AutoML.
+  \item \textbf{AutoGluon} (Erickson et al., 2020): Empilhamento (\textit{stacking}) multicamadas automático de modelos; treina múltiplos modelos e os combina sem validação cruzada explícita, usando \textit{bagging} intra-stack.
+\end{itemize}
+
+\subsection{Neural Architecture Search (NAS)}
+
+O NAS automatiza o design de arquiteturas neurais, historicamente o gargalo mais custoso da DL.
+
+\begin{itemize}
+  \item \textbf{DARTS} (Liu et al., 2019): Relaxa a busca discreta para um espaço contínuo, otimizando pesos de arquitetura e de rede simultaneamente por gradiente descendente.
+  \item \textbf{EfficientNet} (Tan \& Le, 2019): NAS para encontrar arquitetura base + \textit{compound scaling} (balanceia profundidade, largura e resolução). State-of-the-art em eficiência.
+\end{itemize}
+
+\subsection{Otimização de Hiperparâmetros (HPO)}
+
+\begin{itemize}
+  \item \textbf{Grid Search}: Busca exaustiva; $O(n^k)$; impraticável para muitos hiperparâmetros.
+  \item \textbf{Random Search} (Bergstra \& Bengio, 2012): Amostragem aleatória; melhor cobertura em alta dimensão; $O(k)$.
+  \item \textbf{Otimização Bayesiana}: Usa surrogate model (GP ou TPE) para balancear exploração/explotação:
+    \begin{itemize}
+      \item \textbf{Gaussian Process (GP)}: Preciso, caro para muitos parâmetros.
+      \item \textbf{Tree-structured Parzen Estimator (TPE)}: Estima $p(x|y > y^*)$ vs $p(x|y < y^*)$; eficiente.
+    \end{itemize}
+  \item \textbf{Hyperband} (Li et al., 2017): Alocação sucessiva de recursos; para experimentos ruins cedo.
+  \item \textbf{BOHB}: Combina Bayesian Optimization + Hyperband.
+  \item \textbf{Optuna} (Akiba et al., 2019): Framework Python; suporta TPE, CMA-ES, pruning com MedianPruner.
+\end{itemize}
+
+% ============================================================
+\section{Interação entre Técnicas}
+% ============================================================
+
+Sistemas de mineração modernos frequentemente \textbf{combinam} múltiplas técnicas, aproveitando as vantagens de cada abordagem:
+
+\begin{itemize}
+  \item \textbf{CNN + GBM}: Extração de features com CNN pré-treinado (ex.\ ResNet) $\to$ classificação com XGBoost/LightGBM. Combina poder representacional do DL com eficiência dos GBMs.
+  \item \textbf{NLP Embeddings + Clustering}: BERT gera embeddings de documentos $\to$ K-Means ou HDBSCAN para descoberta de tópicos. Supera LDA em qualidade de clustering.
+  \item \textbf{GA + MLP + XGBoost}: GA realiza seleção de features $\to$ MLP e XGBoost são treinados com as features selecionadas $\to$ ensemble das predições.
+  \item \textbf{Fuzzy + RNA}: Sistemas neuro-fuzzy (ex.\ ANFIS) combinam capacidade de aprendizado das RNAs com a interpretabilidade do raciocínio fuzzy.
+  \item \textbf{PSO + Deep Learning}: PSO otimiza hiperparâmetros (taxa de aprendizado, dropout, número de camadas) da rede neural ao invés de busca em grade.
+\end{itemize}
+
+\begin{dicabox}{Pipeline Híbrido Recomendado}
+Para problemas de classificação em dados tabulares com features de alta dimensão: (1) Use GA ou SHAP para seleção de features, (2) aplique AutoML (Optuna + LightGBM) para baseline, (3) experimente TabNet ou FT-Transformer para comparação com DL, (4) combine os melhores modelos em ensemble por stacking.
+\end{dicabox}
+
+% ============================================================
+\section{Estado da Arte (2020--2024)}
+% ============================================================
+
+\begin{estadoartebox}{Transformers para Dados Tabulares}
+Arquiteturas Transformer, dominantes em NLP e visão, agora competem com GBDTs em dados tabulares:
+\begin{itemize}
+  \item \textbf{FT-Transformer} (Gorishniy et al., 2021): Feature Tokenizer + Transformer; supera GBDTs em alguns benchmarks tabulares.
+  \item \textbf{TabPFN} (Hollmann et al., 2022): Prior-Fitted Network treinado em datasets sintéticos; realiza inferência bayesiana aproximada; state-of-the-art em datasets pequenos.
+  \item \textbf{SAINT} (Somepalli et al., 2021): Self-Attention em linhas e colunas; competitivo com LightGBM em benchmarks.
+  \item O debate persiste: GBDTs ainda dominam em eficiência e interpretabilidade para a maioria dos datasets tabulares do mundo real.
+\end{itemize}
+\end{estadoartebox}
+
+\begin{estadoartebox}{Aprendizado por Representação (Self-Supervised)}
+Aprendizado auto-supervisionado elimina a necessidade de grandes conjuntos rotulados:
+\begin{itemize}
+  \item \textbf{SimCLR} (Chen et al., 2020): Aprendizado contrastivo para imagens; usa augmentações como positivos e amostras distintas como negativos.
+  \item \textbf{MoCo} (He et al., 2020): Momentum Contrast; eficiente com memória de queue de negativos.
+  \item \textbf{SCARF} (Bahri et al., 2022): Adapta contrastive learning para dados tabulares; corrompe features aleatórias para criar visões; melhora fine-tuning com poucos rótulos.
+  \item \textbf{Aplicação em DM}: Pré-treinamento em dados não rotulados + fine-tuning com poucos exemplos rotulados; muito útil em domínios médicos, financeiros.
+\end{itemize}
+\end{estadoartebox}
+
+\begin{estadoartebox}{Redes Generativas para Data Augmentation}
+Modelos generativos para criar dados sintéticos realistas:
+\begin{itemize}
+  \item \textbf{GAN} (Goodfellow et al., 2014): Gerador vs.\ Discriminador em jogo minimax; gera amostras de alta qualidade.
+  \item \textbf{CTGAN} (Xu et al., 2019): GAN condicional para dados tabulares; lida com distribuições mistas (contínuo + categórico); implementado no SDV framework.
+  \item \textbf{TVAE} (Xu et al., 2019): Variational Autoencoder para dados tabulares; mais estável que GAN no treinamento.
+  \item \textbf{Aplicações}: Balanceamento de classes desbalanceadas; geração de dados sintéticos para privacidade; aumentar datasets pequenos.
+\end{itemize}
+\end{estadoartebox}
+
+% ============================================================
+\section{Exercícios}
+% ============================================================
+
+\begin{enumerate}
+  \item \textbf{Backpropagation Manual}: Dada uma rede com 2 entradas, 1 camada oculta com 2 neurônios (tanh) e 1 saída (sigmoid), com pesos iniciais $W^{(1)} = \begin{pmatrix}0.5 & -0.3\\ 0.1 & 0.8\end{pmatrix}$ e $W^{(2)} = \begin{pmatrix}0.4 & -0.6\end{pmatrix}$, realize um passo de backpropagation para o exemplo $(x_1=1, x_2=0, y=1)$ com $\eta=0.1$. Mostre todos os valores intermediários.
+
+  \item \textbf{Comparação de Funções de Ativação}: Explique por que o Sigmoid sofre de \textit{vanishing gradient} mas o ReLU não. Em que situações o Leaky ReLU é preferível ao ReLU padrão? O que é o problema \textit{dying ReLU}?
+
+  \item \textbf{Adam vs SGD}: Descreva as vantagens do otimizador Adam sobre o SGD simples. Quando o SGD com momentum pode ser preferível ao Adam? Quais os hiperparâmetros do Adam e seus valores padrão recomendados?
+
+  \item \textbf{AG vs Busca em Grade}: Para otimização de hiperparâmetros de um modelo com 5 hiperparâmetros (3 valores cada), compare o custo computacional de Grid Search vs Algoritmo Genético com 20 gerações e população de 30 indivíduos. Qual abordagem encontra soluções melhores em espaços de alta dimensão? Justifique.
+
+  \item \textbf{Fuzzy C-Means}: Dado um conjunto com 4 pontos em $\mathbb{R}^1$: $x = \{1, 2, 8, 9\}$, aplique manualmente 2 iterações do FCM com $K=2$, $m=2$ e centróides iniciais $c_1=2, c_2=7$. Calcule os graus de pertinência $u_{ik}$ e os novos centróides.
+
+  \item \textbf{Design de Arquitetura}: Para um problema de análise de sentimentos em tweets (texto de até 280 caracteres), proponha e justifique uma arquitetura de rede neural. Considere: representação do texto, tipo de rede, hiperparâmetros principais, estratégias de regularização.
+
+  \item \textbf{Comparação AutoML}: Pesquise os benchmarks OpenML-CC18 e AMLB (AutoML Benchmark). Compare TPOT, Auto-sklearn, AutoGluon e H2O AutoML em termos de acurácia média e tempo de execução. Quais as limitações de cada abordagem?
+\end{enumerate}
+
+% ============================================================
+\section{Referências}
+% ============================================================
+
+\begin{thebibliography}{99}
+
+\bibitem{mcculloch1943}
+McCulloch, W. S.; Pitts, W.
+\newblock A logical calculus of the ideas immanent in nervous activity.
+\newblock \textit{The Bulletin of Mathematical Biophysics}, 5(4):115--133, 1943.
+
+\bibitem{rosenblatt1958}
+Rosenblatt, F.
+\newblock The Perceptron: A probabilistic model for information storage and organization in the brain.
+\newblock \textit{Psychological Review}, 65(6):386--408, 1958.
+
+\bibitem{rumelhart1986}
+Rumelhart, D. E.; Hinton, G. E.; Williams, R. J.
+\newblock Learning representations by back-propagating errors.
+\newblock \textit{Nature}, 323(6088):533--536, 1986.
+
+\bibitem{hornik1989}
+Hornik, K.; Stinchcombe, M.; White, H.
+\newblock Multilayer feedforward networks are universal approximators.
+\newblock \textit{Neural Networks}, 2(5):359--366, 1989.
+
+\bibitem{lecun2015}
+LeCun, Y.; Bengio, Y.; Hinton, G.
+\newblock Deep learning.
+\newblock \textit{Nature}, 521(7553):436--444, 2015.
+
+\bibitem{goodfellow2016}
+Goodfellow, I.; Bengio, Y.; Courville, A.
+\newblock \textit{Deep Learning}.
+\newblock MIT Press, 2016.
+
+\bibitem{vaswani2017}
+Vaswani, A.; Shazeer, N.; Parmar, N.; et al.
+\newblock Attention is all you need.
+\newblock \textit{Advances in Neural Information Processing Systems}, 30, 2017.
+
+\bibitem{srivastava2014}
+Srivastava, N.; Hinton, G.; Krizhevsky, A.; Sutskever, I.; Salakhutdinov, R.
+\newblock Dropout: A simple way to prevent neural networks from overfitting.
+\newblock \textit{Journal of Machine Learning Research}, 15(1):1929--1958, 2014.
+
+\bibitem{ioffe2015}
+Ioffe, S.; Szegedy, C.
+\newblock Batch normalization: Accelerating deep network training by reducing internal covariate shift.
+\newblock \textit{International Conference on Machine Learning (ICML)}, 2015.
+
+\bibitem{kingma2015}
+Kingma, D. P.; Ba, J.
+\newblock Adam: A method for stochastic optimization.
+\newblock \textit{International Conference on Learning Representations (ICLR)}, 2015.
+
+\bibitem{arik2021}
+Arik, S. O.; Pfister, T.
+\newblock TabNet: Attentive interpretable tabular learning.
+\newblock \textit{AAAI Conference on Artificial Intelligence}, 35(8):6679--6687, 2021.
+
+\bibitem{bahri2022}
+Bahri, D.; Jiang, H.; Tay, Y.; Metzler, D.
+\newblock SCARF: Self-supervised contrastive learning using random feature corruption.
+\newblock \textit{International Conference on Learning Representations (ICLR)}, 2022.
+
+\bibitem{holland1975}
+Holland, J. H.
+\newblock \textit{Adaptation in Natural and Artificial Systems}.
+\newblock University of Michigan Press, 1975.
+
+\bibitem{kennedy1995}
+Kennedy, J.; Eberhart, R.
+\newblock Particle swarm optimization.
+\newblock \textit{Proceedings of IEEE International Conference on Neural Networks}, pp.~1942--1948, 1995.
+
+\bibitem{xu2019}
+Xu, L.; Skoularidou, M.; Cuesta-Infante, A.; Veeramachaneni, K.
+\newblock Modeling tabular data using conditional GAN.
+\newblock \textit{Advances in Neural Information Processing Systems}, 32, 2019.
+
+\end{thebibliography}
+
+\end{document}

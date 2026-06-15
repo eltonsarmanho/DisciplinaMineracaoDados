@@ -1,0 +1,71 @@
+# ============================================================
+# .gitignore — Disciplina Mineração de Dados | UEPA
+# Rastreia: .tex, .ipynb, requirements.txt, Ementa/
+# ============================================================
+
+# ── LaTeX: arquivos auxiliares gerados ─────────────────────
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.nav
+*.snm
+*.vrb
+*.idx
+*.ilg
+*.ind
+*.ist
+*.glo
+*.gls
+*.glg
+*.acn
+*.acr
+*.alg
+*.maf
+*.mtc
+*.mtc0
+*.ptc
+
+# ── PDFs gerados (compile localmente com pdflatex) ─────────
+# Remova esta linha se quiser versionar os PDFs compilados:
+*.pdf
+
+# ── Jupyter / Python ───────────────────────────────────────
+.ipynb_checkpoints/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# ── Ambientes virtuais ─────────────────────────────────────
+venv/
+.venv/
+env/
+venv_mineracao/
+.env
+*.egg-info/
+
+# ── Sistema Operacional ────────────────────────────────────
+.DS_Store
+.DS_Store?
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ── Editores ───────────────────────────────────────────────
+*.swp
+*.swo
+*~
+.idea/
+*.iml

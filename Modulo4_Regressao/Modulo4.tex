@@ -1,0 +1,624 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,shapes.geometric,positioning,fit,backgrounds,calc,shadows.blur,decorations.pathmorphing,mindmap,trees,patterns,decorations.text,matrix}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{fontawesome5}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins,theorems}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\setlength{\headheight}{14pt}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{caption}
+\definecolor{mineblue}{RGB}{0,90,180}
+\definecolor{mineorange}{RGB}{230,115,0}
+\definecolor{minegreen}{RGB}{34,139,34}
+\definecolor{minered}{RGB}{180,20,40}
+\definecolor{minegray}{RGB}{100,100,100}
+\definecolor{codebg}{RGB}{250,250,250}
+\newtcolorbox{definicaobox}[1]{title={\faIcon{book} #1},colback=blue!4!white,colframe=mineblue,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{exemplobox}[1]{title={\faIcon{lightbulb} #1},colback=orange!4!white,colframe=mineorange,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{dicabox}[1]{title={\faIcon{info-circle} #1},colback=green!4!white,colframe=minegreen,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{atencaobox}[1]{title={\faIcon{exclamation-triangle} #1},colback=red!4!white,colframe=minered,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{estadoartebox}[1]{title={\faIcon{rocket} #1},colback=purple!4!white,colframe=purple!60!black,fonttitle=\bfseries,breakable,enhanced}
+\lstdefinestyle{mypython}{language=Python,backgroundcolor=\color{codebg},commentstyle=\color{minegray}\itshape,keywordstyle=\color{mineblue}\bfseries,stringstyle=\color{minegreen},basicstyle=\ttfamily\footnotesize,breaklines=true,frame=single,rulecolor=\color{minegray!40},numbers=left,numberstyle=\tiny\color{minegray},tabsize=4,showstringspaces=false}
+\lstset{style=mypython}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small \textcolor{mineblue}{\textbf{Mineração de Dados}} | UEPA -- CCNT}
+\fancyhead[R]{\small Módulo 4: Técnicas de Regressão}
+\fancyfoot[C]{\small \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\titleformat{\section}{\large\bfseries\color{mineblue}}{\thesection}{0.8em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{mineorange}}{\thesubsection}{0.8em}{}
+\titleformat{\subsubsection}{\small\bfseries\color{minegray}}{\thesubsubsection}{0.8em}{}
+
+\begin{document}
+
+%------------------------------------------------------
+% TÍTULO
+%------------------------------------------------------
+\begin{titlepage}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[mineblue!90] (current page.north west) rectangle ([yshift=-3.5cm]current page.north east);
+  \fill[mineorange] ([yshift=-3.5cm]current page.north west) rectangle ([yshift=-4cm]current page.north east);
+\end{tikzpicture}
+
+\vspace*{2.5cm}
+\begin{center}
+  {\color{white}\Large\bfseries Universidade do Estado do Pará}\\[0.3em]
+  {\color{white}\large Centro de Ciências Naturais e Tecnologia}\\[2cm]
+
+  \begin{tcolorbox}[colback=white,colframe=mineblue,boxrule=2pt,arc=8pt,width=0.9\textwidth]
+    \centering
+    {\color{mineblue}\Huge\bfseries Módulo 4}\\[0.5em]
+    {\color{mineorange}\LARGE\bfseries Técnicas de Regressão}\\[0.3em]
+    {\color{minegray}\large em Mineração de Dados}
+  \end{tcolorbox}
+
+  \vspace{1.5cm}
+  \begin{tikzpicture}
+    \node[fill=mineblue!10,draw=mineblue,rounded corners=8pt,inner sep=12pt]{%
+      \begin{tabular}{ll}
+        \faIcon{graduation-cap} \textbf{Disciplina:} & Mineração de Dados \\
+        \faIcon{university}     \textbf{Instituição:} & UEPA -- CCNT \\
+        \faIcon{code}           \textbf{Curso:} & Engenharia de Software (8º Semestre) \\
+        \faIcon{clock}          \textbf{Carga Horária:} & 80h \\
+        \faIcon{calendar}       \textbf{Ano:} & 2025 \\
+      \end{tabular}
+    };
+  \end{tikzpicture}
+
+  \vspace{2cm}
+  {\large\bfseries Conteúdo do Módulo:}\\[0.5em]
+  \begin{tabular}{clcl}
+    \faIcon{chart-line} & Regressão Linear e Múltipla &
+    \faIcon{balance-scale} & Ridge, LASSO e ElasticNet \\
+    \faIcon{wave-square} & Regressão Polinomial e Não-linear &
+    \faIcon{layer-group} & Ensembles para Regressão \\
+    \faIcon{brain}  & Redes Neurais para Regressão &
+    \faIcon{microscope} & Diagnóstico e Validação \\
+  \end{tabular}
+
+  \vfill
+  {\color{minegray}\small Material didático para uso acadêmico. Baseado em Tibshirani (1996), Friedman (2001), Breiman (2001), Chen \& Guestrin (2016) e outros.}
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%------------------------------------------------------
+\section{Objetivos de Aprendizagem}
+%------------------------------------------------------
+
+Ao concluir este módulo, o estudante será capaz de:
+
+\begin{enumerate}[leftmargin=2em,label=\textcolor{mineblue}{\faIcon{check-circle}}]
+  \item \textbf{Distinguir} o problema de regressão do problema de classificação, identificando quando a variável de resposta é contínua e quais técnicas são apropriadas para cada cenário prático.
+  \item \textbf{Derivar} os estimadores de Mínimos Quadrados Ordinários (OLS) para regressão linear simples e múltipla, verificando as hipóteses de Gauss-Markov e diagnosticando violações via análise de resíduos.
+  \item \textbf{Implementar e comparar} métodos de regularização (Ridge, LASSO e ElasticNet), compreendendo o efeito geométrico das restrições L1 e L2 sobre os coeficientes e a propriedade de esparsidade do LASSO.
+  \item \textbf{Aplicar} regressão polinomial e diagnosticar sobreajuste usando o trade-off viés-variância, selecionando o grau ótimo do polinômio por validação cruzada.
+  \item \textbf{Utilizar} métodos ensemble para regressão (Random Forest, Gradient Boosting, XGBoost, LightGBM), ajustando hiperparâmetros e interpretando importância de features com SHAP.
+  \item \textbf{Realizar} diagnóstico completo de modelos de regressão: análise de resíduos, gráficos Q-Q, Cook's Distance, testes de Durbin-Watson, Breusch-Pagan e Shapiro-Wilk.
+  \item \textbf{Calcular e interpretar} métricas de avaliação de regressão (MSE, RMSE, MAE, MAPE, R², R² ajustado), distinguindo quando cada métrica é mais informativa.
+  \item \textbf{Construir} intervalos de predição com garantias estatísticas usando Predição Conformal (Conformal Prediction) e regressão quantílica, quantificando incerteza de forma calibrada.
+\end{enumerate}
+
+%------------------------------------------------------
+\section{Introdução à Regressão}
+%------------------------------------------------------
+
+\subsection{Definição e Distinção com Classificação}
+
+O problema de \textbf{regressão} consiste em aprender um mapeamento $f: \mathbb{R}^p \rightarrow \mathbb{R}$ que prevê uma variável de resposta \textbf{contínua} $y \in \mathbb{R}$ a partir de um vetor de features $\mathbf{x} \in \mathbb{R}^p$. A diferença fundamental com a classificação é a natureza do espaço de saída:
+
+\begin{center}
+\begin{tabular}{>{\bfseries}p{3cm}p{4.5cm}p{4.5cm}}
+\toprule
+Aspecto & Classificação & Regressão \\
+\midrule
+Saída & Discreta: $y \in \{c_1,\ldots,c_k\}$ & Contínua: $y \in \mathbb{R}$ \\
+Métrica principal & Acurácia, F1, AUC & RMSE, MAE, R² \\
+Exemplos & Spam/ham, tumor maligno & Preço de imóvel, temperatura \\
+Perda típica & 0-1 loss, cross-entropy & MSE, MAE, Huber \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Tipos de Regressão}
+
+\begin{itemize}
+  \item \textbf{Regressão Linear Simples:} $\hat{y} = \beta_0 + \beta_1 x$ -- relação linear entre uma feature e a resposta
+  \item \textbf{Regressão Linear Múltipla:} $\hat{y} = \beta_0 + \sum_{j=1}^p \beta_j x_j = \boldsymbol{\beta}^T\mathbf{x}$ -- múltiplas features
+  \item \textbf{Regressão Polinomial:} inclui termos $x^2, x^3, \ldots$ como features -- captura não-linearidade
+  \item \textbf{Regressão Regularizada:} Ridge (L2), LASSO (L1), ElasticNet -- controle de overfitting
+  \item \textbf{Regressão Não-Linear:} SVR, GPR, redes neurais -- fronteiras de decisão arbitrariamente complexas
+\end{itemize}
+
+\subsection{Aplicações em Mineração de Dados}
+
+\begin{itemize}
+  \item \faIcon{home} \textbf{Previsão de preços imobiliários:} estimar valor de imóveis a partir de localização, área, quartos, etc.
+  \item \faIcon{shopping-cart} \textbf{Previsão de demanda:} prever volume de vendas para gestão de estoque e logística.
+  \item \faIcon{chart-line} \textbf{Risco financeiro:} modelar spreads de crédito, volatilidade de ativos, Value at Risk.
+  \item \faIcon{cloud} \textbf{Previsão climática:} temperatura, precipitação, nível do mar com modelos de série temporal.
+  \item \faIcon{heartbeat} \textbf{Saúde:} prever dosagem de medicamentos, tempo de internação, progressão de doenças.
+  \item \faIcon{tachometer-alt} \textbf{Engenharia:} prever consumo energético, eficiência de motores, fadiga de materiais.
+  \item \faIcon{robot} \textbf{NLP:} regressão para scoring de qualidade de textos, relevância de documentos.
+\end{itemize}
+
+%------------------------------------------------------
+\section{Regressão Linear Simples e Múltipla}
+%------------------------------------------------------
+
+\subsection{Regressão Linear Simples}
+
+O modelo de \textbf{Regressão Linear Simples} assume relação linear entre $x$ e $y$:
+\[
+  y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, \quad \varepsilon_i \sim \mathcal{N}(0, \sigma^2)
+\]
+
+Os estimadores de Mínimos Quadrados Ordinários (OLS) minimizam $\sum_i (y_i - \hat{y}_i)^2$:
+\[
+  \hat{\beta}_1 = \frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2} = \frac{S_{xy}}{S_{xx}}, \qquad \hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
+\]
+
+\vspace{0.5em}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=9cm, height=6cm,
+  xlabel={$x$}, ylabel={$y$},
+  title={\small Regressão Linear Simples com Resíduos},
+  grid=major, grid style={minegray!25},
+  xmin=0, xmax=11, ymin=0, ymax=20,
+  title style={font=\small}
+]
+% Data points
+\addplot[only marks, mineblue, mark size=2.5pt] coordinates {
+  (1,2.1)(2,3.8)(3,5.2)(4,7.1)(5,8.9)(6,10.5)(7,12.1)(8,14.3)(9,15.7)(10,17.5)
+  (1.5,3.0)(3.5,6.5)(5.5,9.8)(7.5,13.0)(9.5,16.5)
+};
+% Regression line: y = 1.8x + 0.3
+\addplot[thick, minered, domain=0.5:10.5, samples=50] {1.8*x + 0.3};
+\addlegendentry{$\hat{y} = 1{,}8x + 0{,}3$}
+% Residual lines (dashed orange)
+\addplot[dashed, mineorange, thin] coordinates {(3,5.2)(3,5.7)};
+\addplot[dashed, mineorange, thin] coordinates {(7,12.1)(7,12.9)};
+\addplot[dashed, mineorange, thin] coordinates {(5,8.9)(5,9.3)};
+\node[font=\tiny, mineorange] at (axis cs:3.5,5.45) {$\varepsilon_i$};
+\end{axis}
+\end{tikzpicture}
+\captionof{figure}{Regressão linear simples: linha vermelha é $\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x$. Linhas tracejadas laranja indicam resíduos $\varepsilon_i = y_i - \hat{y}_i$.}
+\end{center}
+
+\subsection{Regressão Linear Múltipla}
+
+Com $p$ features, o modelo matricial é:
+\[
+  \mathbf{y} = X\boldsymbol{\beta} + \boldsymbol{\varepsilon}, \quad X \in \mathbb{R}^{n \times (p+1)}, \quad \boldsymbol{\beta} \in \mathbb{R}^{p+1}
+\]
+
+A solução OLS em forma fechada (quando $X^TX$ é invertível):
+\[
+  \hat{\boldsymbol{\beta}} = (X^TX)^{-1}X^T\mathbf{y}
+\]
+
+\textbf{Hipóteses de Gauss-Markov} (para OLS ser BLUE -- Best Linear Unbiased Estimator):
+\begin{enumerate}
+  \item \textit{Linearidade:} $\mathbb{E}[\mathbf{y}] = X\boldsymbol{\beta}$
+  \item \textit{Exogeneidade:} $\mathbb{E}[\boldsymbol{\varepsilon} \mid X] = \mathbf{0}$
+  \item \textit{Homocedasticidade:} $\text{Var}(\varepsilon_i) = \sigma^2$ (constante)
+  \item \textit{Sem autocorrelação:} $\text{Cov}(\varepsilon_i, \varepsilon_j) = 0$ para $i \neq j$
+  \item \textit{Sem multicolinearidade perfeita:} $\text{posto}(X) = p+1$
+\end{enumerate}
+
+\textbf{Multicolinearidade} ocorre quando features são altamente correlacionadas, inflando a variância dos estimadores. Diagnóstico via VIF (Variance Inflation Factor):
+\[
+  VIF_j = \frac{1}{1 - R_j^2}
+\]
+onde $R_j^2$ é o coeficiente de determinação da regressão de $x_j$ sobre as demais features. $VIF > 10$ indica multicolinearidade severa.
+
+\subsection{Métricas de Avaliação de Regressão}
+
+\begin{center}
+\begin{tabular}{>{\bfseries}p{3cm}p{6cm}p{3.5cm}}
+\toprule
+Métrica & Fórmula & Observação \\
+\midrule
+MSE & $\frac{1}{n}\sum_{i=1}^n(y_i - \hat{y}_i)^2$ & Penaliza outliers quadraticamente \\
+RMSE & $\sqrt{MSE}$ & Mesma unidade de $y$ \\
+MAE & $\frac{1}{n}\sum_{i=1}^n|y_i - \hat{y}_i|$ & Robusto a outliers \\
+MAPE & $\frac{100\%}{n}\sum_{i=1}^n\left|\frac{y_i-\hat{y}_i}{y_i}\right|$ & Interpretação percentual; evitar se $y_i \approx 0$ \\
+R² & $1 - \frac{\sum(y_i-\hat{y}_i)^2}{\sum(y_i-\bar{y})^2}$ & Fração da variância explicada \\
+R² ajustado & $1 - (1-R^2)\frac{n-1}{n-p-1}$ & Penaliza features desnecessárias \\
+Huber Loss & $\frac{1}{n}\sum_i \ell_\delta(y_i-\hat{y}_i)$ & Combina MSE e MAE \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{atencaobox}{Cuidados com R²}
+R² não é uma métrica de bondade de ajuste absoluta: (1) sempre aumenta com mais features (por isso use R² ajustado); (2) pode ser alto mesmo com modelo inadequado (e.g., ajustar polinômio de grau $n-1$); (3) irrelevante para comparar modelos com variáveis resposta diferentes.
+\end{atencaobox}
+
+%------------------------------------------------------
+\section{Regularização}
+%------------------------------------------------------
+
+A regularização adiciona uma penalidade à função de perda para controlar a complexidade do modelo e prevenir overfitting.
+
+\subsection{Ridge Regression (L2 -- Tikhonov)}
+
+O objetivo do Ridge adiciona penalidade L2 aos coeficientes:
+\[
+  \hat{\boldsymbol{\beta}}_{Ridge} = \arg\min_{\boldsymbol{\beta}} \left\{ \|\mathbf{y} - X\boldsymbol{\beta}\|_2^2 + \lambda\|\boldsymbol{\beta}\|_2^2 \right\}
+\]
+
+Solução analítica:
+\[
+  \hat{\boldsymbol{\beta}}_{Ridge} = (X^TX + \lambda I)^{-1}X^T\mathbf{y}
+\]
+
+A adição de $\lambda I$ torna a matriz sempre invertível (condicionamento melhorado), mesmo com multicolinearidade. Efeito: todos os coeficientes são reduzidos (\textit{shrinkage}) mas \textbf{nenhum é zerado exatamente}. Ridge é análise de componentes principais regularizada.
+
+\subsection{LASSO -- Least Absolute Shrinkage and Selection Operator (Tibshirani, 1996)}
+
+Penalidade L1:
+\[
+  \hat{\boldsymbol{\beta}}_{LASSO} = \arg\min_{\boldsymbol{\beta}} \left\{ \|\mathbf{y} - X\boldsymbol{\beta}\|_2^2 + \lambda\|\boldsymbol{\beta}\|_1 \right\}
+\]
+
+Sem solução de forma fechada; resolvido por \textbf{descida de coordenadas} (coordinate descent). O operador de limiarização suave (soft-thresholding) para coordenada $j$:
+\[
+  \hat{\beta}_j = S_{\lambda/2}\left(\frac{\langle \mathbf{r}_j, \mathbf{x}_j \rangle}{\|\mathbf{x}_j\|_2^2}\right) = \text{sign}(z) \max(|z| - \lambda', 0)
+\]
+
+Propriedade fundamental: o LASSO produz \textbf{soluções esparsas} -- alguns coeficientes são exatamente zero, realizando \textbf{seleção automática de features}.
+
+\subsection{ElasticNet (Zou \& Hastie, 2005)}
+
+Combina penalidades L1 e L2:
+\[
+  \hat{\boldsymbol{\beta}}_{EN} = \arg\min_{\boldsymbol{\beta}} \left\{ \|\mathbf{y} - X\boldsymbol{\beta}\|_2^2 + \lambda_1\|\boldsymbol{\beta}\|_1 + \lambda_2\|\boldsymbol{\beta}\|_2^2 \right\}
+\]
+
+Parâmetro $\alpha = \frac{\lambda_1}{\lambda_1 + \lambda_2}$ controla o balanço: $\alpha = 1$ é LASSO puro; $\alpha = 0$ é Ridge puro. ElasticNet é preferível ao LASSO quando há grupos de features correlacionadas (LASSO seleciona apenas uma aleatoriamente).
+
+\vspace{0.5em}
+\begin{center}
+\begin{tikzpicture}[scale=1.4]
+% L2 ball
+\begin{scope}[xshift=-2.8cm]
+  \draw[mineblue, thick, fill=mineblue!10] (0,0) circle (1);
+  \draw[->, minegray, thin] (-1.4,0) -- (1.4,0) node[right,font=\tiny]{$\beta_1$};
+  \draw[->, minegray, thin] (0,-1.4) -- (0,1.4) node[above,font=\tiny]{$\beta_2$};
+  % Elliptic contours (MSE)
+  \draw[minered, dashed, thin] (0.7, 0.714) ellipse (0.5 and 0.35);
+  \draw[minered, dashed, thin] (0.7, 0.714) ellipse (0.85 and 0.6);
+  \filldraw[minered] (0.7, 0.714) circle(0.05) node[above right,font=\tiny,minered]{ótimo};
+  \node[below,font=\tiny,align=center] at (0,-1.6) {\textbf{Ridge (L2)}\\$\|\beta\|_2 \leq t$};
+\end{scope}
+% L1 diamond
+\begin{scope}[xshift=2.0cm]
+  \draw[mineorange, thick, fill=mineorange!10] (1,0)--(0,1)--(-1,0)--(0,-1)--cycle;
+  \draw[->, minegray, thin] (-1.4,0) -- (1.4,0) node[right,font=\tiny]{$\beta_1$};
+  \draw[->, minegray, thin] (0,-1.4) -- (0,1.4) node[above,font=\tiny]{$\beta_2$};
+  % Elliptic contours (MSE)
+  \draw[minered, dashed, thin] (0.3, 1) ellipse (0.65 and 0.45);
+  \draw[minered, dashed, thin] (0.3, 1) ellipse (1.1 and 0.8);
+  \filldraw[minered] (0, 1) circle(0.05) node[right,font=\tiny,minered]{ótimo\\(esparsidade!)};
+  \node[below,font=\tiny,align=center] at (0,-1.6) {\textbf{LASSO (L1)}\\$\|\beta\|_1 \leq t$};
+\end{scope}
+\end{tikzpicture}
+\captionof{figure}{Regiões de restrição: L2 (esfera, Ridge) vs. L1 (losango, LASSO). O ótimo toca o losango em um vértice onde $\beta_1 = 0$, produzindo esparsidade.}
+\end{center}
+
+\begin{exemplobox}{Caminho de Regularização (Regularization Path)}
+Para diferentes valores de $\lambda$ (de 0 a $\infty$): Ridge encolhe todos os coeficientes continuamente para zero; LASSO os zera sequencialmente, um a um. O ``regularization path'' do LASSO é linear por partes (algoritmo LARS). Escolha de $\lambda$ via validação cruzada.
+\end{exemplobox}
+
+%------------------------------------------------------
+\section{Regressão Polinomial e Não-Linear}
+%------------------------------------------------------
+
+\subsection{Regressão Polinomial}
+
+Para capturar relações não-lineares entre $x$ e $y$, expandimos as features com termos polinomiais:
+\[
+  \phi(\mathbf{x}) = [1,\; x,\; x^2,\; \ldots,\; x^d]^T
+\]
+
+O modelo permanece linear nos parâmetros: $\hat{y} = \boldsymbol{\beta}^T\phi(\mathbf{x})$, resolvido com OLS. Para múltiplas features, incluímos também termos de interação: $x_1 x_2$, $x_1^2 x_2$, etc.
+
+\textbf{Risco de sobreajuste com grau alto:} polinômio de grau $n-1$ interpola todos os $n$ pontos com erro zero no treino mas generaliza pessimamente (oscilações de Runge).
+
+\subsection{Trade-off Viés-Variância}
+
+O erro esperado de generalização pode ser decomposto como:
+\[
+  \mathbb{E}[(\hat{f}(\mathbf{x}) - y)^2] = \underbrace{(\mathbb{E}[\hat{f}(\mathbf{x})] - f(\mathbf{x}))^2}_{\text{Viés}^2} + \underbrace{\mathbb{E}[(\hat{f}(\mathbf{x}) - \mathbb{E}[\hat{f}(\mathbf{x})])^2]}_{\text{Variância}} + \underbrace{\sigma^2}_{\text{Ruído}}
+\]
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=9cm, height=5.5cm,
+  xlabel={Complexidade do Modelo},
+  ylabel={Erro},
+  title={\small Trade-off Viés-Variância},
+  grid=major, grid style={minegray!20},
+  xmin=0, xmax=10, ymin=0, ymax=6,
+  xtick={0,...,10}, ytick={0,1,...,6},
+  xticklabels={,,Simples,,,,,,,,Complexo},
+  legend pos=north east,
+  legend style={font=\tiny},
+  title style={font=\small}
+]
+% Bias^2: decreasing
+\addplot[thick, mineblue, smooth, domain=0.5:9.5] {5/(x^0.7 + 1)};
+\addlegendentry{Viés$^2$}
+% Variance: increasing
+\addplot[thick, mineorange, smooth, domain=0.5:9.5] {0.05 * x^1.8};
+\addlegendentry{Variância}
+% Total error: U-shaped
+\addplot[thick, minegreen, smooth, dashed, domain=0.5:9.5] {5/(x^0.7+1) + 0.05*x^1.8 + 0.5};
+\addlegendentry{Erro Total}
+% Optimal point
+\addplot[only marks, minered, mark=*, mark size=3pt] coordinates {(4.2, 2.3)};
+\node[font=\tiny, minered, above right] at (axis cs:4.2,2.3) {Ótimo};
+% Noise floor
+\addplot[gray, dashed, domain=0:10] {0.5};
+\node[font=\tiny, gray, right] at (axis cs:9.5,0.5) {Ruído};
+\end{axis}
+\end{tikzpicture}
+\captionof{figure}{Trade-off viés-variância: à esquerda, modelos simples têm alto viés (underfitting); à direita, modelos complexos têm alta variância (overfitting). O ponto ótimo minimiza o erro total.}
+\end{center}
+
+\subsection{Support Vector Regression (SVR)}
+
+O SVR usa o \textit{$\varepsilon$-tubo}: apenas erros maiores que $\varepsilon$ são penalizados:
+\[
+  \min_{\mathbf{w},b,\xi} \frac{1}{2}\|\mathbf{w}\|^2 + C\sum_i(\xi_i + \xi_i^*)
+  \quad \text{s.a.} \quad y_i - (\mathbf{w}\cdot\mathbf{x}_i + b) \leq \varepsilon + \xi_i
+\]
+
+Pode utilizar todos os kernels da SVM (RBF, polinomial), tornando-se um regressor não-linear.
+
+%------------------------------------------------------
+\section{Métodos de Ensemble para Regressão}
+%------------------------------------------------------
+
+\subsection{Random Forest para Regressão}
+
+O \textbf{Random Forest Regressor} é análogo ao classificador: ensemble de $T$ árvores de regressão (CART), onde cada árvore prediz um valor real e a predição final é a \textbf{média} das predições individuais:
+\[
+  \hat{y}(\mathbf{x}) = \frac{1}{T}\sum_{t=1}^T h_t(\mathbf{x})
+\]
+
+\textbf{Out-of-Bag (OOB) Error:} para cada árvore $t$, os exemplos não amostrados no bootstrap ($\approx 36.8\%$) são usados como conjunto de validação sem custo adicional.
+
+\textbf{Partial Dependence Plots (PDP):} mostram a relação marginal entre uma feature e a predição, integrando sobre as demais features:
+\[
+  \hat{f}_S(x_S) = \frac{1}{n}\sum_{i=1}^n \hat{f}(x_S, \mathbf{x}_{i,C})
+\]
+onde $S$ é a feature de interesse e $C$ são as demais features.
+
+\subsection{Gradient Boosting (GBM, XGBoost, LightGBM)}
+
+O \textbf{Gradient Boosting Regressor} ajusta sequencialmente árvores de regressão aos pseudo-resíduos. Para MSE loss, os pseudo-resíduos são simplesmente os resíduos: $r_{im} = y_i - F_{m-1}(\mathbf{x}_i)$.
+
+O modelo acumulado:
+\[
+  F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \nu \cdot h_m(\mathbf{x})
+\]
+
+onde $\nu \in (0,1]$ é a \textbf{taxa de aprendizado} (\textit{shrinkage/learning rate}) -- valores menores requerem mais árvores mas generalizam melhor.
+
+\begin{dicabox}{Hiperparâmetros-chave do XGBoost para Regressão}
+\begin{itemize}
+  \item \texttt{n\_estimators}: número de árvores (100--2000 com early stopping)
+  \item \texttt{learning\_rate}: $\nu$ (0.01--0.3; menor $\Rightarrow$ mais robusto, mais lento)
+  \item \texttt{max\_depth}: profundidade das árvores (3--6 para dados tabulares)
+  \item \texttt{subsample}: fração de exemplos amostrados por árvore (0.6--1.0)
+  \item \texttt{colsample\_bytree}: fração de features por árvore (0.6--1.0)
+  \item \texttt{reg\_alpha} (L1) e \texttt{reg\_lambda} (L2): regularização nos pesos das folhas
+\end{itemize}
+\end{dicabox}
+
+\subsection{Stacking para Regressão}
+
+No Stacking para regressão, o meta-modelo aprende a combinar as predições dos modelos base:
+
+\begin{enumerate}
+  \item Modelos base: Ridge, Random Forest, XGBoost -- cada um gera predições OOF (out-of-fold)
+  \item Meta-modelo (frequentemente Ridge linear ou Elastic Net): regride $y$ sobre as predições dos modelos base
+  \item O meta-modelo aprende os pesos ótimos de cada modelo base, podendo superar todos individualmente
+\end{enumerate}
+
+%------------------------------------------------------
+\section{Redes Neurais para Regressão}
+%------------------------------------------------------
+
+Uma \textbf{Rede Neural Multicamadas (MLP)} para regressão difere do classificador apenas na camada de saída: em vez de softmax, usa uma \textbf{neurônio linear} com saída escalar $\hat{y} \in \mathbb{R}$.
+
+\textbf{Função de perda:} MSE é o mais comum, mas MAE pode ser usado para robustez. A função de perda Huber combina ambas:
+\[
+  \ell_\delta(r) = \begin{cases} \frac{1}{2}r^2 & |r| \leq \delta \\ \delta|r| - \frac{1}{2}\delta^2 & |r| > \delta \end{cases}
+\]
+
+\textbf{Arquiteturas para regressão complexa:}
+\begin{itemize}
+  \item \textbf{Redes residuais (ResNet-like):} conexões skip para evitar vanishing gradient em regressão profunda
+  \item \textbf{Transformers para séries temporais:} Temporal Fusion Transformer (TFT, Lim et al. 2021) para regressão multi-horizonte
+  \item \textbf{Graph Neural Networks:} regressão sobre propriedades moleculares, tráfego em redes
+\end{itemize}
+
+%------------------------------------------------------
+\section{Diagnóstico de Modelos de Regressão}
+%------------------------------------------------------
+
+\subsection{Análise de Resíduos}
+
+Os resíduos $e_i = y_i - \hat{y}_i$ contêm informação sobre violações das hipóteses do modelo:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+% Residuals vs Fitted (top-left)
+\begin{scope}[xshift=0cm, yshift=3.5cm]
+  \draw[->] (0,0) -- (3.5,0) node[right,font=\tiny]{Valores Ajustados};
+  \draw[->] (0,-1.3) -- (0,1.3) node[above,font=\tiny]{Resíduos};
+  \draw[dashed, mineblue, thin] (0,0) -- (3.5,0);
+  % Random scatter (good)
+  \foreach \x/\y in {0.3/0.4, 0.6/-0.3, 1.0/0.6, 1.4/-0.5, 1.8/0.2, 2.2/-0.4, 2.6/0.5, 3.0/-0.2, 3.3/0.3}
+    \filldraw[minegray] (\x,\y) circle(0.05);
+  \node[font=\tiny\bfseries, mineblue] at (1.75,1.5) {Resíduos vs. Ajustados};
+  \node[font=\tiny, minegreen] at (1.75,-1.5) {(Bom: aleatório)};
+\end{scope}
+% Q-Q Plot (top-right)
+\begin{scope}[xshift=5cm, yshift=3.5cm]
+  \draw[->] (0,0) -- (3.5,0) node[right,font=\tiny]{Quantis Teóricos};
+  \draw[->] (0,-1.3) -- (0,1.3) node[above,font=\tiny]{Quantis Amostrais};
+  \draw[mineorange, thick] (0.2,-1.0) -- (3.3,1.0);
+  \foreach \x/\y in {0.3/-0.97, 0.7/-0.6, 1.1/-0.28, 1.5/0.0, 1.9/0.27, 2.3/0.58, 2.8/0.92, 3.2/0.98}
+    \filldraw[mineblue] (\x,\y) circle(0.05);
+  \node[font=\tiny\bfseries, mineblue] at (1.75,1.5) {Q-Q Plot};
+  \node[font=\tiny, minegreen] at (1.75,-1.5) {(Bom: na reta)};
+\end{scope}
+% Scale-Location (bottom-left)
+\begin{scope}[xshift=0cm, yshift=0cm]
+  \draw[->] (0,0) -- (3.5,0) node[right,font=\tiny]{Valores Ajustados};
+  \draw[->] (0,0) -- (0,1.6) node[above,font=\tiny]{$\sqrt{|e_i|}$};
+  \draw[minegreen, thick, dashed] (0,0.7) -- (3.5,0.7);
+  \foreach \x/\y in {0.3/0.6, 0.7/0.8, 1.1/0.65, 1.5/0.7, 1.9/0.75, 2.4/0.72, 2.8/0.68, 3.2/0.73}
+    \filldraw[minegray] (\x,\y) circle(0.05);
+  \node[font=\tiny\bfseries, mineblue] at (1.75,1.7) {Scale-Location};
+  \node[font=\tiny, minegreen] at (1.75,-0.3) {(Bom: horizontal)};
+\end{scope}
+% Cook's Distance (bottom-right)
+\begin{scope}[xshift=5cm, yshift=0cm]
+  \draw[->] (0,0) -- (3.5,0) node[right,font=\tiny]{Índice};
+  \draw[->] (0,0) -- (0,1.6) node[above,font=\tiny]{Distância de Cook};
+  \draw[minered, dashed] (0,1.1) -- (3.5,1.1) node[right,font=\tiny,minered]{limiar};
+  \foreach \x/\y in {0.3/0.1, 0.6/0.15, 1.0/0.08, 1.4/0.12, 1.7/0.3, 2.1/0.09, 2.5/0.14}
+    \draw[mineblue, thick] (\x,0) -- (\x,\y);
+  \draw[minered, very thick] (2.9,0) -- (2.9,1.3);
+  \node[font=\tiny, minered] at (2.9,1.45) {influente!};
+  \node[font=\tiny\bfseries, mineblue] at (1.75,1.7) {Distância de Cook};
+  \node[font=\tiny] at (1.75,-0.3) {(Detecta influentes)};
+\end{scope}
+\end{tikzpicture}
+\captionof{figure}{Quatro gráficos diagnósticos padrão para modelos de regressão.}
+\end{center}
+
+\subsection{Testes Estatísticos de Diagnóstico}
+
+\begin{itemize}
+  \item \textbf{Durbin-Watson} ($DW \approx 2$: sem autocorrelação; $DW < 1.5$: autocorrelação positiva): detecta autocorrelação serial nos resíduos.
+  \item \textbf{Breusch-Pagan} ($H_0$: homocedasticidade): testa se a variância dos resíduos é constante. Rejeitar $H_0$ indica heterocedasticidade -- solução: transformação de $y$ ou erros robustos (White).
+  \item \textbf{Shapiro-Wilk} ($H_0$: normalidade dos resíduos): fundamental para intervalos de confiança paramétricos. Para amostras grandes ($n > 2000$), use teste de Kolmogorov-Smirnov ou Anderson-Darling.
+\end{itemize}
+
+%------------------------------------------------------
+\section{Estado da Arte (2020--2024)}
+%------------------------------------------------------
+
+\begin{estadoartebox}{Neural Networks for Tabular Regression}
+O debate ``DL vs. GBDT'' em dados tabulares continua ativo:
+\begin{itemize}
+  \item \textbf{FT-Transformer} (Gorishniy et al., 2021): tokeniza features numéricas com embedding linear + bias; aplica multi-head self-attention. Supera XGBoost em alguns benchmarks com features de alta dimensão.
+  \item \textbf{TabNet} (Arik \& Pfister, 2021): atenção em $K$ etapas sequenciais selecionando features relevantes em cada passo; interpretabilidade por design.
+  \item \textbf{NODE} (Popov et al., 2020): Neural Oblivious Decision Ensembles -- diferenciáveis, combinam gradiente de GBDTs com backpropagation.
+  \item \textbf{Conclusão:} para regressão em dados tabulares com $n < 100k$ exemplos e features heterogêneas, XGBoost/LightGBM tipicamente superam DL. DL vantaja em features de alta dimensão (embeddings) e grandes volumes.
+\end{itemize}
+\end{estadoartebox}
+
+\begin{estadoartebox}{Gaussian Process Regression e Métodos Bayesianos}
+\begin{itemize}
+  \item \textbf{GPR (Rasmussen \& Williams, 2006):} modela a distribuição a posteriori sobre funções: $f \sim \mathcal{GP}(\mu(\mathbf{x}), k(\mathbf{x},\mathbf{x}'))$. Fornece incerteza calibrada, mas escala $O(n^3)$ -- inviável para $n > 10^4$.
+  \item \textbf{Sparse GPs e GPflux:} inducing points para aproximação $O(nm^2)$ com $m \ll n$ pontos de indução.
+  \item \textbf{Bayesian Optimization:} usa GPR como surrogate model para otimização de funções custosas (e.g., tuning de hiperparâmetros, experimentos químicos). Libraries: BoTorch, Optuna, Scikit-Optimize.
+  \item \textbf{BART (Bayesian Additive Regression Trees):} ensemble Bayesiano de árvores de regressão com priors sobre profundidade e estrutura.
+\end{itemize}
+\end{estadoartebox}
+
+\begin{estadoartebox}{Predição Conformal e Quantificação de Incerteza}
+\begin{itemize}
+  \item \textbf{Conformal Prediction (Vovk et al., 2005):} produz intervalos de predição com garantias marginais de cobertura $1-\alpha$ sem hipóteses paramétricas. Funciona como wrapper sobre qualquer modelo: $\hat{C}(x) = [\hat{q}_{\alpha/2}(x), \hat{q}_{1-\alpha/2}(x)]$.
+  \item \textbf{CQR -- Conformalized Quantile Regression} (Romano et al., 2019): combina regressão quantílica (e.g., LightGBM com \texttt{objective='quantile'}) com calibração conformal para intervalos adaptativos (mais estreitos onde o modelo é confiante).
+  \item \textbf{MAPIE} (scikit-learn compatible): biblioteca Python para conformal prediction em regressão e classificação com diferentes estratégias (Split CP, Cross-conformal, Jackknife+).
+  \item Aplicação prática: intervalos de confiança para previsão de vendas, limites de risco em finanças.
+\end{itemize}
+\end{estadoartebox}
+
+%------------------------------------------------------
+\section{Exercícios}
+%------------------------------------------------------
+
+\begin{enumerate}[leftmargin=2em,label=\textcolor{mineblue}{\textbf{E\arabic*.}}]
+
+  \item \textbf{(OLS por Cálculo)} Dado o dataset: $\{(1, 2.5), (2, 4.1), (3, 5.8), (4, 7.2), (5, 9.0)\}$, calcule manualmente $\hat{\beta}_0$ e $\hat{\beta}_1$ pelo método OLS, o coeficiente $R^2$, e o RMSE. Interprete cada resultado.
+
+  \item \textbf{(Caminho de Regularização)} No dataset Boston Housing (ou California Housing), trace o regularization path do LASSO: plote os coeficientes em função de $\log(\lambda)$ para $\lambda \in [10^{-4}, 10^2]$. Identifique: qual feature é zerada primeiro? Qual persiste até $\lambda$ mais alto? Interprete em termos da importância de cada feature.
+
+  \item \textbf{(Sobreajuste Polinomial)} Gere 20 pontos de $y = \sin(2\pi x) + \varepsilon$ com $\varepsilon \sim \mathcal{N}(0, 0.2)$ e $x \sim U[0,1]$. Ajuste polinômios de grau $d \in \{1, 3, 5, 9, 15\}$. Para cada grau, calcule o erro de treino e de teste (200 novos pontos). Plote as curvas ajustadas e o gráfico bias-variância. Qual grau minimiza o erro de teste?
+
+  \item \textbf{(RMSE vs. MAE)} Cite dois cenários reais onde MAE é preferível ao RMSE e dois onde RMSE é preferível. Implemente ambas as métricas e compare os modelos Ridge e LASSO no dataset California Housing sob ambas as métricas. Os rankings dos modelos diferem?
+
+  \item \textbf{(Análise de Resíduos)} Treine um modelo de Regressão Linear Múltipla no dataset Ames Housing. Gere os quatro gráficos diagnósticos (Resíduos vs. Ajustados, Q-Q, Scale-Location, Cook's Distance). Aplique os testes de Durbin-Watson e Breusch-Pagan. Se houver heterocedasticidade, aplique a transformação $\log(y)$ e reavalie.
+
+  \item \textbf{(XGBoost para Regressão)} Usando o dataset de energia de edifícios (Energy Efficiency UCI), tuning o XGBRegressor com Optuna (50 trials). Reporte: melhores hiperparâmetros, RMSE no teste, curva de early stopping. Compare com Ridge e Random Forest.
+
+  \item \textbf{(Predição com Intervalo)} No dataset California Housing, use LightGBM com \texttt{objective='quantile'} para prever os percentis 5, 50 e 95 do preço. Calcule a cobertura empírica (proporção de valores reais dentro do intervalo predito). Use MAPIE para calibrar o intervalo com cobertura garantida de 90\%.
+
+\end{enumerate}
+
+%------------------------------------------------------
+\section{Referências}
+%------------------------------------------------------
+
+\begin{thebibliography}{99}
+
+\bibitem{tibshirani1996} Tibshirani, R. (1996). Regression shrinkage and selection via the LASSO. \textit{Journal of the Royal Statistical Society Series B}, 58(1), 267--288.
+
+\bibitem{zou2005} Zou, H., \& Hastie, T. (2005). Regularization and variable selection via the Elastic Net. \textit{Journal of the Royal Statistical Society Series B}, 67(2), 301--320.
+
+\bibitem{breiman2001} Breiman, L. (2001). Random forests. \textit{Machine Learning}, 45(1), 5--32.
+
+\bibitem{chen2016} Chen, T., \& Guestrin, C. (2016). XGBoost: A scalable tree boosting system. In \textit{Proceedings of KDD 2016}, 785--794.
+
+\bibitem{ke2017} Ke, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., ... \& Liu, T.-Y. (2017). LightGBM: A highly efficient gradient boosting decision tree. In \textit{NeurIPS 2017}.
+
+\bibitem{friedman2001} Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. \textit{Annals of Statistics}, 29(5), 1189--1232.
+
+\bibitem{gelman2007} Gelman, A., \& Hill, J. (2007). \textit{Data Analysis Using Regression and Multilevel/Hierarchical Models}. Cambridge University Press.
+
+\bibitem{romano2019} Romano, Y., Patterson, E., \& Candès, E. (2019). Conformalized quantile regression. In \textit{NeurIPS 2019}.
+
+\bibitem{rasmussen2006} Rasmussen, C. E., \& Williams, C. K. I. (2006). \textit{Gaussian Processes for Machine Learning}. MIT Press, Cambridge.
+
+\bibitem{james2021} James, G., Witten, D., Hastie, T., \& Tibshirani, R. (2021). \textit{An Introduction to Statistical Learning with Applications in R} (2nd ed.). Springer.
+
+\bibitem{gorishniy2021} Gorishniy, Y., Rubachev, I., Khrulkov, V., \& Babenko, A. (2021). Revisiting deep learning models for tabular data. In \textit{NeurIPS 2021}.
+
+\bibitem{vovk2005} Vovk, V., Gammerman, A., \& Shafer, G. (2005). \textit{Algorithmic Learning in a Random World}. Springer.
+
+\end{thebibliography}
+
+\end{document}

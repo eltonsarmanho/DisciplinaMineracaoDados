@@ -1,0 +1,843 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,shapes.geometric,positioning,fit,backgrounds,calc,shadows.blur,decorations.pathmorphing,mindmap,trees,patterns,decorations.text,matrix}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{fontawesome5}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins,theorems}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\setlength{\headheight}{14pt}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{caption}
+\definecolor{mineblue}{RGB}{0,90,180}
+\definecolor{mineorange}{RGB}{230,115,0}
+\definecolor{minegreen}{RGB}{34,139,34}
+\definecolor{minered}{RGB}{180,20,40}
+\definecolor{minegray}{RGB}{100,100,100}
+\definecolor{codebg}{RGB}{250,250,250}
+\newtcolorbox{definicaobox}[1]{title={\faIcon{book} #1},colback=blue!4!white,colframe=mineblue,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{exemplobox}[1]{title={\faIcon{lightbulb} #1},colback=orange!4!white,colframe=mineorange,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{dicabox}[1]{title={\faIcon{info-circle} #1},colback=green!4!white,colframe=minegreen,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{atencaobox}[1]{title={\faIcon{exclamation-triangle} #1},colback=red!4!white,colframe=minered,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{estadoartebox}[1]{title={\faIcon{rocket} #1},colback=purple!4!white,colframe=purple!60!black,fonttitle=\bfseries,breakable,enhanced}
+\lstdefinestyle{mypython}{language=Python,backgroundcolor=\color{codebg},commentstyle=\color{minegray}\itshape,keywordstyle=\color{mineblue}\bfseries,stringstyle=\color{minegreen},basicstyle=\ttfamily\footnotesize,breaklines=true,frame=single,rulecolor=\color{minegray!40},numbers=left,numberstyle=\tiny\color{minegray},tabsize=4,showstringspaces=false}
+\lstset{style=mypython}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small \textcolor{mineblue}{\textbf{Mineração de Dados}} | UEPA -- CCNT}
+\fancyhead[R]{\small Módulo 3: Técnicas de Classificação}
+\fancyfoot[C]{\small \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\titleformat{\section}{\large\bfseries\color{mineblue}}{\thesection}{0.8em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{mineorange}}{\thesubsection}{0.8em}{}
+\titleformat{\subsubsection}{\small\bfseries\color{minegray}}{\thesubsubsection}{0.8em}{}
+
+\begin{document}
+
+%------------------------------------------------------
+% TÍTULO
+%------------------------------------------------------
+\begin{titlepage}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[mineblue!90] (current page.north west) rectangle ([yshift=-3.5cm]current page.north east);
+  \fill[mineorange] ([yshift=-3.5cm]current page.north west) rectangle ([yshift=-4cm]current page.north east);
+\end{tikzpicture}
+
+\vspace*{2.5cm}
+\begin{center}
+  {\color{white}\Large\bfseries Universidade do Estado do Pará}\\[0.3em]
+  {\color{white}\large Centro de Ciências Naturais e Tecnologia}\\[2cm]
+
+  \begin{tcolorbox}[colback=white,colframe=mineblue,boxrule=2pt,arc=8pt,width=0.9\textwidth]
+    \centering
+    {\color{mineblue}\Huge\bfseries Módulo 3}\\[0.5em]
+    {\color{mineorange}\LARGE\bfseries Técnicas de Classificação}\\[0.3em]
+    {\color{minegray}\large em Mineração de Dados}
+  \end{tcolorbox}
+
+  \vspace{1.5cm}
+  \begin{tikzpicture}
+    \node[fill=mineblue!10,draw=mineblue,rounded corners=8pt,inner sep=12pt]{%
+      \begin{tabular}{ll}
+        \faIcon{graduation-cap} \textbf{Disciplina:} & Mineração de Dados \\
+        \faIcon{university}     \textbf{Instituição:} & UEPA -- CCNT \\
+        \faIcon{code}           \textbf{Curso:} & Engenharia de Software (8º Semestre) \\
+        \faIcon{clock}          \textbf{Carga Horária:} & 80h \\
+        \faIcon{calendar}       \textbf{Ano:} & 2025 \\
+      \end{tabular}
+    };
+  \end{tikzpicture}
+
+  \vspace{2cm}
+  {\large\bfseries Conteúdo do Módulo:}\\[0.5em]
+  \begin{tabular}{clcl}
+    \faIcon{tree}   & Árvores de Decisão (ID3, C4.5, CART) &
+    \faIcon{brain}  & Redes Neurais Artificiais \\
+    \faIcon{percentage} & Naive Bayes e Regressão Logística &
+    \faIcon{ruler}  & SVM e Kernel Trick \\
+    \faIcon{layer-group} & Métodos Ensemble &
+    \faIcon{chart-bar} & Avaliação de Modelos \\
+  \end{tabular}
+
+  \vfill
+  {\color{minegray}\small Material didático para uso acadêmico. Baseado em Quinlan (1986, 1993), Breiman (2001), Vapnik (1995), Chen \& Guestrin (2016) e outros.}
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%------------------------------------------------------
+\section{Objetivos de Aprendizagem}
+%------------------------------------------------------
+
+Ao concluir este módulo, o estudante será capaz de:
+
+\begin{enumerate}[leftmargin=2em,label=\textcolor{mineblue}{\faIcon{check-circle}}]
+  \item \textbf{Compreender} o problema de classificação supervisionada e sua formalização matemática, distinguindo classificação binária, multiclasse e multirótulo.
+  \item \textbf{Construir} árvores de decisão manualmente utilizando os critérios de Entropia (ID3), Ganho de Informação com Razão de Ganho (C4.5) e Índice Gini (CART), identificando o melhor atributo de divisão em cada nível.
+  \item \textbf{Aplicar} técnicas de poda (pre-pruning e post-pruning) para controlar o sobreajuste em árvores de decisão.
+  \item \textbf{Implementar} classificadores probabilísticos (Naive Bayes Gaussiano, Multinomial, Bernoulli) e Regressão Logística, compreendendo as hipóteses de independência condicional e a função sigmoide.
+  \item \textbf{Utilizar} Máquinas de Vetores de Suporte (SVM) com kernels linear, polinomial e RBF, entendendo o conceito de margem máxima, variáveis de folga e o kernel trick.
+  \item \textbf{Construir} métodos ensemble (Bagging, Random Forest, AdaBoost, Gradient Boosting, XGBoost, LightGBM, CatBoost), comparando bagging versus boosting em termos de variância e viés.
+  \item \textbf{Calcular e interpretar} métricas de avaliação de classificadores: acurácia, precisão, recall, F1-Score, AUC-ROC, AUC-PR, MCC e Kappa de Cohen, selecionando a métrica adequada conforme o contexto (dados desbalanceados, custo assimétrico de erros).
+  \item \textbf{Interpretar} modelos de classificação usando técnicas de XAI (SHAP, LIME), justificando predições individualmente e globalmente para suporte à tomada de decisão responsável.
+\end{enumerate}
+
+%------------------------------------------------------
+\section{Introdução à Classificação}
+%------------------------------------------------------
+
+\subsection{Aprendizado Supervisionado}
+
+O \textbf{aprendizado supervisionado} é o paradigma de aprendizado de máquina no qual o algoritmo aprende uma função de mapeamento a partir de exemplos rotulados. O ``supervisor'' fornece pares entrada-saída $(\mathbf{x}_i, y_i)$ e o objetivo é generalizar para exemplos não vistos. Em contraste com o aprendizado não supervisionado (clusterização) e o aprendizado por reforço (recompensa), aqui cada exemplo de treino possui um rótulo de referência.
+
+\subsection{Definição Formal do Problema de Classificação}
+
+\begin{definicaobox}{Problema de Classificação}
+Seja $\mathcal{D} = \{(\mathbf{x}_1, y_1), (\mathbf{x}_2, y_2), \ldots, (\mathbf{x}_n, y_n)\}$ um conjunto de treinamento, onde:
+\begin{itemize}
+  \item $\mathbf{x}_i \in \mathbb{R}^p$ é o vetor de atributos (features) com $p$ dimensões
+  \item $y_i \in \{c_1, c_2, \ldots, c_k\}$ é o rótulo de classe ($k$ classes possíveis)
+\end{itemize}
+O objetivo é aprender uma função $f: \mathbb{R}^p \rightarrow \{c_1, \ldots, c_k\}$ que minimize a perda esperada:
+\[
+  \mathcal{R}(f) = \mathbb{E}_{(\mathbf{x},y) \sim \mathcal{P}}[\mathcal{L}(y, f(\mathbf{x}))]
+\]
+onde $\mathcal{P}$ é a distribuição de probabilidade desconhecida dos dados e $\mathcal{L}$ é a função de perda (e.g., 0-1 loss, log-loss).
+\end{definicaobox}
+
+Na prática, minimizamos o risco empírico (ERM -- Empirical Risk Minimization):
+\[
+  \hat{f} = \arg\min_{f \in \mathcal{F}} \frac{1}{n} \sum_{i=1}^{n} \mathcal{L}(y_i, f(\mathbf{x}_i)) + \lambda \Omega(f)
+\]
+onde $\mathcal{F}$ é o espaço de hipóteses e $\Omega(f)$ é um termo de regularização.
+
+\subsection{Tipos de Classificação}
+
+\begin{tabular}{>{\bfseries}p{3.5cm}p{5cm}p{5cm}}
+\toprule
+Tipo & Definição & Exemplo \\
+\midrule
+Binária & $k = 2$: $y \in \{0, 1\}$ & Spam vs. Não-spam \\
+Multiclasse & $k > 2$: $y \in \{c_1,\ldots,c_k\}$ & Dígito reconhecido (0--9) \\
+Multirótulo & Múltiplos $y_j \in \{0,1\}$ simultâneos & Gêneros de um filme \\
+Multiclasse-multirótulo & Combinação & Análise de emoções em texto \\
+\bottomrule
+\end{tabular}
+
+\subsection{Aplicações Reais}
+
+\begin{itemize}
+  \item \faIcon{envelope} \textbf{Filtragem de spam:} classificar e-mails como spam/não-spam com base em palavras e metadados.
+  \item \faIcon{heartbeat} \textbf{Diagnóstico médico:} identificar tumor maligno/benigno a partir de imagens histológicas ou dados clínicos.
+  \item \faIcon{credit-card} \textbf{Risco de crédito:} aprovar ou negar empréstimos com base em histórico financeiro do cliente.
+  \item \faIcon{image} \textbf{Reconhecimento de imagens:} identificar objetos, faces, expressões em fotografias (ImageNet, CIFAR-10).
+  \item \faIcon{users} \textbf{Churn prediction:} prever quais clientes irão cancelar assinatura para retenção proativa.
+  \item \faIcon{shield-alt} \textbf{Detecção de fraudes:} identificar transações financeiras fraudulentas em tempo real.
+  \item \faIcon{language} \textbf{Análise de sentimentos:} classificar opiniões de usuários em positivo/negativo/neutro.
+  \item \faIcon{dna} \textbf{Bioinformática:} classificar sequências genéticas ou prever função de proteínas.
+\end{itemize}
+
+%------------------------------------------------------
+\section{Árvores de Decisão}
+%------------------------------------------------------
+
+\subsection{Conceito e Estrutura}
+
+Uma \textbf{árvore de decisão} é um modelo hierárquico que representa uma série de decisões sequenciais na forma de uma estrutura de árvore. Cada \textit{nó interno} contém um teste sobre um atributo; cada \textit{ramo} representa um resultado do teste; cada \textit{folha} atribui um rótulo de classe. Para classificar um novo exemplo, percorremos a árvore da raiz até uma folha, seguindo os ramos correspondentes aos valores dos atributos do exemplo.
+
+\vspace{0.5em}
+\begin{center}
+\begin{tikzpicture}[
+  internal/.style={rectangle,rounded corners,draw=mineblue,fill=mineblue!15,minimum width=3cm,minimum height=0.8cm,font=\small,align=center,drop shadow},
+  leaf/.style={rectangle,rounded corners,draw=minegreen,fill=minegreen!15,minimum width=2.4cm,minimum height=0.7cm,font=\small\bfseries,align=center,drop shadow},
+  edge from parent/.append style={draw,->,thick,mineblue!70},
+  level distance=1.8cm,
+  level 1/.style={sibling distance=6cm},
+  level 2/.style={sibling distance=3cm}
+]
+\node[internal] (root) {Renda $>$ 50k?}
+  child {
+    node[internal] {Histórico\\Limpo?}
+    child { node[leaf] {\textcolor{minegreen}{APROVADO}\\(78\%)} edge from parent node[left,font=\tiny\color{minegray}]{Sim} }
+    child { node[leaf] {\textcolor{minered}{NEGADO}\\(62\%)} edge from parent node[right,font=\tiny\color{minegray}]{Não} }
+    edge from parent node[left,font=\small\color{minegray}]{Não}
+  }
+  child {
+    node[internal] {Tempo Emprego\\$>$ 2 anos?}
+    child { node[leaf] {\textcolor{minered}{NEGADO}\\(55\%)} edge from parent node[left,font=\tiny\color{minegray}]{Não} }
+    child { node[leaf] {\textcolor{minegreen}{APROVADO}\\(91\%)} edge from parent node[right,font=\tiny\color{minegray}]{Sim} }
+    edge from parent node[right,font=\small\color{minegray}]{Sim}
+  };
+\end{tikzpicture}
+\captionof{figure}{Exemplo de árvore de decisão para aprovação de crédito. Nós internos: condições de teste. Folhas: classes com confiança estimada.}
+\end{center}
+
+\vspace{0.5em}
+\begin{dicabox}{Propriedades das Árvores de Decisão}
+\begin{itemize}
+  \item \textbf{Interpretabilidade:} regras explícitas, legíveis por humanos (``Se renda $>$ 50k E emprego $>$ 2 anos, ENTÃO aprovado'').
+  \item \textbf{Não-parametricidade:} não assume distribuição dos dados.
+  \item \textbf{Mistura de tipos:} lidam nativamente com atributos numéricos e categóricos.
+  \item \textbf{Ausência de normalização:} não requer escalonamento de features.
+  \item \textbf{Instabilidade:} pequenas mudanças nos dados podem gerar árvores muito diferentes (mitigado por ensembles).
+\end{itemize}
+\end{dicabox}
+
+\subsection{Algoritmos ID3, C4.5 e CART}
+
+\subsubsection{ID3 -- Iterative Dichotomiser 3 (Quinlan, 1986)}
+
+O ID3 seleciona o atributo que maximiza o \textbf{Ganho de Informação}. O critério de impureza utilizado é a \textbf{Entropia de Shannon}:
+
+\[
+  H(S) = -\sum_{i=1}^{k} p_i \log_2 p_i
+\]
+
+onde $p_i = \frac{|S_i|}{|S|}$ é a proporção de exemplos da classe $c_i$ no conjunto $S$. A entropia é máxima ($H = \log_2 k$) quando as classes são equiprováveis e zero quando o conjunto é puro.
+
+O \textbf{Ganho de Informação} de um atributo $A$ com domínio $V(A)$:
+\[
+  IG(S, A) = H(S) - \sum_{v \in V(A)} \frac{|S_v|}{|S|} H(S_v)
+\]
+
+\begin{exemplobox}{Exemplo Calculado -- Ganho de Informação}
+Considere um dataset de 14 exemplos (9 positivos, 5 negativos) com atributo \textit{Vento} (Fraco/Forte):
+\begin{itemize}
+  \item $H(S) = -\frac{9}{14}\log_2\frac{9}{14} - \frac{5}{14}\log_2\frac{5}{14} \approx 0{,}940$ bits
+  \item $S_{\text{Fraco}} = \{6^+, 2^-\}$: $H = -\frac{6}{8}\log_2\frac{6}{8} - \frac{2}{8}\log_2\frac{2}{8} \approx 0{,}811$
+  \item $S_{\text{Forte}} = \{3^+, 3^-\}$: $H = 1{,}000$ (equiprável)
+  \item $IG(\text{Vento}) = 0{,}940 - \left(\frac{8}{14} \cdot 0{,}811 + \frac{6}{14} \cdot 1{,}000\right) \approx 0{,}048$ bits
+\end{itemize}
+O atributo com maior IG é escolhido como nó raiz.
+\end{exemplobox}
+
+\textbf{Limitações do ID3:} favorece atributos com muitos valores distintos (e.g., ID do cliente tem IG alto mas é inútil para generalização).
+
+\subsubsection{C4.5 (Quinlan, 1993)}
+
+O C4.5 corrige o viés do ID3 usando a \textbf{Razão de Ganho} (\textit{Gain Ratio}):
+
+\[
+  GR(S, A) = \frac{IG(S, A)}{H_A(S)}
+\]
+
+onde $H_A(S)$ é a \textbf{entropia de divisão} do atributo $A$:
+\[
+  H_A(S) = -\sum_{v \in V(A)} \frac{|S_v|}{|S|} \log_2 \frac{|S_v|}{|S|}
+\]
+
+Atributos com muitos valores terão alto $H_A(S)$, penalizando seu ganho ratio. O C4.5 também suporta: (1) atributos contínuos (via thresholds), (2) valores ausentes, (3) poda baseada em confiança estatística.
+
+\subsubsection{CART -- Classification and Regression Trees (Breiman et al., 1984)}
+
+O CART usa o \textbf{Índice Gini} como critério de impureza:
+\[
+  Gini(S) = 1 - \sum_{i=1}^{k} p_i^2
+\]
+
+O Gini mede a probabilidade de classificar incorretamente um exemplo escolhido aleatoriamente. Para dividir o conjunto $S$ pelo atributo $A$:
+\[
+  GiniGain(S, A) = Gini(S) - \sum_{v \in V(A)} \frac{|S_v|}{|S|} Gini(S_v)
+\]
+
+\begin{atencaobox}{Diferenças práticas entre ID3, C4.5 e CART}
+\begin{tabular}{lccc}
+\toprule
+Característica & ID3 & C4.5 & CART \\
+\midrule
+Critério & Entropia/IG & Gain Ratio & Gini \\
+Divisão & Multiway & Multiway & Binária \\
+Valores contínuos & Não & Sim & Sim \\
+Valores ausentes & Não & Sim & Sim (surrogate) \\
+Regressão & Não & Não & Sim \\
+Poda & Não & Pós-poda (CF) & Custo-complexidade \\
+\bottomrule
+\end{tabular}
+\end{atencaobox}
+
+O pseudocódigo do ID3 recursivo:
+
+\begin{algorithm}[H]
+\caption{Algoritmo ID3 Recursivo}
+\SetAlgoLined
+\KwIn{Conjunto $S$, conjunto de atributos $\mathcal{A}$}
+\KwOut{Árvore de Decisão $T$}
+\BlankLine
+\If{$S$ é puro (todos os exemplos têm a mesma classe $c$)}{
+  \Return folha com rótulo $c$\;
+}
+\If{$\mathcal{A} = \emptyset$ \textbf{ou} critério de parada satisfeito}{
+  \Return folha com classe majoritária em $S$\;
+}
+$A^* \leftarrow \arg\max_{A \in \mathcal{A}}\; IG(S, A)$\;
+Cria nó interno $N$ com teste no atributo $A^*$\;
+\ForEach{valor $v \in V(A^*)$}{
+  $S_v \leftarrow \{\mathbf{x} \in S : x_{A^*} = v\}$\;
+  \eIf{$S_v = \emptyset$}{
+    Adiciona folha com classe majoritária de $S$ ao nó $N$\;
+  }{
+    Adiciona ramo $v$ com subárvore $\text{ID3}(S_v,\; \mathcal{A} \setminus \{A^*\})$ ao nó $N$\;
+  }
+}
+\Return nó $N$\;
+\end{algorithm}
+
+\subsection{Poda (Pruning)}
+
+Árvores completamente expandidas tendem a sobreajustar (overfitting) os dados de treinamento. A \textbf{poda} reduz a complexidade da árvore para melhorar a generalização.
+
+\subsubsection{Pré-poda (Pre-pruning)}
+Critérios de parada antecipada durante a construção:
+\begin{itemize}
+  \item \texttt{max\_depth}: profundidade máxima permitida
+  \item \texttt{min\_samples\_split}: mínimo de exemplos para dividir um nó
+  \item \texttt{min\_samples\_leaf}: mínimo de exemplos em uma folha
+  \item \texttt{max\_leaf\_nodes}: número máximo de folhas
+  \item Teste chi-quadrado ou teste-G para avaliar significância da divisão
+\end{itemize}
+
+\subsubsection{Pós-poda (Post-pruning)}
+
+\textbf{Cost-Complexity Pruning (CART):} define o critério de custo-complexidade:
+\[
+  R_\alpha(T) = R(T) + \alpha \cdot |T|
+\]
+onde $R(T)$ é o erro de classificação, $|T|$ é o número de folhas e $\alpha \geq 0$ é o parâmetro de regularização. Para cada $\alpha$, existe a subárvore ótima $T(\alpha)$.
+
+\textbf{Reduced Error Pruning (C4.5):} usando um conjunto de validação, remove subárvores cujos nós raiz (convertidos em folhas) não aumentam o erro no conjunto de validação.
+
+%------------------------------------------------------
+\section{Métodos Probabilísticos}
+%------------------------------------------------------
+
+\subsection{Naive Bayes}
+
+O classificador \textbf{Naive Bayes} aplica o Teorema de Bayes com a hipótese (ingênua) de independência condicional entre os atributos dada a classe.
+
+\textbf{Teorema de Bayes:}
+\[
+  P(c \mid \mathbf{x}) = \frac{P(\mathbf{x} \mid c)\, P(c)}{P(\mathbf{x})}
+\]
+
+\textbf{Hipótese de Naive Bayes:} os atributos são condicionalmente independentes dada a classe:
+\[
+  P(\mathbf{x} \mid c) = \prod_{j=1}^{p} P(x_j \mid c)
+\]
+
+A regra de classificação (maximizar a probabilidade a posteriori):
+\[
+  \hat{y} = \arg\max_{c \in \mathcal{C}} P(c) \prod_{j=1}^{p} P(x_j \mid c)
+\]
+
+\subsubsection{Variantes do Naive Bayes}
+
+\begin{tabular}{>{\bfseries}p{3.5cm}p{4cm}p{5cm}}
+\toprule
+Variante & Distribuição assumida & Aplicação típica \\
+\midrule
+Gaussian NB & $P(x_j|c) = \mathcal{N}(\mu_{jc}, \sigma^2_{jc})$ & Features contínuas \\
+Multinomial NB & Distribuição multinomial & Classificação de textos (freq. palavras) \\
+Bernoulli NB & Distribuição de Bernoulli & Features binárias (presença/ausência) \\
+Complement NB & Modela complemento das classes & Datasets desbalanceados \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\textbf{Suavização de Laplace:} evita probabilidades zero quando um atributo não aparece com determinada classe no treino:
+\[
+  P(x_j = v \mid c) = \frac{\text{count}(x_j = v,\, c) + \alpha}{\text{count}(c) + \alpha \cdot |V_j|}
+\]
+onde $\alpha = 1$ (suavização de Laplace) ou $0 < \alpha < 1$ (Lidstone smoothing), e $|V_j|$ é o número de valores distintos do atributo $j$.
+
+\subsection{Regressão Logística}
+
+A \textbf{Regressão Logística} é um classificador linear que modela a probabilidade da classe positiva usando a função sigmoide:
+
+\[
+  \sigma(z) = \frac{1}{1 + e^{-z}}, \qquad z = \mathbf{w}^T \mathbf{x} + b
+\]
+
+A saída $P(y=1 \mid \mathbf{x}) = \sigma(\mathbf{w}^T\mathbf{x} + b)$ é otimizada minimizando a \textbf{cross-entropy loss}:
+\[
+  \mathcal{L}(\mathbf{w}, b) = -\frac{1}{n} \sum_{i=1}^{n} \left[ y_i \log \hat{y}_i + (1 - y_i) \log(1 - \hat{y}_i) \right]
+\]
+
+Os parâmetros são estimados por gradiente descendente (ou LBFGS, Newton-CG):
+\[
+  \frac{\partial \mathcal{L}}{\partial \mathbf{w}} = \frac{1}{n} \sum_{i=1}^n (\hat{y}_i - y_i)\, \mathbf{x}_i
+\]
+
+\textbf{Softmax para multiclasse:} generaliza a sigmoide para $k$ classes:
+\[
+  P(y = k \mid \mathbf{x}) = \frac{e^{\mathbf{w}_k^T \mathbf{x}}}{\sum_{j=1}^{K} e^{\mathbf{w}_j^T \mathbf{x}}}
+\]
+
+\begin{dicabox}{Regularização na Regressão Logística}
+Para evitar sobreajuste, adiciona-se penalidade: $\mathcal{L}_{reg} = \mathcal{L} + \frac{\lambda}{2}\|\mathbf{w}\|^2$ (L2/Ridge) ou $\mathcal{L}_{reg} = \mathcal{L} + \lambda\|\mathbf{w}\|_1$ (L1/LASSO). O parâmetro \texttt{C = 1/$\lambda$} no scikit-learn controla a regularização.
+\end{dicabox}
+
+%------------------------------------------------------
+\section{K-Vizinhos Mais Próximos (KNN)}
+%------------------------------------------------------
+
+O algoritmo \textbf{K-Vizinhos Mais Próximos (KNN)} é um classificador não-paramétrico baseado em instâncias (lazy learning). Para classificar $\mathbf{x}$: encontre os $k$ exemplos de treino mais próximos e classifique por voto majoritário.
+
+\subsection{Métricas de Distância}
+
+\begin{tabular}{>{\bfseries}p{3cm}p{6cm}p{4cm}}
+\toprule
+Métrica & Fórmula & Uso \\
+\midrule
+Euclidiana & $d(\mathbf{a},\mathbf{b}) = \sqrt{\sum_i (a_i - b_i)^2}$ & Dados contínuos \\
+Manhattan & $d(\mathbf{a},\mathbf{b}) = \sum_i |a_i - b_i|$ & Menos sensível a outliers \\
+Minkowski & $d(\mathbf{a},\mathbf{b}) = \left(\sum_i |a_i - b_i|^r\right)^{1/r}$ & Generalização ($r=2$: Euclid.) \\
+Hamming & $d(\mathbf{a},\mathbf{b}) = \frac{1}{p}\sum_i \mathbf{1}[a_i \neq b_i]$ & Atributos categóricos \\
+Cosine & $d(\mathbf{a},\mathbf{b}) = 1 - \frac{\mathbf{a} \cdot \mathbf{b}}{\|\mathbf{a}\|\|\mathbf{b}\|}$ & Textos/vetores de palavras \\
+\bottomrule
+\end{tabular}
+
+\subsection{Efeito de k}
+
+\begin{itemize}
+  \item $k$ pequeno (e.g., $k=1$): alta variância, baixo viés -- fronteira de decisão irregular, sensível a ruído (\textbf{overfitting})
+  \item $k$ grande (e.g., $k=n$): baixa variância, alto viés -- fronteira suave, mas ignora estrutura local (\textbf{underfitting})
+  \item Escolha de $k$ via validação cruzada; tipicamente $k = \sqrt{n}$ como ponto de partida
+\end{itemize}
+
+\textbf{KNN Ponderado:} pondera cada vizinho pelo inverso da distância ao quadrado:
+\[
+  \hat{y} = \frac{\sum_{i \in N_k(\mathbf{x})} w_i\, y_i}{\sum_{i \in N_k(\mathbf{x})} w_i}, \qquad w_i = \frac{1}{d(\mathbf{x}, \mathbf{x}_i)^2 + \varepsilon}
+\]
+
+\subsection{Complexidade e Aceleração}
+
+\begin{itemize}
+  \item \textbf{Predição ingênua:} $O(n \cdot p)$ por consulta -- inviável para grandes datasets
+  \item \textbf{KD-tree:} particiona o espaço de features em hiperretângulos; $O(p \log n)$ para dimensões baixas ($p \lesssim 20$)
+  \item \textbf{Ball-tree:} usa hiperesféras; robusto para dimensões maiores e métricas não-Euclidianas
+  \item \textbf{Approximate Nearest Neighbors (ANN):} FAISS, HNSW para alta dimensão (e.g., embeddings)
+\end{itemize}
+
+\begin{atencaobox}{Maldição da Dimensionalidade}
+Em altas dimensões ($p \gg 1$), todos os pontos tendem a estar aproximadamente equidistantes. KNN sofre severamente neste regime. Pré-processamento com PCA ou outros métodos de redução de dimensionalidade pode mitigar o problema.
+\end{atencaobox}
+
+%------------------------------------------------------
+\section{Máquinas de Vetores de Suporte (SVM)}
+%------------------------------------------------------
+
+\subsection{SVM Linear (Margem Rígida)}
+
+Uma \textbf{Máquina de Vetores de Suporte} encontra o hiperplano de separação que maximiza a \textbf{margem} entre as classes. O hiperplano é definido por:
+\[
+  \mathbf{w} \cdot \mathbf{x} + b = 0
+\]
+
+A distância de um ponto ao hiperplano é $\frac{|\mathbf{w} \cdot \mathbf{x} + b|}{\|\mathbf{w}\|}$. A margem entre as classes é $\frac{2}{\|\mathbf{w}\|}$. Para classes linearmente separáveis, o problema de otimização (margem rígida):
+\[
+  \min_{\mathbf{w},b} \frac{1}{2}\|\mathbf{w}\|^2 \qquad \text{s.a.} \quad y_i(\mathbf{w} \cdot \mathbf{x}_i + b) \geq 1, \quad \forall i
+\]
+
+Os exemplos que satisfazem $y_i(\mathbf{w} \cdot \mathbf{x}_i + b) = 1$ são os \textbf{vetores de suporte}.
+
+\vspace{0.5em}
+\begin{center}
+\begin{tikzpicture}[scale=1.3]
+% Positive class points (circles - blue)
+\foreach \x/\y in {3.5/2.5, 4/3.5, 4.5/2, 5/3, 3.8/1.8}{
+  \filldraw[mineblue,fill=mineblue!70] (\x,\y) circle(0.09);
+}
+% Negative class points (squares - red)
+\foreach \x/\y in {1/1.5, 1.5/2.5, 0.8/3, 2/1, 1.8/2.8}{
+  \fill[minered,rotate around={45:(\x,\y)}] (\x-0.09,\y-0.09) rectangle (\x+0.09,\y+0.09);
+}
+% Decision boundary
+\draw[very thick,minegreen] (2.5,-0.2) -- (2.5,4.2) node[right,font=\small]{$\mathbf{w}\cdot\mathbf{x}+b=0$};
+% Margin boundaries
+\draw[dashed,mineblue,thick] (3.2,-0.2) -- (3.2,4.2) node[above,font=\tiny]{$+1$};
+\draw[dashed,minered,thick] (1.8,-0.2) -- (1.8,4.2) node[above,font=\tiny]{$-1$};
+% Margin annotation
+\draw[<->,very thick,mineorange] (1.8,4.0) -- (3.2,4.0) node[midway,above,font=\small]{Margem $\frac{2}{\|\mathbf{w}\|}$};
+% Support vectors highlighted
+\draw[mineorange,very thick] (3.2,2.5) circle(0.17) node[right,font=\tiny,mineorange]{SV};
+\draw[mineorange,very thick] (1.8,2.5) circle(0.17) node[left,font=\tiny,mineorange]{SV};
+% Labels
+\node[mineblue,font=\small\bfseries] at (4.5,4) {Classe $+1$};
+\node[minered,font=\small\bfseries] at (0.8,4) {Classe $-1$};
+\end{tikzpicture}
+\captionof{figure}{SVM com margem máxima. Os vetores de suporte (SVs) são os exemplos mais próximos do hiperplano e determinam a fronteira de decisão.}
+\end{center}
+
+\subsection{SVM com Margem Suave (Soft Margin)}
+
+Para dados não linearmente separáveis, introduzem-se \textbf{variáveis de folga} $\xi_i \geq 0$:
+\[
+  \min_{\mathbf{w},b,\boldsymbol{\xi}} \frac{1}{2}\|\mathbf{w}\|^2 + C\sum_{i=1}^n \xi_i
+  \qquad \text{s.a.} \quad y_i(\mathbf{w} \cdot \mathbf{x}_i + b) \geq 1 - \xi_i, \quad \xi_i \geq 0
+\]
+
+O parâmetro $C > 0$ controla o trade-off entre maximizar a margem e minimizar as violações:
+\begin{itemize}
+  \item $C$ grande: penaliza fortemente erros -- margem menor, menos erros de treino (risco de overfitting)
+  \item $C$ pequeno: aceita mais erros -- margem maior, melhor generalização
+\end{itemize}
+
+\subsection{Kernel Trick}
+
+O \textbf{kernel trick} permite que a SVM opere em espaços de alta dimensão sem calcular explicitamente o mapeamento $\phi: \mathbb{R}^p \rightarrow \mathcal{H}$, usando apenas o produto interno $K(\mathbf{x}, \mathbf{z}) = \langle\phi(\mathbf{x}), \phi(\mathbf{z})\rangle$.
+
+\begin{tabular}{>{\bfseries}p{3cm}p{5cm}p{4.5cm}}
+\toprule
+Kernel & Fórmula & Uso \\
+\midrule
+Linear & $K(\mathbf{x},\mathbf{z}) = \mathbf{x} \cdot \mathbf{z}$ & Dados linearmente separáveis \\
+Polinomial & $K(\mathbf{x},\mathbf{z}) = (\mathbf{x} \cdot \mathbf{z} + c)^d$ & Interações de grau $d$ \\
+RBF (Gaussiano) & $K(\mathbf{x},\mathbf{z}) = e^{-\gamma\|\mathbf{x}-\mathbf{z}\|^2}$ & Fronteiras complexas (padrão) \\
+Sigmoide & $K(\mathbf{x},\mathbf{z}) = \tanh(\kappa\mathbf{x}\cdot\mathbf{z} + c)$ & Inspirado em redes neurais \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\begin{definicaobox}{Teorema de Mercer}
+Uma função $K: \mathcal{X} \times \mathcal{X} \rightarrow \mathbb{R}$ é um kernel válido (positivo semi-definido) se e somente se, para qualquer conjunto finito $\{x_1,\ldots,x_n\}$, a matriz de Gram $G_{ij} = K(x_i, x_j)$ é positiva semi-definida. Kernels válidos garantem que o produto interno no espaço de features seja bem-definido.
+\end{definicaobox}
+
+%------------------------------------------------------
+\section{Métodos Ensemble}
+%------------------------------------------------------
+
+Métodos ensemble combinam múltiplos classificadores para obter desempenho superior ao de qualquer modelo individual. Baseiam-se na \textbf{decomposição viés-variância}: $\text{Erro} = \text{Viés}^2 + \text{Variância} + \text{Ruído irredutível}$.
+
+\subsection{Bagging e Random Forest}
+
+\textbf{Bagging} (Bootstrap AGGregatING, Breiman 1996): treina $T$ modelos em subamostras bootstrap (amostras com reposição de tamanho $n$ do dataset original) e combina por votação majoritária (classificação) ou média (regressão). Reduz principalmente a \textbf{variância}.
+
+\begin{definicaobox}{Random Forest (Breiman, 2001)}
+\textbf{Random Forest} é um ensemble de $T$ árvores de decisão onde:
+\begin{enumerate}
+  \item Cada árvore é treinada em uma amostra bootstrap distinta do dataset de treino
+  \item Em cada divisão de nó, apenas um subconjunto aleatório de $m \approx \sqrt{p}$ features (classificação) ou $m \approx p/3$ (regressão) é avaliado
+  \item A predição final é a votação majoritária das $T$ árvores
+\end{enumerate}
+A seleção aleatória de features reduz a correlação entre as árvores, diminuindo a variância do ensemble além do que seria possível com bagging puro.
+\end{definicaobox}
+
+\textbf{Medidas de importância de features em Random Forest:}
+\begin{itemize}
+  \item \textbf{MDI (Mean Decrease in Impurity):} média da redução de Gini/Entropia ponderada pelos exemplos, somada sobre todas as árvores. Rápida mas enviesada para features de alta cardinalidade.
+  \item \textbf{MDA (Mean Decrease in Accuracy):} permuta aleatoriamente os valores de cada feature e mede queda na acurácia OOB. Mais confiável, mais custosa.
+  \item \textbf{SHAP:} atribuição baseada em valores de Shapley, teoricamente fundamentada.
+\end{itemize}
+
+\subsection{Boosting}
+
+\textbf{Boosting} treina modelos sequencialmente, onde cada modelo subsequente foca nos erros do modelo anterior. Reduz principalmente o \textbf{viés}.
+
+\subsubsection{AdaBoost (Freund \& Schapire, 1997)}
+\begin{enumerate}
+  \item Inicializa pesos uniformes $w_i = 1/n$
+  \item Para $m = 1,\ldots,M$: treina classificador $h_m$ nos pesos atuais; calcula erro $\varepsilon_m = \sum_i w_i \mathbf{1}[h_m(\mathbf{x}_i) \neq y_i]$; calcula $\alpha_m = \frac{1}{2}\ln\frac{1-\varepsilon_m}{\varepsilon_m}$; atualiza pesos e normaliza
+  \item Predição: $H(\mathbf{x}) = \text{sign}\left(\sum_m \alpha_m h_m(\mathbf{x})\right)$
+\end{enumerate}
+
+\subsubsection{Gradient Boosting (Friedman, 2001)}
+Generalização que enquadra boosting como otimização em espaço funcional:
+\[
+  F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \gamma_m h_m(\mathbf{x})
+\]
+onde $h_m$ é ajustado aos \textbf{pseudo-resíduos} $r_{im} = -\left[\frac{\partial \mathcal{L}(y_i, F(\mathbf{x}_i))}{\partial F(\mathbf{x}_i)}\right]_{F=F_{m-1}}$.
+
+\subsubsection{XGBoost (Chen \& Guestrin, 2016)}
+Objetivo regularizado de segunda ordem:
+\[
+  \mathcal{L}(\phi) = \sum_i l(y_i, \hat{y}_i) + \sum_k \Omega(f_k), \quad \Omega(f) = \gamma T + \frac{1}{2}\lambda\|w\|^2
+\]
+onde $T$ é o número de folhas e $w$ são os pesos das folhas. Usa expansão de Taylor de segunda ordem para otimização exata.
+
+\subsubsection{LightGBM (Ke et al., 2017)}
+Inovações-chave: (1) \textbf{GOSS} (Gradient-based One-Side Sampling): mantém exemplos com gradientes grandes, amostra aleatoriamente os de gradiente pequeno; (2) \textbf{EFB} (Exclusive Feature Bundling): agrupa features mutuamente exclusivas para reduzir dimensionalidade; (3) Crescimento \textbf{leaf-wise} (vs. level-wise do XGBoost): divide a folha com maior ganho.
+
+\subsubsection{CatBoost (Prokhorenkova et al., 2018)}
+\textbf{Ordered boosting:} usa permutações aleatórias dos dados de treino para calcular estatísticas de target encoding sem data leakage. Suporte nativo a features categóricas de alta cardinalidade.
+
+\vspace{0.5em}
+\begin{center}
+\begin{tikzpicture}[scale=0.95]
+% BAGGING side
+\node[font=\bfseries\small,color=mineblue] at (-3.2,4.0) {BAGGING};
+\node[draw=minegray,rounded corners,font=\tiny\bfseries,minimum width=1.8cm,minimum height=0.5cm,fill=minegray!10] (dbag) at (-3.2,3.3) {Dataset $\mathcal{D}$};
+
+\node[draw=mineblue,fill=mineblue!10,rounded corners,font=\tiny,minimum width=1.4cm,minimum height=0.5cm] (b1) at (-4.5,2.2) {Bootstrap 1};
+\node[draw=mineblue,fill=mineblue!10,rounded corners,font=\tiny,minimum width=1.4cm,minimum height=0.5cm] (b2) at (-3.2,2.2) {Bootstrap 2};
+\node[draw=mineblue,fill=mineblue!10,rounded corners,font=\tiny,minimum width=1.4cm,minimum height=0.5cm] (b3) at (-1.9,2.2) {Bootstrap 3};
+
+\draw[->,minegray,thin] (dbag) -- (b1); \draw[->,minegray,thin] (dbag) -- (b2); \draw[->,minegray,thin] (dbag) -- (b3);
+
+\node[draw=mineblue,fill=mineblue!20,rounded corners,font=\tiny,minimum width=1.4cm,minimum height=0.5cm] (bt1) at (-4.5,1.2) {Modelo 1};
+\node[draw=mineblue,fill=mineblue!20,rounded corners,font=\tiny,minimum width=1.4cm,minimum height=0.5cm] (bt2) at (-3.2,1.2) {Modelo 2};
+\node[draw=mineblue,fill=mineblue!20,rounded corners,font=\tiny,minimum width=1.4cm,minimum height=0.5cm] (bt3) at (-1.9,1.2) {Modelo 3};
+
+\draw[->,mineblue,thin] (b1)--(bt1); \draw[->,mineblue,thin] (b2)--(bt2); \draw[->,mineblue,thin] (b3)--(bt3);
+
+\node[draw=minegreen,fill=minegreen!10,rounded corners,font=\tiny,minimum width=2.2cm,minimum height=0.5cm] (bagg) at (-3.2,0.2) {Votação / Média};
+\draw[->,minegreen,thin] (bt1)--(bagg); \draw[->,minegreen,thin] (bt2)--(bagg); \draw[->,minegreen,thin] (bt3)--(bagg);
+
+% Divider
+\draw[dashed,minegray!60,thick] (0,4.5) -- (0,-0.3);
+
+% BOOSTING side
+\node[font=\bfseries\small,color=mineorange] at (3.2,4.0) {BOOSTING};
+\node[draw=minegray,rounded corners,font=\tiny\bfseries,minimum width=1.8cm,minimum height=0.5cm,fill=minegray!10] (dbst) at (3.2,3.3) {Dataset $\mathcal{D}$};
+
+\node[draw=mineorange,fill=mineorange!10,rounded corners,font=\tiny,minimum width=2cm,minimum height=0.5cm] (bst1) at (3.2,2.5) {Modelo 1};
+\draw[->,minegray,thin] (dbst)--(bst1);
+
+\node[draw=mineorange,fill=mineorange!15,rounded corners,font=\tiny,minimum width=2cm,minimum height=0.5cm,align=center] (bst2) at (3.2,1.7) {Modelo 2\\{\color{minegray}(foco erros M1)}};
+\draw[->,mineorange,thin] (bst1)--(bst2);
+
+\node[draw=mineorange,fill=mineorange!20,rounded corners,font=\tiny,minimum width=2cm,minimum height=0.5cm,align=center] (bst3) at (3.2,0.8) {Modelo 3\\{\color{minegray}(foco erros M2)}};
+\draw[->,mineorange,thin] (bst2)--(bst3);
+
+\node[draw=minegreen,fill=minegreen!10,rounded corners,font=\tiny,minimum width=2.2cm,minimum height=0.5cm,align=center] (bstf) at (3.2,0.0) {Combinação\\ponderada};
+\draw[->,minegreen,thin] (bst3)--(bstf);
+
+\end{tikzpicture}
+\captionof{figure}{Comparação entre Bagging (paralelo, independente) e Boosting (sequencial, adaptativo).}
+\end{center}
+
+\subsection{Stacking}
+
+O \textbf{Stacking} (Wolpert, 1992) usa as predições de modelos base (\textit{nível 0}) como features de entrada para um meta-modelo (\textit{nível 1}):
+\begin{enumerate}
+  \item Treina $L$ modelos base $\{h_1, \ldots, h_L\}$ via cross-validation (para evitar data leakage)
+  \item Para cada exemplo, coleta as predições dos $L$ modelos como novo vetor de features
+  \item Treina um meta-modelo (frequentemente regressão logística ou XGBoost) nas predições dos modelos base
+\end{enumerate}
+
+%------------------------------------------------------
+\section{Avaliação de Modelos de Classificação}
+%------------------------------------------------------
+
+\subsection{Métricas de Avaliação}
+
+\subsubsection{Matriz de Confusão}
+
+Para classificação binária, a matriz de confusão organiza as predições:
+
+\begin{center}
+\begin{tikzpicture}
+\matrix[matrix of nodes,
+  nodes={minimum width=2.5cm,minimum height=1.1cm,draw=minegray!50,align=center,font=\small},
+  row sep=-\pgflinewidth, column sep=-\pgflinewidth] (m) {
+  |[fill=minegray!15,font=\small\bfseries]| {} &
+  |[fill=mineblue!25,font=\small\bfseries]| Previsto $+$ &
+  |[fill=minered!20,font=\small\bfseries]| Previsto $-$ \\
+  |[fill=mineblue!25,font=\small\bfseries]| Real $+$ &
+  |[fill=minegreen!30]| \textbf{VP}\\(Verdadeiro Positivo) &
+  |[fill=minered!20]| \textbf{FN}\\(Falso Negativo) \\
+  |[fill=minered!20,font=\small\bfseries]| Real $-$ &
+  |[fill=minered!20]| \textbf{FP}\\(Falso Positivo) &
+  |[fill=minegreen!30]| \textbf{VN}\\(Verdadeiro Negativo) \\
+};
+\end{tikzpicture}
+\captionof{figure}{Matriz de confusão para classificação binária.}
+\end{center}
+
+\subsubsection{Métricas Derivadas}
+
+\begin{align}
+  \text{Acurácia} &= \frac{VP + VN}{VP + VN + FP + FN} \\[4pt]
+  \text{Precisão} &= \frac{VP}{VP + FP} \quad \text{(fração dos positivos preditos que são corretos)} \\[4pt]
+  \text{Recall (Sensibilidade)} &= \frac{VP}{VP + FN} \quad \text{(fração dos positivos reais detectados)} \\[4pt]
+  \text{Especificidade} &= \frac{VN}{VN + FP} \\[4pt]
+  \text{F1-Score} &= 2 \cdot \frac{\text{Precisão} \cdot \text{Recall}}{\text{Precisão} + \text{Recall}} \\[4pt]
+  F_\beta &= \frac{(1+\beta^2) \cdot \text{Precisão} \cdot \text{Recall}}{\beta^2 \cdot \text{Precisão} + \text{Recall}} \\[4pt]
+  \text{MCC} &= \frac{VP \cdot VN - FP \cdot FN}{\sqrt{(VP+FP)(VP+FN)(VN+FP)(VN+FN)}}
+\end{align}
+
+\textbf{AUC-ROC:} área sob a curva ROC (Receiver Operating Characteristic) que plota Sensibilidade vs. (1 -- Especificidade). Invariante ao limiar de classificação. AUC = 0,5: aleatório; AUC = 1,0: perfeito.
+
+\textbf{AUC-PR:} área sob a curva Precisão-Recall. Mais informativa que AUC-ROC para datasets desbalanceados (onde a classe positiva é rara).
+
+\textbf{Kappa de Cohen:}
+\[
+  \kappa = \frac{p_o - p_e}{1 - p_e}
+\]
+onde $p_o$ é a acurácia observada e $p_e$ é a acurácia esperada por chance.
+
+\vspace{0.5em}
+\begin{center}
+\begin{tabular}{>{\bfseries}p{3cm}p{4cm}p{5cm}}
+\toprule
+Métrica & Quando usar & Por quê \\
+\midrule
+Acurácia & Classes balanceadas & Intuitiva, mas enganosa com desbalanceamento \\
+Precisão & FP tem alto custo & Spam filter: não perder emails legítimos \\
+Recall & FN tem alto custo & Diagnóstico: não perder pacientes doentes \\
+F1-Score & Equilíbrio P/R & Geral em datasets moderadamente desbalanceados \\
+$F_2$ & FN mais crítico & $\beta > 1$: mais peso no Recall \\
+AUC-ROC & Threshold incerto & Ranking de probabilidades \\
+AUC-PR & Alta desbalanceamento & Detecção de fraude, doenças raras \\
+MCC & Desbalanceamento extremo & Métrica mais robusta para 2 classes \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Estratégias de Validação}
+
+\begin{itemize}
+  \item \textbf{Holdout:} divide dados em treino/teste (e.g., 80/20). Simples, mas alta variância para datasets pequenos.
+  \item \textbf{k-fold CV:} divide em $k$ partes; usa $k-1$ para treino e 1 para validação, rodando $k$ vezes. Estimativa mais estável.
+  \item \textbf{Stratified k-fold:} mantém a proporção de classes em cada fold. Essencial para dados desbalanceados.
+  \item \textbf{Leave-One-Out (LOO):} caso especial com $k=n$. Quase sem viés, mas alta variância computacional.
+  \item \textbf{Nested CV:} loop externo para avaliação, loop interno para seleção de hiperparâmetros. Evita ``data leakage'' de hiperparâmetros.
+\end{itemize}
+
+\begin{atencaobox}{Overfitting vs. Underfitting}
+\textbf{Overfitting:} modelo decora os dados de treino mas não generaliza. Sintoma: erro de treino $\ll$ erro de validação. Causas: modelo muito complexo, dados insuficientes. Soluções: regularização, mais dados, redução de features, dropout.\\
+\textbf{Underfitting:} modelo muito simples para capturar os padrões. Sintoma: erro de treino $\approx$ erro de validação $\gg$ erro desejado. Soluções: modelo mais complexo, mais features, menos regularização.
+\end{atencaobox}
+
+\subsection{Testes Estatísticos de Comparação}
+
+Para comparar classificadores de forma rigorosa:
+
+\begin{itemize}
+  \item \textbf{Teste de Wilcoxon com posto sinalizado:} compara os desempenhos de dois classificadores em múltiplos datasets. Não paramétrico; recomendado por Demšar (2006).
+  \item \textbf{Teste de McNemar:} compara os erros de dois classificadores no mesmo dataset de teste. Usa a estatística $\chi^2 = \frac{(|e_{01} - e_{10}| - 1)^2}{e_{01} + e_{10}}$ onde $e_{01}$ é o número de exemplos classificados incorretamente pelo modelo 1 e corretamente pelo modelo 2. Dietterich (1998) recomenda este teste.
+  \item \textbf{Teste de Friedman com post-hoc Nemenyi:} para comparar múltiplos classificadores em múltiplos datasets simultaneamente.
+\end{itemize}
+
+%------------------------------------------------------
+\section{Estado da Arte (2020--2024)}
+%------------------------------------------------------
+
+\begin{estadoartebox}{XGBoost, LightGBM e CatBoost: Dominância em Dados Tabulares}
+\textbf{Gradient Boosted Decision Trees (GBDT)} dominam consistentemente benchmarks em dados tabulares estruturados, conforme revisão de Gorishniy et al. (2022) e análise de Shwartz-Ziv \& Armon (2022). Principais vantagens:
+
+\begin{itemize}
+  \item \textbf{XGBoost} (Chen \& Guestrin, 2016): regularização L1/L2 integrada, computação paralela de splits via histogramas, poda de árvores por profundidade, suporte a GPU. Ganha competições Kaggle desde 2015.
+  \item \textbf{LightGBM} (Ke et al., 2017): GOSS reduz amostras mantendo gradientes informativos; EFB agrupa features mutuamente exclusivas; crescimento leaf-wise $\Rightarrow$ 10$\times$ mais rápido que XGBoost em datasets grandes.
+  \item \textbf{CatBoost} (Prokhorenkova et al., 2018): ordered target encoding elimina leakage em features categóricas; suporte nativo a GPU; robusto a dados heterogêneos.
+\end{itemize}
+\end{estadoartebox}
+
+\begin{estadoartebox}{Redes Neurais para Dados Tabulares}
+\begin{itemize}
+  \item \textbf{TabNet} (Arik \& Pfister, 2021): atenção sequencial para seleção de features em cada etapa de decisão; permite interpretabilidade local por instância.
+  \item \textbf{FT-Transformer} (Gorishniy et al., 2021): tokeniza features numéricas e categóricas e aplica Transformer; supera GBDTs em alguns benchmarks.
+  \item \textbf{SAINT} (Somepalli et al., 2021): Self-Attention e Intersample Attention combinados; pré-treino autossupervisionado.
+  \item \textbf{Conclusão crítica:} Gorishniy et al. (2022), após revisão sistemática, concluem que DL \textbf{ainda não supera consistentemente} GBDTs em dados tabulares. GBDTs preferidos para dados pequenos e heterogêneos; DL pode vantajar em features com alta dimensionalidade e estrutura.
+\end{itemize}
+\end{estadoartebox}
+
+\begin{estadoartebox}{Interpretabilidade e XAI (Explainable AI)}
+\begin{itemize}
+  \item \textbf{SHAP} (Lundberg \& Lee, 2017): valores de Shapley (teoria dos jogos cooperativos) para atribuição de contribuição de cada feature à predição. TreeSHAP é $O(TLD^2)$ para ensemble de árvores -- polinomial, não exponencial.
+  \item \textbf{LIME} (Ribeiro et al., 2016): gera perturbações locais ao redor da instância e ajusta um modelo linear interpretável para aproximar o comportamento local do classificador complexo.
+  \item \textbf{Integrated Gradients} (Sundararajan et al., 2017): para redes neurais, integra os gradientes ao longo do caminho da baseline até a entrada.
+  \item \textbf{Anchors} (Ribeiro et al., 2018): regras if-then de alta precisão que ``ancoram'' a predição local.
+  \item \textbf{Regulação:} AI Act (EU 2024) exige explicabilidade para sistemas de IA de alto risco.
+\end{itemize}
+\end{estadoartebox}
+
+%------------------------------------------------------
+\section{Exercícios}
+%------------------------------------------------------
+
+\begin{enumerate}[leftmargin=2em,label=\textcolor{mineblue}{\textbf{E\arabic*.}}]
+
+  \item \textbf{(Cálculo de Entropia e Ganho de Informação)} Dado o seguinte dataset de 10 exemplos com dois atributos binários $A_1, A_2$ e classes $\{+, -\}$ (6 positivos, 4 negativos): calcule $H(S)$, $IG(S, A_1)$, $IG(S, A_2)$ manualmente, identificando qual atributo ID3 escolheria como raiz. Verifique com o cálculo do Índice Gini.
+
+  \item \textbf{(Construção de Árvore de Decisão)} Construa manualmente a árvore de decisão completa (sem poda) para o dataset ``PlayTennis'' clássico usando os critérios ID3 (entropia) e CART (Gini). Compare as árvores resultantes e discuta as diferenças.
+
+  \item \textbf{(Seleção de Kernel SVM)} Para cada cenário a seguir, justifique o kernel mais adequado: (a) dados de texto com bag-of-words esparso; (b) classificação de imagens com features extraídas por CNN; (c) dados com fronteira circular no espaço original. Implemente com scikit-learn e reporte a acurácia de validação cruzada.
+
+  \item \textbf{(Comparação Ensemble)} No dataset ``Credit Card Fraud Detection'' (Kaggle), compare Random Forest, XGBoost e LightGBM em termos de AUC-PR (métrica adequada para dados altamente desbalanceados). Use estratified 5-fold CV e reporte médias e desvios-padrão. Aplique o teste de Wilcoxon para verificar se as diferenças são estatisticamente significativas.
+
+  \item \textbf{(Seleção de Métrica para Dados Desbalanceados)} Um dataset de detecção de fraude possui 99.5\% de exemplos negativos e 0.5\% positivos. Um classificador que prediz sempre ``não-fraude'' tem acurácia de 99.5\%. Calcule a Precisão, Recall, F1-Score, AUC-ROC, AUC-PR e MCC deste classificador. Discuta por que a acurácia é enganosa e qual métrica você utilizaria neste contexto.
+
+  \item \textbf{(Tuning de XGBoost)} Implemente uma busca de hiperparâmetros (Optuna ou RandomizedSearchCV) para XGBoost no dataset Breast Cancer Wisconsin, tunando: \texttt{n\_estimators} (100--500), \texttt{max\_depth} (3--8), \texttt{learning\_rate} (0.01--0.3), \texttt{subsample} (0.6--1.0), \texttt{colsample\_bytree} (0.6--1.0). Reporte o conjunto ótimo de parâmetros e a curva de validação de early stopping.
+
+  \item \textbf{(Interpretação com SHAP)} Treine um XGBoost no dataset Wine Quality. Gere: (a) SHAP summary plot (beeswarm) para entender a importância global das features; (b) SHAP waterfall plot para a predição de um vinho de qualidade alta; (c) SHAP dependence plot para a feature mais importante. Discuta os insights obtidos.
+
+  \item \textbf{(Implementação Completa)} Implemente um pipeline de classificação completo para o dataset de sua escolha incluindo: pré-processamento com \texttt{Pipeline} do scikit-learn, busca de hiperparâmetros com nested CV, comparação de pelo menos 5 algoritmos diferentes, matriz de confusão, curvas ROC e PR, e interpretação com SHAP. Escreva um relatório de 2 páginas discutindo os resultados.
+
+\end{enumerate}
+
+%------------------------------------------------------
+\section{Referências}
+%------------------------------------------------------
+
+\begin{thebibliography}{99}
+
+\bibitem{quinlan1986} Quinlan, J. R. (1986). Induction of decision trees. \textit{Machine Learning}, 1(1), 81--106.
+
+\bibitem{quinlan1993} Quinlan, J. R. (1993). \textit{C4.5: Programs for Machine Learning}. Morgan Kaufmann, San Francisco.
+
+\bibitem{breiman1984} Breiman, L., Friedman, J., Olshen, R., \& Stone, C. (1984). \textit{Classification and Regression Trees}. Wadsworth, Belmont.
+
+\bibitem{breiman2001} Breiman, L. (2001). Random forests. \textit{Machine Learning}, 45(1), 5--32.
+
+\bibitem{vapnik1995} Vapnik, V. N. (1995). \textit{The Nature of Statistical Learning Theory}. Springer, New York.
+
+\bibitem{chen2016} Chen, T., \& Guestrin, C. (2016). XGBoost: A scalable tree boosting system. In \textit{Proceedings of KDD 2016}, 785--794.
+
+\bibitem{ke2017} Ke, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., ... \& Liu, T.-Y. (2017). LightGBM: A highly efficient gradient boosting decision tree. In \textit{NeurIPS 2017}, 3149--3157.
+
+\bibitem{prokhorenkova2018} Prokhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., \& Gulin, A. (2018). CatBoost: Unbiased boosting with categorical features. In \textit{NeurIPS 2018}.
+
+\bibitem{arik2021} Arik, S. Ö., \& Pfister, T. (2021). TabNet: Attentive interpretable tabular learning. In \textit{AAAI 2021}.
+
+\bibitem{gorishniy2021} Gorishniy, Y., Rubachev, I., Khrulkov, V., \& Babenko, A. (2021). Revisiting deep learning models for tabular data. In \textit{NeurIPS 2021}.
+
+\bibitem{lundberg2017} Lundberg, S. M., \& Lee, S.-I. (2017). A unified approach to interpreting model predictions. In \textit{NeurIPS 2017}, 4765--4774.
+
+\bibitem{dietterich1998} Dietterich, T. G. (1998). Approximate statistical tests for comparing supervised classification learning algorithms. \textit{Neural Computation}, 10(7), 1895--1923.
+
+\bibitem{freund1997} Freund, Y., \& Schapire, R. E. (1997). A decision-theoretic generalization of on-line learning and an application to boosting. \textit{Journal of Computer and System Sciences}, 55(1), 119--139.
+
+\bibitem{friedman2001} Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. \textit{Annals of Statistics}, 29(5), 1189--1232.
+
+\end{thebibliography}
+
+\end{document}

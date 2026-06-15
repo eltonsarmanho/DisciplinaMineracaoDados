@@ -1,0 +1,693 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,shapes.geometric,positioning,fit,backgrounds,calc,shadows.blur,decorations.pathmorphing,mindmap,trees,patterns,matrix}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{fontawesome5}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins,theorems}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\setlength{\headheight}{14pt}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{caption}
+\definecolor{mineblue}{RGB}{0,90,180}
+\definecolor{mineorange}{RGB}{230,115,0}
+\definecolor{minegreen}{RGB}{34,139,34}
+\definecolor{minered}{RGB}{180,20,40}
+\definecolor{minegray}{RGB}{100,100,100}
+\definecolor{codebg}{RGB}{250,250,250}
+\newtcolorbox{definicaobox}[1]{title={\faIcon{book} #1},colback=blue!4!white,colframe=mineblue,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{exemplobox}[1]{title={\faIcon{lightbulb} #1},colback=orange!4!white,colframe=mineorange,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{dicabox}[1]{title={\faIcon{info-circle} #1},colback=green!4!white,colframe=minegreen,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{atencaobox}[1]{title={\faIcon{exclamation-triangle} #1},colback=red!4!white,colframe=minered,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{estadoartebox}[1]{title={\faIcon{rocket} #1},colback=purple!4!white,colframe=purple!60!black,fonttitle=\bfseries,breakable,enhanced}
+\lstdefinestyle{mypython}{language=Python,backgroundcolor=\color{codebg},commentstyle=\color{minegray}\itshape,keywordstyle=\color{mineblue}\bfseries,stringstyle=\color{minegreen},basicstyle=\ttfamily\footnotesize,breaklines=true,frame=single,rulecolor=\color{minegray!40},numbers=left,numberstyle=\tiny\color{minegray},tabsize=4,showstringspaces=false}
+\lstset{style=mypython}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small \textcolor{mineblue}{\textbf{Mineração de Dados}} | UEPA -- CCNT}
+\fancyhead[R]{\small Módulo 7: Aplicações de Mineração de Dados}
+\fancyfoot[C]{\small \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\titleformat{\section}{\large\bfseries\color{mineblue}}{\thesection}{0.8em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{mineorange}}{\thesubsection}{0.8em}{}
+\titleformat{\subsubsection}{\small\bfseries\color{minegray}}{\thesubsubsection}{0.8em}{}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{mineblue} Módulo 7}\\[0.4em]
+  {\large\bfseries Aplicações de Mineração de Dados:\\[0.2em]
+  Social CRM, Web e Análise de Sentimentos}\\[0.6em]
+  {\small Mineração de Dados $\cdot$ 8.º Semestre $\cdot$ Engenharia de Software $\cdot$ UEPA/CCNT}\\[0.3em]
+  {\small Carga horária do módulo: \textasciitilde{}10 horas}
+\end{center}
+\vspace{0.5em}
+\hrule height 1.5pt
+\vspace{1em}
+
+% ============================================================
+\section{Objetivos de Aprendizagem}
+% ============================================================
+
+Ao concluir este módulo, o estudante será capaz de:
+
+\begin{enumerate}[label=\faIcon{check-circle}~\textbf{\arabic*.}, leftmargin=2cm, itemsep=0.3em]
+  \item Compreender e diferenciar as três vertentes da Mineração na Web: Web Content Mining, Web Structure Mining e Web Usage Mining.
+  \item Aplicar algoritmos de extração de informação, web scraping e análise de logs para obtenção de conhecimento a partir de fontes web.
+  \item Entender o conceito de Social CRM e como técnicas de mineração de dados potencializam o relacionamento com o cliente.
+  \item Implementar modelos de segmentação de clientes com RFM e K-Means, previsão de churn e cálculo de Valor do Ciclo de Vida (CLV).
+  \item Construir sistemas de recomendação baseados em filtragem colaborativa (SVD, Matrix Factorization), filtragem por conteúdo e métodos híbridos.
+  \item Distinguir e implementar abordagens léxicas, baseadas em aprendizado de máquina e baseadas em Transformers para análise de sentimentos.
+  \item Analisar redes sociais usando métricas de centralidade, detecção de comunidades e modelos de propagação de informação.
+  \item Avaliar implicações éticas, de privacidade e de conformidade com a LGPD em projetos de mineração de dados aplicados.
+\end{enumerate}
+
+% ============================================================
+\section{Mineração na Web (Web Mining)}
+% ============================================================
+
+A \textbf{Web Mining} consiste na aplicação de técnicas de mineração de dados ao conteúdo, à estrutura e ao uso da World Wide Web. Com mais de 5 bilhões de usuários ativos e exabytes de dados gerados diariamente, a web tornou-se a maior fonte não estruturada de informação disponível para análise.
+
+\begin{definicaobox}{Web Mining}
+Processo de descoberta e análise de informação útil a partir de dados da World Wide Web, incluindo conteúdo de páginas, estrutura de hiperlinks e padrões de navegação de usuários.
+\end{definicaobox}
+
+\subsection{Taxonomia da Web Mining}
+
+A Web Mining divide-se em três grandes categorias, cada uma com objetivos, fontes de dados e técnicas distintas:
+
+\begin{center}
+\begin{tikzpicture}[
+  root/.style={rectangle,rounded corners,fill=mineblue,text=white,minimum width=3cm,minimum height=0.7cm,font=\small\bfseries,align=center},
+  child/.style={rectangle,rounded corners,fill=mineblue!20,draw=mineblue,minimum width=3cm,minimum height=0.7cm,font=\small,align=center},
+  grandchild/.style={rectangle,rounded corners,fill=mineorange!20,draw=mineorange,minimum width=2.5cm,minimum height=0.6cm,font=\tiny,align=center},
+  level 1/.style={sibling distance=5cm, level distance=1.6cm},
+  level 2/.style={sibling distance=2.8cm, level distance=1.4cm}]
+\node[root] (root) {Web Mining}
+  child { node[child] (wc) {Web Content Mining}
+    child { node[grandchild] {Extração de Texto} }
+    child { node[grandchild] {Extração Multimídia} }
+  }
+  child { node[child] (ws) {Web Structure Mining}
+    child { node[grandchild] {PageRank} }
+    child { node[grandchild] {HITS} }
+  }
+  child { node[child] (wu) {Web Usage Mining}
+    child { node[grandchild] {Logs de Acesso} }
+    child { node[grandchild] {Sessões de Usuário} }
+  };
+\end{tikzpicture}
+\end{center}
+
+\begin{table}[ht]
+\centering
+\caption{Comparação das três vertentes da Web Mining}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Tipo} & \textbf{Fonte de Dados} & \textbf{Técnicas} & \textbf{Resultado} \\
+\midrule
+Content Mining & HTML, texto, multimídia & NLP, IE, classificação & Conhecimento semântico \\
+Structure Mining & Hiperlinks, grafos & PageRank, HITS, GNN & Autoridade, hubs \\
+Usage Mining & Logs, cookies, sessões & Padrões sequenciais & Comportamento usuário \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Web Content Mining}
+
+O \textbf{Web Content Mining} foca na extração de conhecimento a partir do conteúdo de páginas web, que pode ser texto, imagens, vídeos ou dados estruturados.
+
+\subsubsection{Extração de Informação (Information Extraction -- IE)}
+
+\begin{itemize}
+  \item \textbf{NER (Named Entity Recognition):} identificação de entidades como pessoas, organizações, locais e datas em texto não estruturado.
+  \item \textbf{Extração de Relações:} descoberta de relações semânticas entre entidades (e.g., ``\textit{João} \textit{trabalha em} \textit{UEPA}'').
+  \item \textbf{Extração de Eventos:} identificação de eventos e seus participantes em textos jornalísticos ou redes sociais.
+\end{itemize}
+
+\subsubsection{Web Scraping}
+
+\begin{lstlisting}[caption={Web scraping com BeautifulSoup}]
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://exemplo.com/noticias"
+response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+soup = BeautifulSoup(response.text, "html.parser")
+
+# Extrair todos os titulos de noticias
+titulos = [h.get_text(strip=True) for h in soup.find_all("h2", class_="titulo")]
+paragrafos = [p.get_text() for p in soup.find_all("p")]
+\end{lstlisting}
+
+\begin{itemize}
+  \item \textbf{BeautifulSoup:} parsing simples de HTML/XML, ideal para projetos de pequena escala.
+  \item \textbf{Scrapy:} framework completo para crawling, com suporte a pipelines, middlewares e exportação de dados.
+  \item \textbf{Seletores:} DOM tree, XPath (e.g., \texttt{//div[@class='content']/p}) e CSS selectors.
+\end{itemize}
+
+\subsubsection{Pré-processamento de Texto}
+
+O pipeline típico de pré-processamento inclui:
+\begin{enumerate}
+  \item \textbf{Tokenização:} divisão do texto em tokens (palavras, subpalavras).
+  \item \textbf{Remoção de stopwords:} eliminação de palavras de alta frequência e baixo valor informativo (``de'', ``a'', ``o'').
+  \item \textbf{Stemming:} redução de palavras à sua forma raiz (e.g., ``correndo'' $\to$ ``corr'').
+  \item \textbf{Lematização:} redução à forma canônica com base no contexto (``correndo'' $\to$ ``correr'').
+  \item \textbf{Normalização:} conversão para minúsculas, remoção de acentos, pontuação.
+\end{enumerate}
+
+\subsubsection{TF-IDF: Ponderação de Termos}
+
+O \textbf{TF-IDF} (Term Frequency -- Inverse Document Frequency) é a medida de relevância mais utilizada em recuperação de informação:
+
+\begin{equation}
+  \text{TF-IDF}(t, d) = \text{tf}(t, d) \times \log\frac{N}{df(t)}
+\end{equation}
+
+onde $\text{tf}(t,d)$ é a frequência do termo $t$ no documento $d$, $N$ é o número total de documentos e $df(t)$ é o número de documentos que contêm o termo $t$.
+
+\subsection{Web Structure Mining}
+
+O \textbf{Web Structure Mining} analisa a estrutura de hiperlinks da web como um grafo dirigido $G = (V, E)$, onde $V$ são páginas e $E$ são hiperlinks.
+
+\subsubsection{PageRank (Page et al., 1999)}
+
+O algoritmo PageRank, que fundamenta o Google Search, calcula a importância de uma página com base na quantidade e qualidade dos links que apontam para ela:
+
+\begin{equation}
+  PR(p) = \frac{1-d}{N} + d \sum_{q \in B_p} \frac{PR(q)}{|F_q|}
+\end{equation}
+
+onde $d$ é o fator de amortecimento (tipicamente $0{,}85$), $N$ é o número total de páginas, $B_p$ é o conjunto de páginas que apontam para $p$ e $|F_q|$ é o número de links de saída de $q$.
+
+\begin{dicabox}{Interpretação do PageRank}
+O PageRank pode ser interpretado como a probabilidade de um ``surfador aleatório'' visitar uma página: com probabilidade $d$ ele segue um link aleatório da página atual, e com probabilidade $1-d$ ele pula para uma página aleatória qualquer.
+\end{dicabox}
+
+\subsubsection{HITS (Kleinberg, 1999)}
+
+O algoritmo \textbf{HITS} (Hyperlink-Induced Topic Search) define dois escores complementares:
+\begin{itemize}
+  \item \textbf{Authority score} $a(p)$: páginas que recebem muitos links de bons hubs.
+  \item \textbf{Hub score} $h(p)$: páginas que apontam para muitas boas authorities.
+\end{itemize}
+
+As atualizações iterativas são:
+\begin{align}
+  a(p) &\leftarrow \sum_{q: q \to p} h(q), \qquad h(p) \leftarrow \sum_{q: p \to q} a(q)
+\end{align}
+
+\subsubsection{Análise de Estrutura de Redes Sociais Online}
+
+As mesmas técnicas de Structure Mining aplicam-se a redes de seguidores (Twitter/X), conexões profissionais (LinkedIn) e grupos (Facebook), possibilitando a identificação de influenciadores, comunidades e padrões de difusão de informação.
+
+\subsection{Web Usage Mining}
+
+O \textbf{Web Usage Mining} extrai padrões de comportamento a partir de logs de servidores web, dados de sessões e interações de usuários.
+
+\subsubsection{Análise de Clickstream}
+
+O clickstream registra a sequência de páginas visitadas por um usuário em uma sessão. A reconstrução de sessões envolve:
+\begin{enumerate}
+  \item Identificação de usuário (IP + User-Agent ou cookie).
+  \item Delimitação de sessão (timeout de 30 minutos é o padrão).
+  \item Filtragem de recursos estáticos (CSS, imagens, JS).
+\end{enumerate}
+
+\subsubsection{Mineração de Padrões Sequenciais}
+
+O algoritmo \textbf{GSP} (Srikant \& Agrawal, 1996) estende o Apriori para sequências: encontra padrões de navegação frequentes como $\langle \text{Home} \to \text{Produtos} \to \text{Carrinho} \to \text{Checkout} \rangle$.
+
+\subsubsection{Web Analytics}
+
+Métricas fundamentais em plataformas como Google Analytics:
+\begin{itemize}
+  \item \textbf{Taxa de rejeição (Bounce Rate):} percentual de sessões de uma única página.
+  \item \textbf{Funil de conversão (Funnel Analysis):} identificação de etapas onde usuários abandonam o processo.
+  \item \textbf{Tempo médio na página} e \textbf{páginas por sessão}.
+  \item \textbf{Cohorte de usuários:} acompanhamento de grupos de usuários ao longo do tempo.
+\end{itemize}
+
+% ============================================================
+\section{Social CRM (Customer Relationship Management)}
+% ============================================================
+
+O \textbf{Social CRM} integra dados de redes sociais, plataformas digitais e canais tradicionais para construir uma visão 360$^\circ$ do cliente, potencializando estratégias de relacionamento com técnicas de mineração de dados.
+
+\begin{definicaobox}{Social CRM}
+Extensão do CRM tradicional que incorpora dados não estruturados de mídias sociais (posts, comentários, avaliações, menções) para enriquecer o perfil do cliente, monitorar a reputação da marca e personalizar a comunicação em tempo real.
+\end{definicaobox}
+
+\subsection{CRM Tradicional vs Social CRM}
+
+\begin{table}[ht]
+\centering
+\caption{Comparação entre CRM Tradicional e Social CRM}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Dimensão} & \textbf{CRM Tradicional} & \textbf{Social CRM} \\
+\midrule
+Fonte de dados & Transações, chamados, vendas & Redes sociais, fóruns, reviews \\
+Tipo de dado & Estruturado & Não estruturado / semiestruturado \\
+Origem & Interna (ERP, callcenter) & Externa + interna integradas \\
+Atualização & Periódica (batch) & Em tempo real (streaming) \\
+Volume & Moderado & Massivo (Big Data) \\
+Voz & Empresa para cliente & Cliente para empresa e entre clientes \\
+Canal & E-mail, telefone, loja & Facebook, Twitter, WhatsApp, reviews \\
+Objetivo & Gestão de transações & Gestão de relacionamentos \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Aplicações de DM em CRM}
+
+\subsubsection{Segmentação de Clientes}
+
+\paragraph{Modelo RFM}
+
+O modelo RFM é a base clássica de segmentação em e-commerce e varejo:
+\begin{itemize}
+  \item \textbf{Recency (R):} quantos dias atrás o cliente fez a última compra.
+  \item \textbf{Frequency (F):} quantas compras realizou no período analisado.
+  \item \textbf{Monetary (M):} quanto gastou no total no período.
+\end{itemize}
+
+Clientes são pontuados de 1 a 5 em cada dimensão, gerando segmentos como ``Campeões'' (R=5, F=5, M=5) e ``Em risco'' (R=1, F=4, M=4).
+
+\paragraph{K-Means para Segmentação}
+
+Após normalização das métricas RFM, aplica-se K-Means para descobrir segmentos naturais:
+\begin{lstlisting}[caption={Segmentação K-Means sobre RFM}]
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+
+# Normalizar RFM
+scaler = StandardScaler()
+rfm_scaled = scaler.fit_transform(rfm_df[['Recency','Frequency','Monetary']])
+
+# Encontrar k otimo com metodo do cotovelo
+inertias = [KMeans(n_clusters=k, random_state=42).fit(rfm_scaled).inertia_
+            for k in range(2, 11)]
+
+# Treinar modelo final
+km = KMeans(n_clusters=4, random_state=42)
+rfm_df['Segment'] = km.fit_predict(rfm_scaled)
+\end{lstlisting}
+
+Cada segmento recebe um \textbf{perfil (persona)} com estratégia de marketing diferenciada: clientes ``Hibernando'' recebem campanhas de reativação, ``Leais'' recebem programas de fidelidade.
+
+\subsubsection{Previsão de Churn}
+
+O \textbf{churn} (cancelamento) é modelado como um problema de classificação binária:
+\begin{itemize}
+  \item \textbf{Features:} padrões de uso, tickets de suporte abertos, tempo de resposta, engajamento com e-mails, NPS, variações de frequência de compra.
+  \item \textbf{Label:} cancelou ou não cancelou no próximo trimestre.
+  \item \textbf{Modelos:} Gradient Boosting (XGBoost, LightGBM), Análise de Sobrevivência (Cox Proportional Hazards), Redes Neurais.
+  \item \textbf{Métrica principal:} ROC-AUC (prioriza detecção de verdadeiros positivos com mínimo de falsos alarmes).
+\end{itemize}
+
+\begin{atencaobox}{Desbalanceamento de Classes em Churn}
+Taxas de churn geralmente são entre 2\% e 15\%, causando forte desbalanceamento. Use técnicas como SMOTE, class\_weight='balanced' ou thresholding customizado para melhorar o recall na classe minoritária.
+\end{atencaobox}
+
+\subsubsection{Valor do Ciclo de Vida (CLV)}
+
+O \textbf{Customer Lifetime Value} quantifica o valor total esperado que um cliente gerará ao longo do relacionamento com a empresa:
+
+\begin{equation}
+  CLV = \sum_{t=1}^{T} \frac{m_t \cdot r_t}{(1+d)^t}
+\end{equation}
+
+onde $m_t$ é a margem de contribuição no período $t$, $r_t$ é a probabilidade de retenção acumulada até $t$ e $d$ é a taxa de desconto (custo de capital).
+
+Modelos preditivos de CLV (BG/NBD + Gamma-Gamma, Pareto/NBD) permitem estimar o CLV individual para priorização de clientes.
+
+\subsubsection{Sistemas de Recomendação}
+
+Os sistemas de recomendação são uma das aplicações de DM com maior impacto comercial: representam 35\% das vendas da Amazon e 75\% do conteúdo consumido na Netflix.
+
+\paragraph{Filtragem Colaborativa (Collaborative Filtering)}
+
+\textbf{User-based CF:} recomenda itens preferidos por usuários similares:
+
+\begin{equation}
+  \hat{r}_{u,i} = \bar{r}_u + \frac{\displaystyle\sum_{v \in N(u)} \text{sim}(u,v)\,(r_{v,i} - \bar{r}_v)}{\displaystyle\sum_{v \in N(u)} |\text{sim}(u,v)|}
+\end{equation}
+
+\textbf{Item-based CF:} calcula similaridade entre itens a partir de co-avaliações, mais estável para grandes catálogos (Sarwar et al., 2001).
+
+\textbf{Matrix Factorization:} decompõe a matriz de avaliações $R \approx P \cdot Q^T$, onde $P \in \mathbb{R}^{|U| \times k}$ são fatores latentes de usuários e $Q \in \mathbb{R}^{|I| \times k}$ são fatores latentes de itens. O problema de otimização é:
+
+\begin{equation}
+  \min_{P,Q} \sum_{(u,i) \in \Omega} \left(r_{ui} - p_u^T q_i\right)^2 + \lambda\left(\|P\|_F^2 + \|Q\|_F^2\right)
+\end{equation}
+
+onde $\Omega$ é o conjunto de avaliações observadas e $\lambda$ é o termo de regularização L2 que previne overfitting (Koren et al., 2009).
+
+\paragraph{Filtragem por Conteúdo (Content-Based Filtering)}
+
+Recomenda itens similares ao histórico do usuário, baseando-se em atributos dos itens:
+\begin{itemize}
+  \item Perfil do item: vetor TF-IDF construído a partir de descrição, gênero, tags.
+  \item Similaridade por cosseno entre perfil do usuário e perfis dos itens:
+\end{itemize}
+
+\begin{equation}
+  \cos(\theta) = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\| \cdot \|\mathbf{v}\|}
+\end{equation}
+
+\paragraph{Métodos Híbridos}
+
+A abordagem híbrida combina CF e CB, superando limitações individuais:
+\begin{itemize}
+  \item \textbf{Cold-start problem:} CF falha para novos usuários/itens; CB resolve parcialmente.
+  \item \textbf{Netflix Prize (2009):} a solução vencedora combinou mais de 100 modelos diferentes, com Matrix Factorization como base.
+\end{itemize}
+
+\paragraph{Arquitetura de um Sistema de Recomendação}
+
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={rectangle,rounded corners,draw=mineblue,fill=mineblue!10,minimum width=2.2cm,minimum height=0.8cm,font=\small,align=center},
+  arr/.style={->,thick,mineblue}]
+\node[box] (user) at (0,0) {\faIcon{user}\\Usuário};
+\node[box] (history) at (3,1) {Histórico\\de Interações};
+\node[box] (items) at (3,-1) {Catálogo\\de Itens};
+\node[box] (cf) at (6,1.5) {Filtragem\\Colaborativa};
+\node[box] (cb) at (6,0) {Filtragem\\por Conteúdo};
+\node[box] (hyb) at (6,-1.5) {Método\\Híbrido};
+\node[box] (rank) at (9,0) {Rankeamento\\e Filtragem};
+\node[box] (rec) at (12,0) {\faIcon{star}\\Top-N\\Recomendações};
+
+\draw[arr] (user.east) -- (history.west);
+\draw[arr] (user.east) -- (items.west);
+\draw[arr] (history.east) -- (cf.west);
+\draw[arr] (items.east) -- (cb.west);
+\draw[arr] (history.east) -- (hyb.west);
+\draw[arr] (items.east) -- (hyb.west);
+\draw[arr] (cf.east) -- (rank.west);
+\draw[arr] (cb.east) -- (rank.west);
+\draw[arr] (hyb.east) -- (rank.west);
+\draw[arr] (rank.east) -- (rec.west);
+\end{tikzpicture}
+\end{center}
+
+\paragraph{Deep Learning para Recomendação}
+
+\begin{itemize}
+  \item \textbf{NCF} (Neural Collaborative Filtering -- He et al., 2017): substitui o produto escalar de MF por MLP.
+  \item \textbf{Wide \& Deep} (Google, 2016): combina aprendizado de regras memorizadas (Wide) com generalização (Deep) para recomendação em app stores.
+  \item \textbf{BERT4Rec} (Sun et al., 2019): modelagem sequencial de sessões do usuário com mecanismo de atenção bidirecional.
+  \item \textbf{LightGCN} (He et al., 2020): graph neural network simplificada para CF, propagando embeddings no grafo usuário-item.
+  \item \textbf{Two-Tower Models:} encoders separados para usuário e item, treinados com contrastive learning; amplamente usados em YouTube e TikTok para retrieval em escala.
+\end{itemize}
+
+\paragraph{Métricas de Avaliação}
+
+\begin{table}[ht]
+\centering
+\caption{Métricas para avaliação de sistemas de recomendação}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Métrica} & \textbf{Fórmula / Descrição} & \textbf{Mede} \\
+\midrule
+Precision@K & $\frac{|\text{relevantes} \cap \text{Top-K}|}{K}$ & Acerto na lista \\
+Recall@K & $\frac{|\text{relevantes} \cap \text{Top-K}|}{|\text{relevantes}|}$ & Cobertura de relevantes \\
+NDCG@K & DCG normalizado pelo IDCG & Ranking ordenado \\
+MAP & Média das precisions nos pontos de recall & Ranking geral \\
+Hit Rate & $\frac{\text{usuários com} \geq 1 \text{ acerto}}{|\text{usuários}|}$ & Experiência mínima \\
+Coverage & \% do catálogo recomendado & Diversidade de catálogo \\
+Diversity & Dissimilaridade média na lista & Variedade intra-lista \\
+Serendipity & Novidade útil e surpreendente & Descoberta \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+\section{Análise de Sentimentos e Opinião}
+% ============================================================
+
+A \textbf{Análise de Sentimentos} (Sentiment Analysis, Opinion Mining) é a área de NLP focada em identificar, extrair e quantificar opiniões subjetivas expressas em texto. Com o crescimento exponencial de avaliações online, posts em redes sociais e comentários de usuários, tornou-se essencial para monitoramento de marca, análise de produto e inteligência competitiva.
+
+\subsection{Tarefas na Análise de Sentimentos}
+
+\begin{enumerate}
+  \item \textbf{Análise de sentimento em nível de documento:} classifica o documento inteiro como positivo, negativo ou neutro.
+  \item \textbf{Análise de sentimento em nível de sentença:} classifica cada sentença individualmente.
+  \item \textbf{Análise de sentimento baseada em aspectos (ABSA -- Aspect-Based Sentiment Analysis):} identifica aspectos mencionados e o sentimento associado a cada um.
+  \item \textbf{Reconhecimento de emoções:} classifica texto em emoções básicas -- alegria, tristeza, raiva, medo, desgosto, surpresa (Ekman, 1992).
+  \item \textbf{Mineração de opiniões:} extração estruturada de (detentor da opinião, alvo da opinião, expressão de opinião, sentimento, tempo).
+\end{enumerate}
+
+\subsection{Abordagem Baseada em Léxico}
+
+\begin{definicaobox}{Léxico de Sentimentos}
+Dicionário que associa palavras ou frases a polaridades e intensidades de sentimento. Ex: ``excelente'' $\to$ positivo (+3), ``terrível'' $\to$ negativo (-3).
+\end{definicaobox}
+
+\paragraph{VADER (Valence Aware Dictionary and sEntiment Reasoner)}
+
+VADER (Hutto \& Gilbert, 2014) é um analisador léxico-baseado em regras especialmente eficaz para textos de mídias sociais:
+\begin{itemize}
+  \item Lida com pontuação (``!!!''), capitalização (``ÓTIMO''), emoticons e gírias.
+  \item Retorna escores: positivo, negativo, neutro e compound $\in [-1, 1]$.
+  \item Compound $\geq 0.05$ $\to$ positivo; $\leq -0.05$ $\to$ negativo; caso contrário neutro.
+\end{itemize}
+
+Outros léxicos: \textbf{SentiWordNet} (escores positivo/negativo/objetivo por synset), \textbf{AFINN} (lista de 3.382 palavras pontuadas de $-5$ a $+5$), \textbf{OpLexicon} (português brasileiro).
+
+\textbf{Vantagens:} não requer dados de treinamento, transparente e interpretável, rápido.
+\textbf{Desvantagens:} não captura contexto, problemas com negação implícita e ironia.
+
+\subsection{Abordagem Baseada em ML Clássico}
+
+\begin{itemize}
+  \item \textbf{Representação:} Bag of Words (BoW), TF-IDF, n-gramas, word embeddings (Word2Vec, GloVe, FastText).
+  \item \textbf{Algoritmos:} SVM (melhor desempenho geral), Naive Bayes (eficiente para texto), Regressão Logística (interpretável), Random Forest.
+  \item \textbf{Pipeline típico:} tokenização $\to$ TF-IDF $\to$ seleção de features $\to$ treinamento $\to$ avaliação com F1-score.
+\end{itemize}
+
+\begin{lstlisting}[caption={Pipeline de SA com TF-IDF e SVM}]
+from sklearn.pipeline import Pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.svm import LinearSVC
+
+pipeline = Pipeline([
+    ('tfidf', TfidfVectorizer(ngram_range=(1,2), max_features=50000)),
+    ('clf',   LinearSVC(C=1.0, max_iter=2000))
+])
+pipeline.fit(X_train, y_train)
+print(classification_report(y_test, pipeline.predict(X_test)))
+\end{lstlisting}
+
+\subsection{Deep Learning para Sentimentos}
+
+\paragraph{BERT (Devlin et al., 2019)}
+
+O \textbf{BERT} (Bidirectional Encoder Representations from Transformers) revolucionou o NLP ao aprender representações contextualizadas em duas fases:
+\begin{enumerate}
+  \item \textbf{Pré-treinamento:} Masked Language Model (MLM) + Next Sentence Prediction (NSP) em corpus massivo (Wikipedia + BooksCorpus).
+  \item \textbf{Fine-tuning:} adição de uma camada de classificação e ajuste fino no dataset de sentimentos específico.
+\end{enumerate}
+
+Variantes relevantes: \textbf{RoBERTa} (Liu et al., 2019), \textbf{DistilBERT} (56\% do tamanho, 97\% da acurácia), \textbf{BERTimbau} (BERT pré-treinado em português, Souza et al., 2020).
+
+\paragraph{Pipeline de Análise de Sentimentos}
+
+\begin{center}
+\begin{tikzpicture}[
+  pipenode/.style={rectangle,rounded corners,fill=mineblue!15,draw=mineblue,minimum width=2.8cm,minimum height=0.8cm,font=\small,align=center},
+  arr/.style={->,thick,mineblue}]
+\node[pipenode] (raw) at (0,0) {\faIcon{comment}\\Texto Bruto};
+\node[pipenode] (pre) at (3,0) {Pré-\\processamento};
+\node[pipenode] (feat) at (6,0) {Extração\\de Features};
+\node[pipenode] (model) at (9,0) {Modelo\\de Sentimento};
+\node[rectangle,rounded corners,fill=minegreen!20,draw=minegreen,minimum width=2.5cm,minimum height=0.8cm,font=\small,align=center] (out) at (12,0) {\faIcon{smile} Positivo\\\faIcon{meh} Neutro\\\faIcon{frown} Negativo};
+\draw[arr] (raw)--(pre);
+\draw[arr] (pre)--(feat);
+\draw[arr] (feat)--(model);
+\draw[arr] (model)--(out);
+\node[font=\tiny,below=0.15cm] at (3,0) {tokenize, clean,\\normalize};
+\node[font=\tiny,below=0.15cm] at (6,0) {TF-IDF / Embeddings\\/ BERT tokens};
+\node[font=\tiny,below=0.15cm] at (9,0) {VADER / SVM\\/ BERT fine-tuned};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Aspect-Based Sentiment Analysis (ABSA)}
+
+A ABSA vai além da polaridade global do texto, extraindo o sentimento por aspecto:
+
+\begin{exemplobox}{Exemplo de ABSA}
+``A câmera do celular é ótima, mas a bateria dura pouco.''\\[0.3em]
+\begin{tabular}{lll}
+\textbf{Aspecto} & \textbf{Sentimento} & \textbf{Expressão} \\
+\hline
+Câmera & Positivo & ``ótima'' \\
+Bateria & Negativo & ``dura pouco'' \\
+\end{tabular}
+\end{exemplobox}
+
+Modelos de ABSA: datasets SemEval 2014/2015/2016, BERT-ADA (adaptado ao domínio), LCF-BERT (Local Context Focus). A tarefa é subdividida em: extração de termos de aspectos (ATE), classificação de sentimento por aspecto (ASC) e extração conjunta fim-a-fim.
+
+% ============================================================
+\section{Mineração de Redes Sociais}
+% ============================================================
+
+\subsection{Análise de Redes Sociais (ARS)}
+
+\begin{definicaobox}{Grafo de Rede Social}
+Uma rede social é modelada como um grafo $G = (V, E)$, onde $V$ é o conjunto de atores (usuários, organizações) e $E$ é o conjunto de relações (amizade, seguimento, co-autoria). Grafos podem ser dirigidos ou não dirigidos, ponderados ou não ponderados.
+\end{definicaobox}
+
+\subsubsection{Medidas de Centralidade}
+
+\begin{table}[ht]
+\centering
+\caption{Medidas de centralidade em redes sociais}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Medida} & \textbf{Definição} & \textbf{Interpreta} \\
+\midrule
+Degree & $C_D(v) = \deg(v)$ & Número de conexões diretas \\
+Betweenness & Fração de caminhos mínimos passando por $v$ & Intermediário / ponte \\
+Closeness & Inverso da soma das distâncias & Velocidade de difusão \\
+Eigenvector & Influência ponderada pelos vizinhos & Prestígio / influência \\
+PageRank & Variante do eigenvector para grafos dirigidos & Autoridade na rede \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Detecção de Comunidades}
+
+\begin{itemize}
+  \item \textbf{Algoritmo de Louvain:} otimização gulosa da modularidade $Q$; escala para redes com milhões de nós.
+  \item \textbf{Girvan-Newman:} remoção iterativa de arestas com maior betweenness; dendrograma hierárquico.
+  \item \textbf{Modularidade:} $Q = \frac{1}{2m} \sum_{ij} \left[A_{ij} - \frac{k_i k_j}{2m}\right] \delta(c_i, c_j)$
+\end{itemize}
+
+\subsubsection{Modelos de Propagação}
+
+\begin{itemize}
+  \item \textbf{SIR:} Suscetível $\to$ Infectado $\to$ Recuperado; modela viral de conteúdo.
+  \item \textbf{SIS:} Suscetível $\to$ Infectado $\to$ Suscetível; modela rumores recorrentes.
+  \item \textbf{Maximização de Influência:} problema NP-hard, aproximado com algoritmo guloso (Kempe et al., 2003).
+\end{itemize}
+
+\subsection{Extração de Conhecimento de Redes Sociais}
+
+\begin{itemize}
+  \item \textbf{Predição de links:} prever novas conexões usando índice de Jaccard, adamic-adar, common neighbors.
+  \item \textbf{Inferência de atributos:} deduzir localização, interesses ou características demográficas de usuários.
+  \item \textbf{Propagação de influência:} identificar os $k$ usuários mais influentes para maximizar a difusão de informação.
+  \item \textbf{Dinâmica temporal:} evolução da rede ao longo do tempo, formação de comunidades, dissolução de laços.
+\end{itemize}
+
+% ============================================================
+\section{Ética, Privacidade e LGPD em Aplicações}
+% ============================================================
+
+\begin{atencaobox}{LGPD e Mineração de Dados}
+A Lei Geral de Proteção de Dados (Lei 13.709/2018) estabelece requisitos que impactam diretamente projetos de mineração de dados: base legal para tratamento, minimização de dados, direito ao esquecimento, transparência algorítmica e relatório de impacto à proteção de dados (RIPD).
+\end{atencaobox}
+
+\subsection*{Principais Requisitos da LGPD em Aplicações de DM}
+
+\begin{itemize}
+  \item \textbf{Base legal:} consentimento explícito ou legítimo interesse devidamente fundamentado.
+  \item \textbf{Minimização:} coletar apenas dados necessários para a finalidade declarada.
+  \item \textbf{Anonimização:} \textbf{k-anonimato} (cada registro indistinguível de pelo menos $k-1$ outros), \textbf{l-diversidade} (pelo menos $l$ valores diferentes para atributos sensíveis), \textbf{privacidade diferencial} (ruído calibrado para proteger indivíduos).
+  \item \textbf{Viés algorítmico:} sistemas de recomendação podem criar \textit{filter bubbles} (câmaras de eco), reforçando opiniões sem expor o usuário a perspectivas diversas.
+  \item \textbf{Transparência:} direito à explicação de decisões automatizadas (artigo 20 da LGPD).
+\end{itemize}
+
+% ============================================================
+\section{Estado da Arte (2020--2024)}
+% ============================================================
+
+\begin{estadoartebox}{LLMs para Text Mining e Sentimentos}
+Grandes Modelos de Linguagem (GPT-4, Claude 3, Llama 3, Gemini) demonstraram capacidade de análise de sentimentos zero-shot e few-shot com desempenho comparável a modelos fine-tuned em muitos benchmarks. A abordagem elimina a necessidade de datasets anotados, porém enfrenta desafios de custo computacional, latência e consistência em idiomas de baixo recurso como o português. LLM-based opinion mining sem fine-tuning especializado é viável para tarefas gerais, mas modelos menores fine-tuned superam LLMs em tarefas de domínio específico (e.g., sentimentos em laudos médicos).
+\end{estadoartebox}
+
+\begin{estadoartebox}{Sistemas de Recomendação com Transformers e GNNs}
+Recomendação sequencial com BERT4Rec e SASRec (Self-Attentive Sequential Recommendation) tornaram-se estado da arte. LLM-augmented recommendations como LLaRA e ChatRec (2023) usam LLMs como feature encoders ou como motor de raciocínio para explicações. Recomendações multimodais (texto + imagem + vídeo) com encoders CLIP-based. Graph Neural Networks para CF: LightGCN (2020) e NGCF (2019) superam MF tradicional em datasets esparsos ao propagar embeddings no grafo bipartido usuário-item.
+\end{estadoartebox}
+
+\begin{estadoartebox}{Fake News e Desinformação}
+Mineração de dados aplicada à detecção de fake news combina análise de grafo de propagação (quem compartilhou, quando, para quem) com NLP sobre o conteúdo. Modelos de credibilidade de fontes avaliam histórico de precisão jornalística. Detecção multimodal integra análise de texto e imagem (verificação de manipulação de imagens com redes de análise forense). Desafio: arms race entre geradores de desinformação (LLMs) e detectores.
+\end{estadoartebox}
+
+% ============================================================
+\section{Exercícios}
+% ============================================================
+
+\begin{enumerate}[label=\textbf{\arabic*.}, itemsep=0.5em]
+  \item \textbf{[Sistema de Recomendação do Zero]} Implemente um sistema de filtragem colaborativa user-based usando apenas NumPy. Dado uma matriz $5 \times 6$ de avaliações (com zeros para não-avaliados), calcule a similaridade cosseno entre usuários e preveja a avaliação do usuário 1 para o item 4.
+
+  \item \textbf{[Análise de Sentimentos com VADER e BERT]} Colete 50 avaliações de um produto no Mercado Livre ou Amazon.com.br. Analise-as com VADER e com BERTimbau (fine-tuned para sentimentos). Compare os resultados em uma tabela, identificando pelo menos 5 casos onde os modelos divergem e explique por quê.
+
+  \item \textbf{[Segmentação para CRM]} Com o dataset ``Online Retail'' (UCI ML Repository), calcule RFM para cada cliente, aplique K-Means com $k=4$ e crie um relatório descritivo de cada segmento incluindo: tamanho, RFM médio, percentual de receita e estratégia de marketing sugerida.
+
+  \item \textbf{[Pipeline de Web Scraping]} Construa um pipeline com Scrapy para extrair manchetes e timestamps das últimas 100 notícias de um portal de tecnologia. Armazene em CSV, remova duplicatas e aplique análise de sentimentos com VADER para calcular o sentimento médio por dia da semana.
+
+  \item \textbf{[Implementação do PageRank]} Implemente o algoritmo PageRank por iteração de potência em Python usando NumPy, sem bibliotecas de grafos. Teste com um grafo web de 10 páginas (definido manualmente) e compare com o resultado de \texttt{networkx.pagerank()}. Discuta convergência e fator de amortecimento.
+
+  \item \textbf{[ABSA Manual]} Dadas as 10 avaliações a seguir de um restaurante, faça ABSA manualmente identificando aspectos (comida, serviço, ambiente, preço) e o sentimento associado. Em seguida, implemente um classificador simples de ABSA com BERT para as mesmas avaliações e compare.
+
+  \item \textbf{[Análise Ética]} Escolha uma aplicação real de mineração de dados (e.g., sistema de recomendação de notícias, scoring de crédito, análise de sentimentos em redes sociais). Identifique: (a) dados coletados e base legal LGPD, (b) potenciais vieses algorítmicos, (c) riscos de privacidade, (d) mecanismos de transparência necessários. Escreva um relatório de 2 páginas.
+\end{enumerate}
+
+% ============================================================
+\section{Referências}
+% ============================================================
+
+\begin{thebibliography}{99}
+
+\bibitem{page1999} Page, L., Brin, S., Motwani, R., \& Winograd, T. (1999). \textit{The PageRank citation ranking: Bringing order to the Web}. Stanford InfoLab Technical Report.
+
+\bibitem{kleinberg1999} Kleinberg, J. M. (1999). Authoritative sources in a hyperlinked environment. \textit{Journal of the ACM}, 46(5), 604--632.
+
+\bibitem{sarwar2001} Sarwar, B., Karypis, G., Konstan, J., \& Riedl, J. (2001). Item-based collaborative filtering recommendation algorithms. In \textit{Proceedings of WWW 2001} (pp. 285--295).
+
+\bibitem{koren2009} Koren, Y., Bell, R., \& Volinsky, C. (2009). Matrix factorization techniques for recommender systems. \textit{Computer}, 42(8), 30--37.
+
+\bibitem{he2017} He, X., Liao, L., Zhang, H., Nie, L., Hu, X., \& Chua, T. S. (2017). Neural collaborative filtering. In \textit{Proceedings of WWW 2017} (pp. 173--182).
+
+\bibitem{he2020} He, X., Deng, K., Wang, X., Li, Y., Zhang, Y., \& Wang, M. (2020). LightGCN: Simplifying and powering graph convolution network for recommendation. In \textit{Proceedings of SIGIR 2020} (pp. 639--648).
+
+\bibitem{sun2019} Sun, F., Liu, J., Wu, J., Pei, C., Lin, X., Ou, W., \& Jiang, P. (2019). BERT4Rec: Sequential recommendation with bidirectional encoder representations from Transformer. In \textit{Proceedings of CIKM 2019} (pp. 1441--1450).
+
+\bibitem{devlin2019} Devlin, J., Chang, M. W., Lee, K., \& Toutanova, K. (2019). BERT: Pre-training of deep bidirectional transformers for language understanding. In \textit{Proceedings of NAACL-HLT 2019} (pp. 4171--4186).
+
+\bibitem{hutto2014} Hutto, C., \& Gilbert, E. (2014). VADER: A parsimonious rule-based model for sentiment analysis of social media text. In \textit{Proceedings of ICWSM 2014}.
+
+\bibitem{pang2008} Pang, B., \& Lee, L. (2008). Opinion mining and sentiment analysis. \textit{Foundations and Trends in Information Retrieval}, 2(1--2), 1--135.
+
+\bibitem{liu2012} Liu, B. (2012). \textit{Sentiment Analysis and Opinion Mining}. Morgan \& Claypool Publishers.
+
+\bibitem{blei2003} Blei, D. M., Ng, A. Y., \& Jordan, M. I. (2003). Latent Dirichlet allocation. \textit{Journal of Machine Learning Research}, 3, 993--1022.
+
+\bibitem{srikant1996} Srikant, R., \& Agrawal, R. (1996). Mining sequential patterns: Generalizations and performance improvements. In \textit{Proceedings of EDBT 1996} (pp. 1--17).
+
+\bibitem{souza2020} Souza, F., Nogueira, R., \& Lotufo, R. (2020). BERTimbau: Pretrained BERT models for Brazilian Portuguese. In \textit{Brazilian Conference on Intelligent Systems (BRACIS)}.
+
+\end{thebibliography}
+
+\end{document}

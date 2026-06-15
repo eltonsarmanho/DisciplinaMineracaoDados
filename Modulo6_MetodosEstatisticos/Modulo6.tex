@@ -1,0 +1,731 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,shapes.geometric,positioning,fit,backgrounds,calc,shadows.blur,decorations.pathmorphing,mindmap,trees,patterns,matrix}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{fontawesome5}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins,theorems}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+\setlength{\headheight}{14pt}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{caption}
+\definecolor{mineblue}{RGB}{0,90,180}
+\definecolor{mineorange}{RGB}{230,115,0}
+\definecolor{minegreen}{RGB}{34,139,34}
+\definecolor{minered}{RGB}{180,20,40}
+\definecolor{minegray}{RGB}{100,100,100}
+\definecolor{codebg}{RGB}{250,250,250}
+\newtcolorbox{definicaobox}[1]{title={\faIcon{book} #1},colback=blue!4!white,colframe=mineblue,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{exemplobox}[1]{title={\faIcon{lightbulb} #1},colback=orange!4!white,colframe=mineorange,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{dicabox}[1]{title={\faIcon{info-circle} #1},colback=green!4!white,colframe=minegreen,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{atencaobox}[1]{title={\faIcon{exclamation-triangle} #1},colback=red!4!white,colframe=minered,fonttitle=\bfseries,breakable,enhanced}
+\newtcolorbox{estadoartebox}[1]{title={\faIcon{rocket} #1},colback=purple!4!white,colframe=purple!60!black,fonttitle=\bfseries,breakable,enhanced}
+\lstdefinestyle{mypython}{language=Python,backgroundcolor=\color{codebg},commentstyle=\color{minegray}\itshape,keywordstyle=\color{mineblue}\bfseries,stringstyle=\color{minegreen},basicstyle=\ttfamily\footnotesize,breaklines=true,frame=single,rulecolor=\color{minegray!40},numbers=left,numberstyle=\tiny\color{minegray},tabsize=4,showstringspaces=false}
+\lstset{style=mypython}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small \textcolor{mineblue}{\textbf{Mineração de Dados}} | UEPA -- CCNT}
+\fancyhead[R]{\small Módulo 6: Métodos Estatísticos e Clustering}
+\fancyfoot[C]{\small \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\titleformat{\section}{\large\bfseries\color{mineblue}}{\thesection}{0.8em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{mineorange}}{\thesubsection}{0.8em}{}
+\titleformat{\subsubsection}{\small\bfseries\color{minegray}}{\thesubsubsection}{0.8em}{}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{mineblue} Módulo 6: Métodos Estatísticos}\\[0.4em]
+  {\large\color{mineorange} e Mineração Não-Supervisionada}\\[0.6em]
+  {\normalsize Universidade do Estado do Pará (UEPA) -- CCNT\\
+  Curso: Engenharia de Software, 8$^{\circ}$ Semestre\\
+  Disciplina: Mineração de Dados | Carga Horária: 80h}\\[0.3em]
+  \rule{\linewidth}{0.8pt}
+\end{center}
+
+% ============================================================
+\section{Objetivos de Aprendizagem}
+% ============================================================
+
+\begin{itemize}[leftmargin=2em]
+  \item[\faIcon{check-circle}] \textbf{Aplicar} testes de hipótese estatísticos para comparar o desempenho de algoritmos de mineração de dados, interpretando p-valores e erros Tipo I e II.
+  \item[\faIcon{check-circle}] \textbf{Calcular} e interpretar medidas de correlação e dependência (Pearson, Spearman, Informação Mútua) para análise exploratória de dados.
+  \item[\faIcon{check-circle}] \textbf{Implementar} e comparar algoritmos de agrupamento (K-Means, Hierarchical, DBSCAN, GMM) para descoberta de estrutura em dados não rotulados.
+  \item[\faIcon{check-circle}] \textbf{Selecionar} o algoritmo de clustering mais adequado conforme a forma geométrica dos grupos, presença de ruído e dimensionalidade dos dados.
+  \item[\faIcon{check-circle}] \textbf{Avaliar} agrupamentos com métricas internas (Silhouette, Davies-Bouldin) e externas (ARI, NMI), compreendendo as limitações de cada abordagem.
+  \item[\faIcon{check-circle}] \textbf{Minerar} regras de associação usando os algoritmos Apriori e FP-Growth, calculando suporte, confiança, lift e conviction.
+  \item[\faIcon{check-circle}] \textbf{Detectar} anomalias usando métodos estatísticos, baseados em distância e em florestas de isolamento (Isolation Forest).
+  \item[\faIcon{check-circle}] \textbf{Identificar} as tendências do estado da arte (2020--2024) em clustering profundo, HDBSCAN e detecção moderna de outliers.
+\end{itemize}
+
+% ============================================================
+\section{Fundamentos Estatísticos para Mineração de Dados}
+% ============================================================
+
+\subsection{Testes de Hipótese}
+
+Um \textbf{teste de hipótese} é um procedimento para decidir, com base em evidências amostrais, se uma afirmação sobre uma população deve ser aceita ou rejeitada.
+
+\begin{definicaobox}{Componentes de um Teste de Hipótese}
+\begin{itemize}
+  \item \textbf{$H_0$ (hipótese nula)}: A posição padrão a ser testada (ex.\ ``algoritmo A e B têm a mesma acurácia'').
+  \item \textbf{$H_1$ (hipótese alternativa)}: O que queremos provar (ex.\ ``algoritmo A é melhor que B'').
+  \item \textbf{Nível de significância $\alpha$}: Probabilidade máxima do Erro Tipo I aceitável (tipicamente $\alpha = 0.05$).
+  \item \textbf{p-valor}: Probabilidade de observar um resultado tão extremo quanto o observado, supondo $H_0$ verdadeira. Rejeita-se $H_0$ se $p < \alpha$.
+\end{itemize}
+\end{definicaobox}
+
+\textbf{Tipos de Erro:}
+\begin{itemize}
+  \item \textbf{Erro Tipo I ($\alpha$)}: Rejeitar $H_0$ quando ela é verdadeira (\textit{falso positivo}).
+  \item \textbf{Erro Tipo II ($\beta$)}: Não rejeitar $H_0$ quando ela é falsa (\textit{falso negativo}).
+  \item \textbf{Poder do Teste ($1-\beta$)}: Probabilidade de detectar corretamente o efeito quando $H_1$ é verdadeira.
+\end{itemize}
+
+\textbf{Testes Relevantes para Mineração de Dados:}
+
+\begin{itemize}
+  \item \textbf{Teste $t$ pareado}: Compara médias de dois classificadores nos mesmos folds de validação cruzada. Assume normalidade das diferenças.
+    \[
+      t = \frac{\bar{d}}{s_d / \sqrt{n}}, \quad \bar{d} = \frac{1}{n}\sum_{i=1}^{n}(a_i - b_i)
+    \]
+  \item \textbf{ANOVA (Analysis of Variance)}: Compara três ou mais classificadores simultaneamente. Decompõe variância total em variância entre grupos e dentro dos grupos.
+  \item \textbf{Teste de Wilcoxon Signed-Rank} (não-paramétrico): Alternativa ao teste $t$ pareado quando os dados não seguem distribuição normal. Ranqueia as diferenças absolutas e testa se as medianas são iguais.
+  \item \textbf{McNemar's Test}: Compara dois classificadores pelas matrizes de confusão. Testa se o número de casos onde A acerta e B erra é diferente do número onde B acerta e A erra:
+    \[
+      \chi^2 = \frac{(b - c)^2}{b + c}
+    \]
+    onde $b$ = casos em que A acerta e B erra, $c$ = casos em que B acerta e A erra.
+\end{itemize}
+
+\begin{atencaobox}{Comparações Múltiplas}
+Ao comparar $k$ classificadores com múltiplos testes de hipótese, a probabilidade de pelo menos um falso positivo é $1-(1-\alpha)^k$. Para 10 comparações com $\alpha=0.05$, isso é $\approx 40\%$! Use correções como \textbf{Bonferroni} ($\alpha' = \alpha/k$) ou o teste de \textbf{Friedman} + post-hoc de Nemenyi para comparações múltiplas.
+\end{atencaobox}
+
+\subsection{Correlação e Dependência}
+
+\textbf{Coeficiente de Correlação de Pearson} ($r$): Mede relação linear entre duas variáveis contínuas:
+\[
+  r = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n}(x_i - \bar{x})^2 \cdot \sum_{i=1}^{n}(y_i - \bar{y})^2}}
+  \in [-1, 1]
+\]
+$r = 1$ (correlação positiva perfeita), $r = 0$ (sem correlação linear), $r = -1$ (negativa perfeita).
+
+\textbf{Correlação de Spearman} ($\rho$): Aplica Pearson nos \textbf{postos} (\textit{ranks}) dos dados. Detecta monotonicidade, não apenas linearidade. Robusta a outliers e útil para dados ordinais.
+
+\textbf{Tau de Kendall} ($\tau$): Baseado em concordância/discordância de pares. Mais robusto que Spearman para amostras pequenas.
+
+\textbf{Informação Mútua} $I(X;Y)$: Mede dependência geral (não apenas linear) entre variáveis:
+\[
+  I(X; Y) = \sum_{x,y} p(x,y) \log \frac{p(x,y)}{p(x) p(y)}
+\]
+$I(X;Y) = 0$ iff $X$ e $Y$ são independentes. Muito usado em seleção de features (MRMR).
+
+\subsection{Distribuições Relevantes}
+
+\begin{table}[h!]
+\centering
+\caption{Distribuições de probabilidade frequentes em Mineração de Dados.}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{>{\bfseries}p{2.5cm} p{4cm} p{1.5cm} p{4.5cm}}
+\toprule
+Distribuição & FDP/FMP & Suporte & Uso em DM \\
+\midrule
+Normal & $\frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$ & $\mathbb{R}$ & Ruído, GMM, testes paramétricos \\
+Bernoulli & $p^x (1-p)^{1-x}$ & $\{0,1\}$ & Classificação binária, Naive Bayes \\
+Binomial & $\binom{n}{k} p^k (1-p)^{n-k}$ & $\{0,\ldots,n\}$ & Contagem de acertos, limiar de confiança \\
+Poisson & $\frac{\lambda^k e^{-\lambda}}{k!}$ & $\mathbb{N}_0$ & Contagem de eventos raros, detecção de anomalias \\
+Exponencial & $\lambda e^{-\lambda x}$ & $[0,+\infty)$ & Tempo entre eventos, detecção de outliers \\
+$t$-Student & $\frac{\Gamma(\frac{\nu+1}{2})}{\sqrt{\nu\pi}\,\Gamma(\frac{\nu}{2})}\left(1+\frac{t^2}{\nu}\right)^{-\frac{\nu+1}{2}}$ & $\mathbb{R}$ & Testes com pequenas amostras \\
+Qui-Quadrado & $\frac{x^{k/2-1}e^{-x/2}}{2^{k/2}\Gamma(k/2)}$ & $[0,+\infty)$ & Teste de independência (tabelas de contingência) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+\section{Agrupamento (Clustering)}
+% ============================================================
+
+\subsection{Definição e Aplicações}
+
+O \textbf{agrupamento} (clustering) é uma tarefa de aprendizado não-supervisionado que busca descobrir a estrutura natural dos dados, organizando exemplos similares em grupos (\textit{clusters}) sem o uso de rótulos pré-definidos.
+
+\textbf{Objetivo formal}: Dado $\mathcal{X} = \{\mathbf{x}_1, \ldots, \mathbf{x}_N\} \subset \mathbb{R}^d$, encontrar uma partição $\mathcal{C} = \{C_1, \ldots, C_K\}$ tal que objetos dentro de cada $C_k$ sejam similares entre si e dissimilares aos de outros clusters.
+
+\textbf{Aplicações:}
+\begin{itemize}
+  \item \textbf{Segmentação de clientes}: Grupos de comportamento de compra para marketing direcionado.
+  \item \textbf{Detecção de anomalias}: Pontos que não pertencem a nenhum cluster são candidatos a outliers.
+  \item \textbf{Sumarização de dados}: Representa o dataset pelos centróides dos clusters (compressão).
+  \item \textbf{Modelagem de tópicos}: Agrupa documentos por tema (text mining).
+  \item \textbf{Bioinformática}: Agrupamento de genes por padrão de expressão.
+  \item \textbf{Compressão de imagens}: K-Means para quantização de cores.
+\end{itemize}
+
+\begin{dicabox}{Avaliação sem Ground Truth}
+A falta de rótulos torna a avaliação de clustering mais desafiadora do que a classificação supervisionada. Métricas internas (Silhouette, Davies-Bouldin) medem a coesão e separação dos clusters, mas podem favorecer clustering simples. Sempre combine métricas numéricas com inspeção visual (PCA, t-SNE, UMAP) para validar resultados.
+\end{dicabox}
+
+\subsection{K-Means}
+
+O K-Means (MacQueen, 1967; Lloyd, 1982) é o algoritmo de clustering mais popular. Minimiza a \textbf{inércia} (soma dos quadrados das distâncias intra-cluster):
+\[
+  J = \sum_{k=1}^{K} \sum_{\mathbf{x}_i \in C_k} \|\mathbf{x}_i - \boldsymbol{\mu}_k\|^2
+\]
+onde $\boldsymbol{\mu}_k = \frac{1}{|C_k|}\sum_{\mathbf{x}_i \in C_k} \mathbf{x}_i$ é o centróide do cluster $k$.
+
+\begin{algorithm}[H]
+\caption{K-Means (Algoritmo de Lloyd)}
+\KwIn{Dados $\mathcal{X}$, número de clusters $K$, tolerância $\varepsilon$}
+\KwOut{Partição $\{C_1,\ldots,C_K\}$ e centróides $\{\boldsymbol{\mu}_1,\ldots,\boldsymbol{\mu}_K\}$}
+Inicializar centróides $\boldsymbol{\mu}_1, \ldots, \boldsymbol{\mu}_K$ aleatoriamente (ou com K-Means++)\;
+\Repeat{centróides não mudam (ou $\Delta < \varepsilon$)}{
+  \tcp{Passo de Atribuição (E-step)}
+  \ForEach{$\mathbf{x}_i \in \mathcal{X}$}{
+    $c_i \leftarrow \arg\min_{k \in \{1,\ldots,K\}} \|\mathbf{x}_i - \boldsymbol{\mu}_k\|^2$\;
+  }
+  \tcp{Passo de Atualização (M-step)}
+  \ForEach{$k \in \{1,\ldots,K\}$}{
+    $\boldsymbol{\mu}_k \leftarrow \frac{1}{|C_k|} \sum_{\mathbf{x}_i : c_i = k} \mathbf{x}_i$\;
+  }
+}
+\end{algorithm}
+
+\textbf{Visualização das etapas do K-Means:}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.75]
+% ---- Painel 1: Inicialização ----
+\begin{scope}[xshift=0cm]
+\node[above,font=\small\bfseries,mineblue] at (2.5,4.2) {1. Inicialização};
+% Cluster azul (canto superior esquerdo)
+\foreach \x/\y in {0.8/3.2, 1.3/2.6, 0.6/3.7, 1.5/3.0, 1.0/2.8}{
+  \filldraw[mineblue!50] (\x,\y) circle(0.09);
+}
+% Cluster laranja (canto superior direito)
+\foreach \x/\y in {3.2/3.4, 3.8/2.8, 3.5/3.8, 4.0/3.2, 3.6/2.6}{
+  \filldraw[mineorange!50] (\x,\y) circle(0.09);
+}
+% Cluster verde (baixo centro)
+\foreach \x/\y in {2.0/0.8, 2.5/1.3, 1.8/1.5, 2.3/0.6, 2.8/1.0}{
+  \filldraw[minegreen!50] (\x,\y) circle(0.09);
+}
+% Centróides aleatórios (vermelho)
+\filldraw[minered] (2.5,2.5) node[above,font=\tiny]{$\mu_1$} circle(0.15);
+\filldraw[minered] (1.8,2.0) node[above,font=\tiny]{$\mu_2$} circle(0.15);
+\filldraw[minered] (3.0,1.5) node[above,font=\tiny]{$\mu_3$} circle(0.15);
+\draw[minegray,dashed] (-0.2,0.0) rectangle (5.0,4.5);
+\end{scope}
+
+% ---- Painel 2: Primeira Atribuição ----
+\begin{scope}[xshift=5.5cm]
+\node[above,font=\small\bfseries,mineblue] at (2.5,4.2) {2. Primeira Atribuição};
+\foreach \x/\y in {0.8/3.2, 1.3/2.6, 0.6/3.7, 1.5/3.0, 1.0/2.8}{
+  \filldraw[mineblue!70] (\x,\y) circle(0.09);
+}
+\foreach \x/\y in {3.2/3.4, 3.8/2.8, 3.5/3.8, 4.0/3.2, 3.6/2.6}{
+  \filldraw[mineorange!70] (\x,\y) circle(0.09);
+}
+\foreach \x/\y in {2.0/0.8, 2.5/1.3, 1.8/1.5, 2.3/0.6, 2.8/1.0}{
+  \filldraw[minegreen!70] (\x,\y) circle(0.09);
+}
+\filldraw[mineblue!80] (1.04,3.06) node[above,font=\tiny,mineblue]{$\mu_1$} circle(0.15);
+\filldraw[mineorange!80] (3.62,3.16) node[above,font=\tiny,mineorange]{$\mu_2$} circle(0.15);
+\filldraw[minegreen!80] (2.28,1.04) node[right,font=\tiny,minegreen]{$\mu_3$} circle(0.15);
+\draw[minegray,dashed] (-0.2,0.0) rectangle (5.0,4.5);
+\end{scope}
+
+% ---- Painel 3: Convergência ----
+\begin{scope}[xshift=11cm]
+\node[above,font=\small\bfseries,minegreen] at (2.5,4.2) {3. Convergência};
+\foreach \x/\y in {0.8/3.2, 1.3/2.6, 0.6/3.7, 1.5/3.0, 1.0/2.8}{
+  \filldraw[mineblue] (\x,\y) circle(0.09);
+}
+\foreach \x/\y in {3.2/3.4, 3.8/2.8, 3.5/3.8, 4.0/3.2, 3.6/2.6}{
+  \filldraw[mineorange] (\x,\y) circle(0.09);
+}
+\foreach \x/\y in {2.0/0.8, 2.5/1.3, 1.8/1.5, 2.3/0.6, 2.8/1.0}{
+  \filldraw[minegreen] (\x,\y) circle(0.09);
+}
+\filldraw[mineblue] (1.04,3.06) node[star,star points=5,fill=mineblue,draw=mineblue,minimum size=0.3cm,font=\tiny,above]{$\mu_1$} circle(0.15);
+\filldraw[mineorange] (3.62,3.16) node[above,font=\tiny,mineorange]{$\mu_2$} circle(0.15);
+\filldraw[minegreen] (2.28,1.04) node[right,font=\tiny,minegreen]{$\mu_3$} circle(0.15);
+\draw[minegreen,dashed,thick] (-0.2,0.0) rectangle (5.0,4.5);
+\node[below,font=\tiny\itshape,minegray] at (2.5,-0.1) {Centróides estabilizados};
+\end{scope}
+\end{tikzpicture}
+\end{center}
+
+\textbf{Escolha de K:}
+\begin{itemize}
+  \item \textbf{Método do Cotovelo (Elbow)}: Plota inércia vs $K$; o ``cotovelo'' indica o $K$ ótimo.
+  \item \textbf{Análise de Silhouette}: Para cada $K$, calcula o coeficiente médio; escolhe $K$ com maior silhouette.
+  \item \textbf{Gap Statistic} (Tibshirani et al., 2001): Compara inércia com a esperada sob distribuição de referência.
+\end{itemize}
+
+\textbf{Variantes do K-Means:}
+\begin{itemize}
+  \item \textbf{K-Means++} (Arthur \& Vassilvitskii, 2007): Inicialização melhorada -- cada centróide é escolhido com probabilidade proporcional à distância ao centróide mais próximo já escolhido. Garante aproximação $O(\log K)$ do ótimo.
+  \item \textbf{K-Medoids (PAM)}: Usa exemplos reais do dataset como centróides (medóides). Mais robusto a outliers.
+  \item \textbf{Mini-Batch K-Means}: Processa mini-lotes aleatórios; escala para datasets de milhões de exemplos.
+\end{itemize}
+
+\subsection{Clustering Hierárquico}
+
+O clustering hierárquico cria uma \textbf{hierarquia} de agrupamentos representada em um \textbf{dendrograma}, sem necessidade de especificar $K$ antecipadamente.
+
+\textbf{Agglomerativo (Bottom-up)}: Começa com $N$ clusters (um por ponto) e mescla iterativamente os dois mais próximos.
+
+\textbf{Divisivo (Top-down)}: Começa com um único cluster e divide recursivamente.
+
+\textbf{Critérios de Ligação (Linkage):}
+\begin{align}
+  d_{\text{single}}(A,B) &= \min_{a \in A, b \in B} d(a,b) && \text{(single linkage -- sensível a outliers)}\\
+  d_{\text{complete}}(A,B) &= \max_{a \in A, b \in B} d(a,b) && \text{(complete linkage -- clusters compactos)}\\
+  d_{\text{average}}(A,B) &= \frac{1}{|A||B|} \sum_{a \in A} \sum_{b \in B} d(a,b) && \text{(UPGMA -- balanço)}\\
+  d_{\text{ward}}(A,B) &= \Delta J \text{ ao mesclar } A \text{ e } B && \text{(Ward -- minimiza variância intra-cluster)}
+\end{align}
+
+\textbf{Dendrograma (exemplo esquemático):}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85,
+  level 1/.style={sibling distance=4cm, level distance=2cm},
+  level 2/.style={sibling distance=2cm, level distance=1.5cm},
+  level 3/.style={sibling distance=1cm, level distance=1.2cm},
+  edge from parent/.style={draw,mineblue,thick}]
+\node[draw=mineblue,fill=mineblue!10,rounded corners,font=\small\bfseries] {Raiz}
+  child { node[draw=mineorange,fill=mineorange!10,rounded corners,font=\small] {Cluster A}
+    child { node[draw=minegreen,fill=minegreen!10,rounded corners,font=\small] {A1}
+      child { node[font=\footnotesize] {$p_1$} }
+      child { node[font=\footnotesize] {$p_2$} }
+    }
+    child { node[draw=minegreen,fill=minegreen!10,rounded corners,font=\small] {A2}
+      child { node[font=\footnotesize] {$p_3$} }
+      child { node[font=\footnotesize] {$p_4$} }
+    }
+  }
+  child { node[draw=mineorange,fill=mineorange!10,rounded corners,font=\small] {Cluster B}
+    child { node[font=\footnotesize] {$p_5$} }
+    child { node[draw=minegreen,fill=minegreen!10,rounded corners,font=\small] {B2}
+      child { node[font=\footnotesize] {$p_6$} }
+      child { node[font=\footnotesize] {$p_7$} }
+    }
+  };
+\end{tikzpicture}
+\end{center}
+
+A \textbf{correlação cofenética} mede o quão fiel o dendrograma é às distâncias originais -- valores $> 0.75$ indicam boa representação hierárquica.
+
+\subsection{DBSCAN}
+
+O \textbf{DBSCAN} (Density-Based Spatial Clustering of Applications with Noise; Ester et al., 1996) é um algoritmo baseado em densidade que encontra clusters de \textbf{forma arbitrária} e detecta \textbf{ruído/outliers} automaticamente.
+
+\textbf{Conceitos:} Dado $\varepsilon > 0$ e $\text{MinPts} \in \mathbb{N}$:
+\begin{itemize}
+  \item \textbf{Ponto Núcleo}: $|N_\varepsilon(\mathbf{x})| \geq \text{MinPts}$, onde $N_\varepsilon(\mathbf{x}) = \{\mathbf{y} : d(\mathbf{x},\mathbf{y}) \leq \varepsilon\}$.
+  \item \textbf{Ponto de Fronteira}: Está na $\varepsilon$-vizinhança de um núcleo, mas não é núcleo.
+  \item \textbf{Ponto de Ruído}: Não é núcleo nem fronteira.
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}[scale=1.0]
+% Cluster 1 (denso, canto inferior esquerdo)
+\foreach \x/\y in {1.5/1.0, 2.0/1.5, 1.0/1.5, 2.5/1.0, 1.8/2.0, 1.2/0.8, 2.2/0.8, 2.8/1.5}{
+  \filldraw[mineblue!50] (\x,\y) circle(0.08);
+}
+% Mostrar epsilon para ponto núcleo
+\draw[mineblue,dashed,thick] (1.8,1.4) circle(0.8);
+\filldraw[mineblue] (1.8,1.4) circle(0.1);
+\node[font=\tiny,above=0.85cm,mineblue] at (1.8,1.4) {ponto núcleo ($\varepsilon$)};
+
+% Cluster 2 (topo direita)
+\foreach \x/\y in {4.0/3.0, 4.5/3.5, 5.0/3.0, 4.8/2.5, 3.8/2.8, 5.2/3.5}{
+  \filldraw[mineorange!60] (\x,\y) circle(0.08);
+}
+
+% Ponto de fronteira
+\filldraw[minegreen,thick] (3.2/1,2.0/1) circle(0.1) node[right,font=\tiny,minegreen] {\;fronteira};
+
+% Pontos de ruído
+\filldraw[minered] (6.5/1,1.0/1) circle(0.1) node[right,font=\tiny,minered] {\;ruído};
+\filldraw[minered] (0.3,3.5) circle(0.1) node[right,font=\tiny,minered] {\;ruído};
+
+\node[below,font=\small\itshape,minegray] at (3.0,0.1) {DBSCAN: pontos núcleo (azul/laranja), fronteira (verde) e ruído (vermelho)};
+
+% Legenda
+\draw[mineblue,dashed,thick] (5.8,0.5) circle(0.2);
+\node[right,font=\tiny] at (6.0,0.5) {$\varepsilon$-vizinhança};
+\end{tikzpicture}
+\end{center}
+
+\begin{algorithm}[H]
+\caption{DBSCAN}
+\KwIn{Dados $\mathcal{X}$, raio $\varepsilon$, densidade mínima MinPts}
+\KwOut{Rótulos de cluster $C$ para cada ponto (incluindo ruído $= -1$)}
+$C \leftarrow 0$; \quad marcar todos os pontos como não visitados\;
+\ForEach{ponto não visitado $\mathbf{p} \in \mathcal{X}$}{
+  Marcar $\mathbf{p}$ como visitado\;
+  $N \leftarrow N_\varepsilon(\mathbf{p})$ \tcp{vizinhança $\varepsilon$}
+  \If{$|N| < \text{MinPts}$}{
+    Marcar $\mathbf{p}$ como ruído\;
+  }\Else{
+    $C \leftarrow C + 1$\;
+    ExpandCluster($\mathbf{p}$, $N$, $C$, $\varepsilon$, MinPts)\;
+  }
+}
+
+\SetKwFunction{FExpand}{ExpandCluster}
+\SetKwProg{Fn}{Função}{:}{}
+\Fn{\FExpand{$\mathbf{p}$, $N$, $C$, $\varepsilon$, MinPts}}{
+  Adicionar $\mathbf{p}$ ao cluster $C$\;
+  \ForEach{$\mathbf{q} \in N$}{
+    \If{$\mathbf{q}$ não visitado}{
+      Marcar $\mathbf{q}$ como visitado\;
+      $N' \leftarrow N_\varepsilon(\mathbf{q})$\;
+      \If{$|N'| \geq \text{MinPts}$}{$N \leftarrow N \cup N'$\;}
+    }
+    \If{$\mathbf{q}$ ainda não atribuído a cluster}{Adicionar $\mathbf{q}$ ao cluster $C$\;}
+  }
+}
+\end{algorithm}
+
+\textbf{Parâmetros:} $\varepsilon$ pode ser estimado pelo gráfico da $k$-NN distance (joelho da curva para $k = \text{MinPts}$). Regra prática: $\text{MinPts} \geq 2d$ onde $d$ é a dimensionalidade.
+
+\subsection{HDBSCAN}
+
+O \textbf{HDBSCAN} (Hierarchical DBSCAN; McInnes et al., 2017) estende o DBSCAN com uma abordagem hierárquica que \textbf{varia o limiar de densidade} automaticamente.
+
+\textbf{Vantagens sobre DBSCAN:}
+\begin{itemize}
+  \item Detecta clusters com \textbf{densidades variáveis} (problema do DBSCAN: apenas $\varepsilon$ global).
+  \item Mais robusto na seleção de parâmetros: apenas \texttt{min\_cluster\_size} é crítico.
+  \item Constrói uma árvore de condensação de clusters e extrai os mais persistentes.
+  \item Retorna probabilidade de pertencimento ao cluster (métrica de membrana).
+\end{itemize}
+
+\subsection{Modelos de Mistura Gaussiana (GMM)}
+
+O GMM modela os dados como uma \textbf{mistura} de $K$ distribuições Gaussianas:
+\[
+  p(\mathbf{x}) = \sum_{k=1}^{K} \pi_k \, \mathcal{N}(\mathbf{x} \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)
+\]
+onde $\pi_k$ são os pesos da mistura ($\sum_k \pi_k = 1$, $\pi_k > 0$).
+
+O GMM é treinado pelo \textbf{algoritmo EM} (Dempster et al., 1977):
+
+\textbf{E-step} -- Calcular responsabilidades:
+\[
+  r_{ik} = \frac{\pi_k \, \mathcal{N}(\mathbf{x}_i \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)}{\sum_{j=1}^{K} \pi_j \, \mathcal{N}(\mathbf{x}_i \mid \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j)}
+\]
+
+\textbf{M-step} -- Atualizar parâmetros:
+\[
+  \pi_k = \frac{1}{N}\sum_i r_{ik}, \quad
+  \boldsymbol{\mu}_k = \frac{\sum_i r_{ik} \mathbf{x}_i}{\sum_i r_{ik}}, \quad
+  \boldsymbol{\Sigma}_k = \frac{\sum_i r_{ik}(\mathbf{x}_i - \boldsymbol{\mu}_k)(\mathbf{x}_i - \boldsymbol{\mu}_k)^T}{\sum_i r_{ik}}
+\]
+
+\textbf{Seleção do número de componentes} $K$: Use \textbf{BIC} (Bayesian Information Criterion) ou \textbf{AIC}: $\text{BIC} = -2\log\hat{L} + p \log N$, onde $p$ é o número de parâmetros. Minimize o BIC.
+
+\subsection{Spectral Clustering}
+
+O Spectral Clustering (Ng et al., 2002) baseia-se na teoria de grafos espectrais para capturar estruturas não-convexas que K-Means falha.
+
+\textbf{Algoritmo:}
+\begin{enumerate}
+  \item Construir matriz de similaridade $\mathbf{W}$ (ex.\ kernel RBF: $w_{ij} = e^{-\|x_i-x_j\|^2/2\sigma^2}$).
+  \item Calcular Laplaciano normalizado: $\mathbf{L} = \mathbf{D}^{-1/2}(\mathbf{D}-\mathbf{W})\mathbf{D}^{-1/2}$, onde $D_{ii} = \sum_j w_{ij}$.
+  \item Extrair os $K$ menores autovetores de $\mathbf{L}$; formar matriz $\mathbf{U}$.
+  \item Aplicar K-Means no espaço dos autovetores.
+\end{enumerate}
+
+\subsection{Avaliação de Agrupamentos}
+
+\subsubsection{Métricas Internas (sem rótulos verdadeiros)}
+
+\textbf{Coeficiente de Silhouette} (Rousseeuw, 1987): Para cada ponto $i$:
+\[
+  s(i) = \frac{b(i) - a(i)}{\max\{a(i), b(i)\}}
+\]
+onde $a(i) = $ distância média intra-cluster, $b(i) = $ distância média ao cluster vizinho mais próximo.
+$s(i) \in [-1, 1]$: valores próximos a 1 indicam boa alocação.
+
+\textbf{Índice Davies-Bouldin} (Davies \& Bouldin, 1979):
+\[
+  \text{DB} = \frac{1}{K} \sum_{k=1}^{K} \max_{k \neq k'} \frac{s_k + s_{k'}}{\|c_k - c_{k'}\|}
+\]
+onde $s_k$ é a distância média intra-cluster $k$. Minimizar DB.
+
+\textbf{Índice Calinski-Harabasz}: Razão entre dispersão inter-cluster e intra-cluster. Maximizar.
+
+\subsubsection{Métricas Externas (com rótulos verdadeiros)}
+
+\textbf{Adjusted Rand Index (ARI)}: Versão ajustada para chance do Rand Index. $\text{ARI} \in [-1, 1]$; 1 = agrupamento perfeito; 0 = aleatório.
+
+\textbf{Normalized Mutual Information (NMI)}:
+\[
+  \text{NMI}(U, V) = \frac{2 \cdot I(U; V)}{H(U) + H(V)} \in [0, 1]
+\]
+
+\textbf{V-Measure}: Média harmônica de homogeneidade (cada cluster contém apenas uma classe) e completude (todos os membros de uma classe estão no mesmo cluster).
+
+% ============================================================
+\section{Regras de Associação}
+% ============================================================
+
+\subsection{Conceitos Fundamentais}
+
+Dada uma base de transações $\mathcal{T} = \{T_1, \ldots, T_N\}$ sobre um conjunto de itens $\mathcal{I}$, o objetivo é encontrar regras $A \Rightarrow B$ ($A, B \subseteq \mathcal{I}$, $A \cap B = \emptyset$) com alta frequência e confiabilidade.
+
+\textbf{Medidas de interesse:}
+\begin{align}
+  \text{sup}(A) &= \frac{|\{T \in \mathcal{T} : A \subseteq T\}|}{|\mathcal{T}|} && \text{(frequência do itemset)}\\
+  \text{sup}(A \Rightarrow B) &= \text{sup}(A \cup B) && \text{(frequência da regra)}\\
+  \text{conf}(A \Rightarrow B) &= \frac{\text{sup}(A \cup B)}{\text{sup}(A)} && \text{(confiança)}\\
+  \text{lift}(A \Rightarrow B) &= \frac{\text{conf}(A \Rightarrow B)}{\text{sup}(B)} && \text{(importância relativa)}\\
+  \text{conv}(A \Rightarrow B) &= \frac{1 - \text{sup}(B)}{1 - \text{conf}(A \Rightarrow B)} && \text{(convicção)}
+\end{align}
+
+\textbf{Interpretação:}
+\begin{itemize}
+  \item \textbf{Lift $> 1$}: $A$ e $B$ são positivamente correlacionados; a regra é mais frequente que o esperado por acaso.
+  \item \textbf{Lift $= 1$}: $A$ e $B$ são independentes.
+  \item \textbf{Lift $< 1$}: $A$ e $B$ são negativamente correlacionados (regra negativa).
+\end{itemize}
+
+\begin{exemplobox}{Exemplo: Cesta de Mercado}
+Considere 5 transações: $T_1=\{leite, pão\}$, $T_2=\{leite, manteiga, pão\}$, $T_3=\{manteiga, queijo\}$, $T_4=\{leite, manteiga\}$, $T_5=\{leite, pão, queijo\}$.
+
+Para a regra $\{leite\} \Rightarrow \{pão\}$:
+\[
+  \text{sup}(\{leite, pão\}) = 3/5 = 0.6, \quad
+  \text{sup}(\{leite\}) = 4/5 = 0.8, \quad
+  \text{conf} = 0.6/0.8 = 0.75
+\]
+\[
+  \text{sup}(\{pão\}) = 3/5 = 0.6, \quad
+  \text{lift} = 0.75/0.6 = 1.25 \quad \text{(correlação positiva)}
+\]
+\end{exemplobox}
+
+\subsection{Algoritmo Apriori (Agrawal \& Srikant, 1994)}
+
+O Apriori usa a propriedade \textbf{anti-monótona}: se um itemset é infrequente, todos os seus superconjuntos também são. Isso permite poda da busca.
+
+\begin{algorithm}[H]
+\caption{Apriori}
+\KwIn{Transações $\mathcal{T}$, suporte mínimo $\text{minsup}$, confiança mínima $\text{minconf}$}
+\KwOut{Conjunto de regras de associação frequentes}
+$L_1 \leftarrow$ \{itemsets frequentes de tamanho 1\}\;
+$k \leftarrow 1$\;
+\While{$L_k \neq \emptyset$}{
+  $C_{k+1} \leftarrow$ AprioriGen($L_k$) \tcp{gera candidatos de tamanho $k+1$}
+  \ForEach{transação $T \in \mathcal{T}$}{
+    $D_T \leftarrow$ \{candidatos em $C_{k+1}$ contidos em $T$\}\;
+    Incrementar contagem de cada itemset em $D_T$\;
+  }
+  $L_{k+1} \leftarrow$ \{$c \in C_{k+1}$ : sup$(c) \geq \text{minsup}$\}\;
+  $k \leftarrow k + 1$\;
+}
+$\mathcal{F} \leftarrow \bigcup_k L_k$ \tcp{todos os itemsets frequentes}
+\ForEach{$f \in \mathcal{F}$, $A \subset f$, $B = f \setminus A$, $A \neq \emptyset$}{
+  \If{conf$(A \Rightarrow B) \geq \text{minconf}$}{
+    Adicionar $A \Rightarrow B$ às regras\;
+  }
+}
+\end{algorithm}
+
+\subsection{Algoritmo FP-Growth (Han et al., 2000)}
+
+O FP-Growth elimina a geração de candidatos construindo uma estrutura compacta (\textbf{FP-Tree}) que representa a base de transações.
+
+\textbf{Vantagens sobre Apriori:}
+\begin{itemize}
+  \item Apenas \textbf{dois varrimentos} da base de dados (independente do número de itemsets).
+  \item Sem geração explícita de candidatos.
+  \item A FP-Tree é tipicamente muito menor que a base original (compartilha prefixos).
+\end{itemize}
+
+\textbf{Funcionamento:} (1) Varre a base, conta frequências de itens, ordena por frequência decrescente. (2) Varre novamente, inserindo transações na FP-Tree. (3) Extrai itemsets frequentes recursivamente usando bases de padrões condicionais.
+
+\textbf{ECLAT (Equivalence CLAss Transformation)}: Usa formato vertical dos dados (lista de transações por item -- TidList). Interseção de TidLists para computar suporte; eficiente para muitas transações.
+
+\subsection{Regras de Associação para Cenários Específicos}
+
+\begin{itemize}
+  \item \textbf{Regras Quantitativas}: Itens com atributos numéricos; discretização ou particionamento fuzzy.
+  \item \textbf{Regras Temporais / Mineração de Sequências}: Regras com ordenação temporal; algoritmo GSP (Generalized Sequential Patterns) e PrefixSpan.
+  \item \textbf{Regras Multi-nível}: Taxonomias de itens (ex.\ leite $\subset$ laticínios $\subset$ alimentos); suporte mínimo ajustado por nível.
+  \item \textbf{Regras Negativas}: $A \Rightarrow \neg B$ (comprar A implica não comprar B); úteis para descoberta de anti-correlações.
+\end{itemize}
+
+% ============================================================
+\section{Detecção de Anomalias}
+% ============================================================
+
+\begin{definicaobox}{Tipos de Anomalias}
+\begin{itemize}
+  \item \textbf{Ponto}: Uma instância individual diverge significativamente das demais (ex.\ transação fraudulenta).
+  \item \textbf{Contextual}: Uma instância é anômala em um contexto específico (ex.\ temperatura de $35^\circ$C em dezembro no RS).
+  \item \textbf{Coletiva}: Um subconjunto de instâncias é anômalo em conjunto, mas cada instância individualmente parece normal.
+\end{itemize}
+\end{definicaobox}
+
+\textbf{Métodos de Detecção de Anomalias:}
+
+\begin{itemize}
+  \item \textbf{Estatísticos}: Assume distribuição Gaussiana; Z-score ($|z| > 3$); Grubbs Test; Boxplot ($> 1.5 \times \text{IQR}$).
+  \item \textbf{Baseados em Distância}: K-NN Outlier Score: anomalias têm vizinhos distantes.
+  \item \textbf{Local Outlier Factor (LOF)} (Breunig et al., 2000): Compara a densidade de um ponto com a de seus vizinhos. $\text{LOF}(p) \gg 1$ indica anomalia.
+  \item \textbf{Isolation Forest} (Liu et al., 2008): Constrói árvores de isolamento aleatórias. Anomalias são isoladas em menos partições (caminhos curtos na árvore). Score de anomalia: $s(x,n) = 2^{-E[h(x)]/c(n)}$, onde $h(x)$ é o comprimento do caminho e $c(n)$ é o comprimento médio esperado.
+  \item \textbf{Autoencoder}: Treina a rede neural para reconstruir dados normais. Alta \textbf{erro de reconstrução} $\|x - \hat{x}\|^2$ indica anomalia.
+  \item \textbf{VAE (Variational Autoencoder)}: Score de anomalia baseado no ELBO (Evidence Lower BOund).
+\end{itemize}
+
+% ============================================================
+\section{Estado da Arte (2020--2024)}
+% ============================================================
+
+\begin{estadoartebox}{Deep Clustering}
+Integração de redes neurais profundas com objetivos de clustering:
+\begin{itemize}
+  \item \textbf{DEC -- Deep Embedded Clustering} (Xie et al., 2016): Autoencoder treinado conjuntamente com uma função de perda de clustering; aprende representações otimizadas para agrupamento.
+  \item \textbf{SCAN} (Van Gansbeke et al., 2020): Self-supervised clustering; usa similaridade de vizinhos para treinar sem rótulos; state-of-the-art em clustering de imagens.
+  \item \textbf{DINO} (Caron et al., 2021): Recursos do Vision Transformer (ViT) pré-treinados auto-supervisionados revelam estrutura de clustering sem fine-tuning; propriedade emergente dos Transformers.
+\end{itemize}
+\end{estadoartebox}
+
+\begin{estadoartebox}{HDBSCAN e Clustering para Dados de Alta Dimensão}
+\begin{itemize}
+  \item \textbf{HDBSCAN} tornou-se o padrão para clustering robusto em Python (scikit-learn $\geq 1.3$). Suporta dados de alta dimensão com a métrica de alcançabilidade mútua.
+  \item \textbf{Pipeline UMAP + HDBSCAN}: UMAP reduz dimensionalidade preservando estrutura local, HDBSCAN agrupa no espaço reduzido. Muito eficaz para NLP (embeddings de documentos), genômica single-cell (scRNA-seq).
+  \item \textbf{BERTopic} (Grootendorst, 2022): Modela tópicos combinando BERT embeddings + UMAP + HDBSCAN + TF-IDF por cluster. Supera LDA em qualidade de tópicos.
+\end{itemize}
+\end{estadoartebox}
+
+\begin{estadoartebox}{Detecção de Outliers Moderna}
+\begin{itemize}
+  \item \textbf{PyOD} (Zhao et al., 2019): Biblioteca Python com 40+ algoritmos de detecção de outliers unificados em uma API sklearn-compatível.
+  \item \textbf{COPOD} (Li et al., 2020): Copula-Based Outlier Detection; sem hiperparâmetros; muito eficiente; baseado em cópulas empíricas.
+  \item \textbf{ECOD} (Li et al., 2022): Empirical Cumulative distribution-based Outlier Detection; computacionalmente eficiente; interpretável; sem hiperparâmetros.
+  \item \textbf{Detecção de Anomalias em Grafos}: GraphSAGE + Isolation Forest para detecção de fraudes em redes sociais; muito relevante para Social CRM.
+\end{itemize}
+\end{estadoartebox}
+
+% ============================================================
+\section{Exercícios}
+% ============================================================
+
+\begin{enumerate}
+  \item \textbf{Silhouette Manual}: Dados os pontos $p_1=(1,1), p_2=(2,1), p_3=(5,5), p_4=(6,5)$ e os clusters $C_1 = \{p_1, p_2\}$, $C_2 = \{p_3, p_4\}$, calcule o coeficiente de silhouette para cada ponto e a silhouette média. O clustering é bom?
+
+  \item \textbf{K-Means com Diferentes K}: Aplique K-Means com $K = 2, 3, 4, 5$ ao dataset Iris (4 features). Para cada $K$, calcule a inércia, Silhouette e Davies-Bouldin. Plote as curvas e determine o $K$ ótimo. O $K$ ótimo coincide com o número real de classes (3)?
+
+  \item \textbf{Comparação de Linkages}: Aplique clustering hierárquico com single, complete, average e Ward linkage ao dataset Wine. Para cada método, corte o dendrograma em $K=3$ e calcule ARI e NMI em relação às classes verdadeiras. Qual linkage tem melhor desempenho? Por quê?
+
+  \item \textbf{Apriori Manual}: Dada a base de transações: $T_1=\{A,B,C\}$, $T_2=\{A,B\}$, $T_3=\{B,C,D\}$, $T_4=\{A,C\}$, $T_5=\{A,B,D\}$, $T_6=\{B,C\}$. Com suporte mínimo $= 0.5$ e confiança mínima $= 0.7$, execute o Apriori: liste os itemsets frequentes $L_1, L_2, L_3$ e as regras válidas com suporte, confiança e lift.
+
+  \item \textbf{DBSCAN Parameter Selection}: Aplique DBSCAN ao dataset make\_moons de scikit-learn. Varie $\varepsilon \in \{0.1, 0.2, 0.3, 0.5\}$ e MinPts $\in \{3, 5, 10\}$. Para cada combinação, reporte número de clusters, número de pontos de ruído e ARI. Qual combinação é melhor? Compare com K-Means ($K=2$).
+
+  \item \textbf{Comparação de Métodos de Anomalia}: Usando o dataset Pima Indians Diabetes ou Credit Card Fraud, compare Isolation Forest, LOF e Z-Score para detecção de anomalias. Avalie com AUC-ROC e Precisão@K (K = 1\% dos dados). Qual método tem melhor desempenho?
+
+  \item \textbf{Avaliação de Clustering Pipeline}: Implemente um pipeline completo: (1) normalizar dados, (2) reduzir com PCA para 2D, (3) aplicar K-Means e HDBSCAN, (4) visualizar com t-SNE, (5) calcular todas as métricas de avaliação disponíveis. Reporte e discuta os resultados para o dataset Fashion-MNIST (10.000 amostras).
+\end{enumerate}
+
+% ============================================================
+\section{Referências}
+% ============================================================
+
+\begin{thebibliography}{99}
+
+\bibitem{agrawal1994}
+Agrawal, R.; Srikant, R.
+\newblock Fast algorithms for mining association rules.
+\newblock \textit{Proceedings of the 20th VLDB Conference}, pp.~487--499, 1994.
+
+\bibitem{han2000}
+Han, J.; Pei, J.; Yin, Y.
+\newblock Mining frequent patterns without candidate generation.
+\newblock \textit{ACM SIGMOD Record}, 29(2):1--12, 2000.
+
+\bibitem{macqueen1967}
+MacQueen, J.
+\newblock Some methods for classification and analysis of multivariate observations.
+\newblock \textit{Proceedings of the 5th Berkeley Symposium on Mathematical Statistics and Probability}, 1:281--297, 1967.
+
+\bibitem{arthur2007}
+Arthur, D.; Vassilvitskii, S.
+\newblock k-means++: The advantages of careful seeding.
+\newblock \textit{Proceedings of the 18th Annual ACM-SIAM Symposium on Discrete Algorithms (SODA)}, pp.~1027--1035, 2007.
+
+\bibitem{ester1996}
+Ester, M.; Kriegel, H.-P.; Sander, J.; Xu, X.
+\newblock A density-based algorithm for discovering clusters in large spatial databases with noise.
+\newblock \textit{Proceedings of the 2nd ACM International Conference on Knowledge Discovery and Data Mining (KDD)}, pp.~226--231, 1996.
+
+\bibitem{mcinnes2017}
+McInnes, L.; Healy, J.; Astels, S.
+\newblock hdbscan: Hierarchical density based clustering.
+\newblock \textit{Journal of Open Source Software}, 2(11):205, 2017.
+
+\bibitem{breunig2000}
+Breunig, M. M.; Kriegel, H.-P.; Ng, R. T.; Sander, J.
+\newblock LOF: Identifying density-based local outliers.
+\newblock \textit{ACM SIGMOD Record}, 29(2):93--104, 2000.
+
+\bibitem{liu2008}
+Liu, F. T.; Ting, K. M.; Zhou, Z.-H.
+\newblock Isolation forest.
+\newblock \textit{IEEE International Conference on Data Mining (ICDM)}, pp.~413--422, 2008.
+
+\bibitem{rousseeuw1987}
+Rousseeuw, P. J.
+\newblock Silhouettes: A graphical aid to the interpretation and validation of cluster analysis.
+\newblock \textit{Journal of Computational and Applied Mathematics}, 20:53--65, 1987.
+
+\bibitem{davies1979}
+Davies, D. L.; Bouldin, D. W.
+\newblock A cluster separation measure.
+\newblock \textit{IEEE Transactions on Pattern Analysis and Machine Intelligence}, 1(2):224--227, 1979.
+
+\bibitem{dempster1977}
+Dempster, A. P.; Laird, N. M.; Rubin, D. B.
+\newblock Maximum likelihood from incomplete data via the EM algorithm.
+\newblock \textit{Journal of the Royal Statistical Society. Series B}, 39(1):1--38, 1977.
+
+\bibitem{ng2002}
+Ng, A. Y.; Jordan, M. I.; Weiss, Y.
+\newblock On spectral clustering: Analysis and an algorithm.
+\newblock \textit{Advances in Neural Information Processing Systems}, 14, 2002.
+
+\bibitem{zhao2019}
+Zhao, Y.; Nasrullah, Z.; Li, Z.
+\newblock PyOD: A Python toolbox for scalable outlier detection.
+\newblock \textit{Journal of Machine Learning Research}, 20(96):1--7, 2019.
+
+\bibitem{caron2021}
+Caron, M.; Touvron, H.; Misra, I.; et al.
+\newblock Emerging properties in self-supervised vision transformers.
+\newblock \textit{International Conference on Computer Vision (ICCV)}, 2021.
+
+\end{thebibliography}
+
+\end{document}
