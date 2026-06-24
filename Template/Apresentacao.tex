@@ -1,0 +1,85 @@
+\documentclass[aspectratio=169]{beamer} % Alterado para 16:9 (padrão moderno)
+\setbeamerfont{headline}{size=\footnotesize}
+
+\mode<presentation>{
+    \usetheme{Montpellier}
+    \setbeamercovered{transparent}
+    \usecolortheme{beaver} % Sugestão: Beaver tem tons de vermelho/cinza que funcionam bem, ou volte para lsc se preferir
+}
+
+\usepackage[english,brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fontawesome}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{colortbl}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,backgrounds,shapes.multipart,shapes, arrows, positioning, shadow, calc}
+
+\usepackage{ragged2e} % Para justificar texto se necessário
+
+% --- Configuração de Cores e Listings ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\newcommand{\reflexao}[1]{\begin{alertblock}{Reflexão}#1\end{alertblock}}
+\newcommand{\key}[1]{\underline{#1}}
+% --- Dados do Título ---
+\title[Mineração de Dados]{Mineração de Dados: Conceitos e Aplicações}
+\subtitle{}
+\author[Elton Sarmanho]{
+    Prof. Elton Sarmanho\inst{1}\\
+    \footnotesize \href{mailto:eltonss@ufpa.br}{eltonss@ufpa.br}
+}
+\institute[UFPA]{
+    \inst{1} Faculdade de Sistemas de Informação - UFPA Campus Cametá
+}
+\date{\today}
+
+% --- Configuração de Diagramas TikZ ---
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse, fill=red!20, node distance=3cm, minimum height=2em]
+\tikzstyle{decision} = [diamond, draw, fill=green!20, text width=4.5em, text badly centered, inner sep=0pt]
+
+\begin{document}
+
+% Slide de Título
+\begin{frame}
+    \titlepage
+    \begin{center}
+        \tiny \faGithub \ \href{https://github.com/eltonsarmanho}{github.com/eltonsarmanho} \quad
+        \faLinkedinSquare \ \href{https://www.linkedin.com/in/elton-sarmanho-836553185/}{Elton Sarmanho}
+    \end{center}
+\end{frame}
+
+% Roteiro
+\begin{frame}{Roteiro da Aula}
+    \tableofcontents
+\end{frame}
+
+% ==============================================================================
+\section{Conceitos Fundamentais}
+% ==============================================================================
+
+\subsection{Titulo da subseção}
+\begin{frame}{Nome do Slide}
+   
+\end{frame}
+
+
+
+\begin{frame}{Referências Bibliográficas}
+    \begin{thebibliography}{99}
+        \bibitem{heuser} HEUSER, C. A. \textit{Projeto de Banco de Dados}. 6ª ed. Bookman, 2009.
+        \bibitem{silber} SILBERSCHATZ, A. et al. \textit{Sistema de Banco de Dados}. Campus.
+        \bibitem{date} DATE, C. J. \textit{Introdução a Sistemas de Banco de Dados}. Campus.
+        \bibitem{navathe} ELMASRI, R.; NAVATHE, S. \textit{Sistemas de Banco de Dados}. Pearson.
+    \end{thebibliography}
+\end{frame}
+
+\end{document}

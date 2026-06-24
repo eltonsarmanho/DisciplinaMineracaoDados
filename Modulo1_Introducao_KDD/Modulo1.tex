@@ -128,11 +128,11 @@ Ao final deste módulo, o estudante será capaz de:
 \section{Introdução}
 %=============================================================
 
-Vivemos na era dos dados. A cada minuto, são gerados mais de 2,5 quintilhões de bytes de informação no mundo --- resultado das redes sociais, transações financeiras, sensores de IoT, registros médicos, registros de navegação web e inúmeras outras fontes digitais. Esse fenômeno, frequentemente descrito pelos ``três Vs'' do Big Data (Volume, Velocidade e Variedade), criou uma lacuna fundamental entre a quantidade de dados disponíveis e a capacidade humana de extrair significado deles de forma manual. É nesse contexto que a \textbf{Mineração de Dados} (do inglês, \textit{Data Mining}) emerge como disciplina essencial: ela fornece os métodos, algoritmos e ferramentas para transformar grandes massas de dados brutos em conhecimento acionável.
+Vivemos na era dos dados. A cada minuto, são gerados mais de 2,5 quintilhões de bytes de informação no mundo resultado das redes sociais, transações financeiras, sensores de IoT, registros médicos, registros de navegação web e inúmeras outras fontes digitais. Esse fenômeno, frequentemente descrito pelos ``três Vs'' do Big Data (Volume, Velocidade e Variedade), criou uma lacuna fundamental entre a quantidade de dados disponíveis e a capacidade humana de extrair significado deles de forma manual. É nesse contexto que a \textbf{Mineração de Dados} (do inglês, \textit{Data Mining}) emerge como disciplina essencial: ela fornece os métodos, algoritmos e ferramentas para transformar grandes massas de dados brutos em conhecimento acionável.
 
 O impacto prático da Mineração de Dados já é visível no cotidiano. A Netflix utiliza algoritmos de filtragem colaborativa para recomendar filmes e séries, reduzindo significativamente o custo de retenção de assinantes. Instituições financeiras como Visa e Mastercard aplicam modelos de detecção de anomalias para identificar transações fraudulentas em tempo real, prevenindo bilhões de dólares em perdas anuais. Na medicina, modelos preditivos auxiliam no diagnóstico precoce de doenças como câncer de mama e diabetes a partir de exames de imagem e histórico clínico. Em todos esses casos, o valor não está nos dados em si, mas no \textit{padrão} e no \textit{conhecimento} que podem ser extraídos deles.
 
-A Mineração de Dados não é uma disciplina isolada --- ela ocupa a intersecção de várias áreas do conhecimento. De um lado, herda o rigor matemático da \textbf{Estatística}, que fornece as bases para amostragem, inferência e modelagem probabilística. De outro, beneficia-se dos avanços do \textbf{Aprendizado de Máquina} (Machine Learning), que desenvolveu algoritmos capazes de aprender padrões em dados de alta dimensionalidade. Os \textbf{Bancos de Dados} fornecem a infraestrutura para armazenar, consultar e gerenciar os dados em escala. E a \textbf{Inteligência Artificial} contribui com representações de conhecimento e mecanismos de raciocínio. Ao longo deste módulo, exploraremos cada um desses elos e veremos como o processo KDD integra todas essas contribuições em um fluxo coerente de descoberta de conhecimento.
+A Mineração de Dados não é uma disciplina isolada ela ocupa a intersecção de várias áreas do conhecimento. De um lado, herda o rigor matemático da \textbf{Estatística}, que fornece as bases para amostragem, inferência e modelagem probabilística. De outro, beneficia-se dos avanços do \textbf{Aprendizado de Máquina} (Machine Learning), que desenvolveu algoritmos capazes de aprender padrões em dados de alta dimensionalidade. Os \textbf{Bancos de Dados} fornecem a infraestrutura para armazenar, consultar e gerenciar os dados em escala. E a \textbf{Inteligência Artificial} contribui com representações de conhecimento e mecanismos de raciocínio. Ao longo deste módulo, exploraremos cada um desses elos e veremos como o processo KDD integra todas essas contribuições em um fluxo coerente de descoberta de conhecimento.
 
 %=============================================================
 \section{Definição e Conceitos Fundamentais}
@@ -150,12 +150,12 @@ Essa definição clássica, proposta por Usama Fayyad, Gregory Piatetsky-Shapiro
 
 \begin{itemize}[leftmargin=*]
   \item \textbf{Implícita:} o conhecimento não é diretamente observável na estrutura dos dados, mas requer processos de busca e inferência para ser descoberto.
-  \item \textbf{Previamente desconhecida:} o conhecimento deve ser novo --- não se trata de confirmar hipóteses já conhecidas, mas de descobrir relações inesperadas.
+  \item \textbf{Previamente desconhecida:} o conhecimento deve ser novo não se trata de confirmar hipóteses já conhecidas, mas de descobrir relações inesperadas.
   \item \textbf{Potencialmente útil:} o conhecimento deve ter valor prático ou teórico, sendo passível de ação ou refinamento do entendimento.
 \end{itemize}
 
 \begin{exemplobox}{Exemplo Ilustrativo}
-Um supermercado coleta bilhões de transações de compra. Um analista poderia notar manualmente que certas categorias vendem bem. Porém, apenas a mineração de dados pode revelar padrões como ``clientes que compram fraldas às sextas-feiras também tendem a comprar cerveja'' --- uma associação inesperada e valiosa para estratégias de posicionamento de prateleiras.
+Um supermercado coleta bilhões de transações de compra. Um analista poderia notar manualmente que certas categorias vendem bem. Porém, apenas a mineração de dados pode revelar padrões como ``clientes que compram fraldas às sextas-feiras também tendem a comprar cerveja'' uma associação inesperada e valiosa para estratégias de posicionamento de prateleiras.
 \end{exemplobox}
 
 \subsection{Distinção entre Termos}
@@ -234,12 +234,12 @@ A figura a seguir apresenta a evolução histórica das áreas que contribuem pa
 
 \subsection{Etapas do KDD (Fayyad, 1996)}
 
-O processo de Descoberta de Conhecimento em Bancos de Dados (KDD --- \textit{Knowledge Discovery in Databases}) foi formalizado por Fayyad et al.\ (1996) como um processo iterativo e interativo composto por múltiplas etapas. A mineração de dados, nesse contexto, é apenas uma das fases do processo --- a mais central, mas dependente de todas as anteriores.
+O processo de Descoberta de Conhecimento em Bancos de Dados (KDD \textit{Knowledge Discovery in Databases}) foi formalizado por Fayyad et al.\ (1996) como um processo iterativo e interativo composto por múltiplas etapas. A mineração de dados, nesse contexto, é apenas uma das fases do processo a mais central, mas dependente de todas as anteriores.
 
 \begin{enumerate}[leftmargin=*, label=\textbf{Etapa \arabic*:}]
   \item \textbf{Seleção de Dados:} Identificação e seleção dos dados relevantes para o problema em questão. Envolve a definição do universo de análise, a escolha das fontes de dados (bancos de dados transacionais, data warehouses, arquivos externos) e a extração do subconjunto a ser analisado. Uma boa seleção reduz ruído e custo computacional nas etapas subsequentes.
 
-  \item \textbf{Pré-processamento:} Limpeza e consolidação dos dados selecionados. Inclui o tratamento de valores ausentes (imputação, remoção ou marcação), a identificação e o tratamento de outliers, a resolução de inconsistências e a integração de dados provenientes de múltiplas fontes. Esta é frequentemente a etapa que consome mais tempo --- estima-se que 60--80\% do esforço de um projeto de DM seja dedicado ao pré-processamento.
+  \item \textbf{Pré-processamento:} Limpeza e consolidação dos dados selecionados. Inclui o tratamento de valores ausentes (imputação, remoção ou marcação), a identificação e o tratamento de outliers, a resolução de inconsistências e a integração de dados provenientes de múltiplas fontes. Esta é frequentemente a etapa que consome mais tempo estima-se que 60--80\% do esforço de um projeto de DM seja dedicado ao pré-processamento.
 
   \item \textbf{Transformação:} Conversão e enriquecimento dos dados pré-processados para um formato adequado ao algoritmo de mineração. Inclui normalização e escalonamento de atributos numéricos, codificação de variáveis categóricas (One-Hot Encoding, Label Encoding), criação de novos atributos (\textit{feature engineering}), redução de dimensionalidade (PCA, t-SNE) e discretização de variáveis contínuas.
 
@@ -281,17 +281,17 @@ O processo de Descoberta de Conhecimento em Bancos de Dados (KDD --- \textit{Kno
 
 A metodologia CRISP-DM (\textit{Cross-Industry Standard Process for Data Mining}), proposta por Wirth e Hipp (2000) e desenvolvida por um consórcio de empresas europeias, tornou-se o padrão de facto para projetos de mineração de dados na indústria. Diferente do KDD acadêmico, o CRISP-DM incorpora explicitamente a perspectiva de negócios.
 
-\textbf{Fase 1 --- Entendimento do Negócio:} O projeto começa com a compreensão profunda dos objetivos de negócio. Nesta fase, define-se o problema de forma precisa, identificam-se as partes interessadas, estabelece-se o critério de sucesso do projeto e avalia-se a viabilidade técnica e os recursos disponíveis. Um mal entendimento do negócio é a principal causa de falha em projetos de DM.
+\textbf{Fase 1 Entendimento do Negócio:} O projeto começa com a compreensão profunda dos objetivos de negócio. Nesta fase, define-se o problema de forma precisa, identificam-se as partes interessadas, estabelece-se o critério de sucesso do projeto e avalia-se a viabilidade técnica e os recursos disponíveis. Um mal entendimento do negócio é a principal causa de falha em projetos de DM.
 
-\textbf{Fase 2 --- Entendimento dos Dados:} Coleta inicial dos dados, exploração preliminar (estatísticas descritivas, visualizações), identificação de problemas de qualidade e formulação de hipóteses. Ferramentas de Análise Exploratória de Dados (EDA) são amplamente utilizadas nesta fase.
+\textbf{Fase 2 Entendimento dos Dados:} Coleta inicial dos dados, exploração preliminar (estatísticas descritivas, visualizações), identificação de problemas de qualidade e formulação de hipóteses. Ferramentas de Análise Exploratória de Dados (EDA) são amplamente utilizadas nesta fase.
 
-\textbf{Fase 3 --- Preparação dos Dados:} Seleção, limpeza, construção e formatação dos dados para a modelagem. Esta fase corresponde aproximadamente ao pré-processamento e transformação do KDD. Inclui o tratamento de dados faltantes, outliers, criação de features derivadas e divisão em conjuntos de treino, validação e teste.
+\textbf{Fase 3 Preparação dos Dados:} Seleção, limpeza, construção e formatação dos dados para a modelagem. Esta fase corresponde aproximadamente ao pré-processamento e transformação do KDD. Inclui o tratamento de dados faltantes, outliers, criação de features derivadas e divisão em conjuntos de treino, validação e teste.
 
-\textbf{Fase 4 --- Modelagem:} Seleção e aplicação de técnicas de modelagem. Nesta fase, parâmetros são ajustados, modelos são treinados e diferentes abordagens são comparadas. A modelagem é iterativa e frequentemente requer retorno à fase de preparação de dados.
+\textbf{Fase 4 Modelagem:} Seleção e aplicação de técnicas de modelagem. Nesta fase, parâmetros são ajustados, modelos são treinados e diferentes abordagens são comparadas. A modelagem é iterativa e frequentemente requer retorno à fase de preparação de dados.
 
-\textbf{Fase 5 --- Avaliação:} Avaliação rigorosa do modelo em relação aos critérios de sucesso do negócio. Verifica-se se todos os requisitos de negócio foram atendidos e se o modelo é robusto e generalizável. A aprovação nesta fase autoriza a implantação.
+\textbf{Fase 5 Avaliação:} Avaliação rigorosa do modelo em relação aos critérios de sucesso do negócio. Verifica-se se todos os requisitos de negócio foram atendidos e se o modelo é robusto e generalizável. A aprovação nesta fase autoriza a implantação.
 
-\textbf{Fase 6 --- Implantação:} Integração do modelo ao ambiente de produção. Inclui o planejamento da implantação, o monitoramento do modelo em produção (detecção de \textit{data drift} e degradação de desempenho), a documentação do projeto e as lições aprendidas.
+\textbf{Fase 6 Implantação:} Integração do modelo ao ambiente de produção. Inclui o planejamento da implantação, o monitoramento do modelo em produção (detecção de \textit{data drift} e degradação de desempenho), a documentação do projeto e as lições aprendidas.
 
 \vspace{0.5cm}
 \begin{center}
@@ -299,21 +299,30 @@ A metodologia CRISP-DM (\textit{Cross-Industry Standard Process for Data Mining}
 \def\n{6}
 \def\radius{3.2}
 \def\innerradius{0.8}
-\foreach \i/\label/\col in {
-  1/{Entendimento\\do Negócio}/mineblue,
-  2/{Entendimento\\dos Dados}/mineorange,
-  3/{Preparação\\dos Dados}/minegreen,
-  4/{Modelagem}/purple,
-  5/{Avaliação}/minered,
-  6/{Implantação}/minegreen!60!mineblue
-}{
-  \pgfmathsetmacro\angle{90 - (\i-1)*360/\n}
-  \pgfmathsetmacro\nextangle{90 - \i*360/\n}
-  \fill[\col!30] (\angle:\innerradius) -- (\angle:\radius) arc(\angle:\nextangle:\radius) -- (\nextangle:\innerradius) arc(\nextangle:\angle:\innerradius) -- cycle;
-  \draw[\col,thick] (\angle:\innerradius) -- (\angle:\radius) arc(\angle:\nextangle:\radius) -- (\nextangle:\innerradius) arc(\nextangle:\angle:\innerradius) -- cycle;
-  \pgfmathsetmacro\midangle{90 - (\i-0.5)*360/\n}
-  \node[font=\tiny\bfseries,align=center,text width=1.8cm] at (\midangle:2.1) {\label};
-}
+% Setores 0-4: loop simples com \colorlet para evitar espaço na expansão de \col
+\foreach \idx/\sectxt/\cname in {%
+  0/{Entendimento\\do Neg\'{o}cio}/mineblue,%
+  1/{Entendimento\\dos Dados}/mineorange,%
+  2/{Prepara\c{c}\~{a}o\\dos Dados}/minegreen,%
+  3/{Modelagem}/purple,%
+  4/{Avalia\c{c}\~{a}o}/minered%
+}{%
+  \pgfmathsetmacro{\secA}{90 - \idx*360/\n}%
+  \pgfmathsetmacro{\secB}{90 - (\idx+1)*360/\n}%
+  \pgfmathsetmacro{\secMid}{90 - (\idx+0.5)*360/\n}%
+  \colorlet{tmpsec}{\cname}%
+  \fill[tmpsec!30] (\secA:\innerradius) -- (\secA:\radius) arc(\secA:\secB:\radius) -- (\secB:\innerradius) arc(\secB:\secA:\innerradius) -- cycle;%
+  \draw[tmpsec,thick] (\secA:\innerradius) -- (\secA:\radius) arc(\secA:\secB:\radius) -- (\secB:\innerradius) arc(\secB:\secA:\innerradius) -- cycle;%
+  \node[font=\tiny\bfseries,align=center,text width=1.8cm] at (\secMid:2.1) {\sectxt};%
+}%
+% Setor 5 separado: cor composta minegreen!60!mineblue (não suportada via variável foreach)
+\colorlet{tmpsec}{minegreen!60!mineblue}%
+\pgfmathsetmacro{\secA}{90 - 5*360/\n}%
+\pgfmathsetmacro{\secB}{90 - 6*360/\n}%
+\pgfmathsetmacro{\secMid}{90 - 5.5*360/\n}%
+\fill[tmpsec!30] (\secA:\innerradius) -- (\secA:\radius) arc(\secA:\secB:\radius) -- (\secB:\innerradius) arc(\secB:\secA:\innerradius) -- cycle;%
+\draw[tmpsec,thick] (\secA:\innerradius) -- (\secA:\radius) arc(\secA:\secB:\radius) -- (\secB:\innerradius) arc(\secB:\secA:\innerradius) -- cycle;%
+\node[font=\tiny\bfseries,align=center,text width=1.8cm] at (\secMid:2.1) {Implanta\c{c}\~{a}o};
 \node[circle,fill=mineblue,text=white,font=\small\bfseries,minimum size=1.5cm] at (0,0) {DADOS};
 % Circular arrow
 \draw[->,thick,minegray,dashed] (0:3.6) arc(0:340:3.6);
@@ -347,13 +356,13 @@ A metodologia CRISP-DM (\textit{Cross-Industry Standard Process for Data Mining}
 
 A Mineração de Dados é, por natureza, uma disciplina interdisciplinar. Sua riqueza deriva exatamente da convergência de métodos e perspectivas de múltiplas áreas:
 
-\textbf{Estatística:} A estatística fornece o arcabouço teórico para a inferência a partir de dados. Conceitos como distribuições de probabilidade, testes de hipótese, regressão, análise de variância e intervalos de confiança são fundamentais para avaliar a validade dos padrões descobertos. A diferença central é que a estatística trabalha com hipóteses formuladas \textit{a priori}, enquanto a mineração de dados é predominantemente exploratória --- busca padrões sem hipótese prévia.
+\textbf{Estatística:} A estatística fornece o arcabouço teórico para a inferência a partir de dados. Conceitos como distribuições de probabilidade, testes de hipótese, regressão, análise de variância e intervalos de confiança são fundamentais para avaliar a validade dos padrões descobertos. A diferença central é que a estatística trabalha com hipóteses formuladas \textit{a priori}, enquanto a mineração de dados é predominantemente exploratória busca padrões sem hipótese prévia.
 
 \textbf{Machine Learning (Aprendizado de Máquina):} O ML fornece os algoritmos centrais da mineração de dados. Árvores de decisão, Redes Neurais, Support Vector Machines (SVM), algoritmos de clustering como K-Means e modelos de ensemble como Random Forest e Gradient Boosting são todos contribuições do ML. A diferença é de foco: o ML enfatiza a generalização e a predição, enquanto a DM enfatiza também a interpretabilidade e a descoberta de conhecimento novo.
 
 \textbf{Bancos de Dados (BD):} Os SGBDs (Sistemas de Gerenciamento de Bancos de Dados) fornecem a infraestrutura para armazenar, indexar e recuperar os dados que serão minerados. SQL, Data Warehousing, modelagem dimensional (esquema estrela e floco de neve) e ETL (\textit{Extract, Transform, Load}) são conceitos de BD essenciais para projetos de DM em escala real.
 
-\textbf{Inteligência Artificial (IA):} A IA clássica contribuiu com sistemas especialistas baseados em regras e lógica fuzzy. A IA moderna --- especialmente os LLMs (\textit{Large Language Models}) --- está transformando a mineração de texto e a geração automática de features. O planejamento automático da IA inspira o AutoML.
+\textbf{Inteligência Artificial (IA):} A IA clássica contribuiu com sistemas especialistas baseados em regras e lógica fuzzy. A IA moderna especialmente os LLMs (\textit{Large Language Models}) está transformando a mineração de texto e a geração automática de features. O planejamento automático da IA inspira o AutoML.
 
 \textbf{Reconhecimento de Padrões:} Desenvolvido originalmente para processar sinais e imagens, o reconhecimento de padrões contribuiu com técnicas de extração de features, análise de componentes principais (PCA) e métricas de similaridade que são amplamente usadas em tarefas de agrupamento e classificação em DM.
 
@@ -382,7 +391,7 @@ Regras de Associação & Não Supervisionado & Descobrir regras de co-ocorrênci
 \midrule
 Detecção de Anomalias & Semissupervisionado & Identificar instâncias atípicas & Fraude financeira; falha em equipamentos & Isolation Forest, LOF, One-Class SVM \\
 \midrule
-Sumarização & --- & Caracterizar e resumir dados & Perfis de usuários; relatórios automáticos & PCA, Estatísticas Descritivas, Autoencoders \\
+Sumarização & & Caracterizar e resumir dados & Perfis de usuários; relatórios automáticos & PCA, Estatísticas Descritivas, Autoencoders \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -473,15 +482,15 @@ AutoML automatiza o processo de seleção de modelos, engenharia de features e a
 A interpretabilidade tornou-se um requisito crítico em aplicações de alto impacto (crédito, saúde, justiça). As principais abordagens são:
 
 \begin{itemize}[leftmargin=*]
-  \item \textbf{SHAP} (SHapley Additive exPlanations --- Lundberg \& Lee, 2017): baseado na teoria dos jogos cooperativos, atribui contribuições individuais a cada feature para uma predição específica. É agnóstico ao modelo e consistente.
-  \item \textbf{LIME} (Local Interpretable Model-agnostic Explanations --- Ribeiro et al., 2016): aproxima qualquer modelo negro por um modelo interpretável localmente, em torno de uma instância específica.
+  \item \textbf{SHAP} (SHapley Additive exPlanations Lundberg \& Lee, 2017): baseado na teoria dos jogos cooperativos, atribui contribuições individuais a cada feature para uma predição específica. É agnóstico ao modelo e consistente.
+  \item \textbf{LIME} (Local Interpretable Model-agnostic Explanations Ribeiro et al., 2016): aproxima qualquer modelo negro por um modelo interpretável localmente, em torno de uma instância específica.
   \item \textbf{Grad-CAM}: para modelos de visão computacional, destaca as regiões da imagem que mais influenciaram a predição.
   \item \textbf{Counterfactual Explanations}: explica ``o que teria que mudar para obter uma predição diferente''.
 \end{itemize}
 \end{estadoartebox}
 
 \begin{estadoartebox}{Federated Learning para Privacidade}
-O aprendizado federado (Federated Learning --- McMahan et al., 2017) permite treinar modelos sem centralizar dados sensíveis. Os dados permanecem nos dispositivos locais (smartphones, hospitais, bancos), e apenas os gradientes ou atualizações de modelo são compartilhados com um servidor central. É altamente relevante no contexto da LGPD brasileira e do GDPR europeu:
+O aprendizado federado (Federated Learning McMahan et al., 2017) permite treinar modelos sem centralizar dados sensíveis. Os dados permanecem nos dispositivos locais (smartphones, hospitais, bancos), e apenas os gradientes ou atualizações de modelo são compartilhados com um servidor central. É altamente relevante no contexto da LGPD brasileira e do GDPR europeu:
 
 \begin{itemize}[leftmargin=*]
   \item Aplicações: teclados preditivos (Google Gboard), detecção de fraude bancária distribuída, diagnóstico médico federado.
@@ -510,16 +519,16 @@ A adoção crescente de técnicas de mineração de dados em contextos de alto i
 
 \textbf{Privacidade de Dados:} A mineração de dados frequentemente envolve dados pessoais sensíveis. É fundamental garantir anonimização eficaz, consentimento informado e minimização do uso de dados.
 
-\textbf{LGPD (Lei Geral de Proteção de Dados --- Lei 13.709/2018):} A LGPD brasileira, inspirada no GDPR europeu, estabelece direitos dos titulares de dados (acesso, correção, exclusão, portabilidade), obrigações para controladores e operadores, e penalidades severas por descumprimento. Todo projeto de DM com dados pessoais deve estar em conformidade com a LGPD.
+\textbf{LGPD (Lei Geral de Proteção de Dados Lei 13.709/2018):} A LGPD brasileira, inspirada no GDPR europeu, estabelece direitos dos titulares de dados (acesso, correção, exclusão, portabilidade), obrigações para controladores e operadores, e penalidades severas por descumprimento. Todo projeto de DM com dados pessoais deve estar em conformidade com a LGPD.
 
 \textbf{Fairness em ML:} Diversas métricas de equidade foram propostas para avaliar a imparcialidade de modelos: \textit{demographic parity}, \textit{equalized odds}, \textit{individual fairness}. É importante notar que algumas dessas métricas são matematicamente incompatíveis entre si (impossibilidade de Fairness).
 
 \textbf{Transparência Algorítmica:} O ``direito de explicação'' (presente na LGPD e no GDPR) exige que decisões automatizadas significativas possam ser explicadas aos titulares de dados afetados. Isso impõe restrições ao uso de modelos caixa-preta em contextos de alto impacto.
 
-\textbf{Responsabilidade (\textit{Accountability}):} Quando um modelo de DM cause dano, quem é responsável --- o desenvolvedor do algoritmo, a empresa que o implementou ou o usuário que tomou a decisão final? A ausência de frameworks claros de responsabilidade é uma lacuna ética e legal importante.
+\textbf{Responsabilidade (\textit{Accountability}):} Quando um modelo de DM cause dano, quem é responsável o desenvolvedor do algoritmo, a empresa que o implementou ou o usuário que tomou a decisão final? A ausência de frameworks claros de responsabilidade é uma lacuna ética e legal importante.
 
 \begin{atencaobox}{Atenção: Ética não é Opcional}
-A ética em Mineração de Dados não é um tema teórico distante da prática profissional --- ela afeta diretamente projetos reais. Vieses em dados de treino podem causar discriminação sistemática. Ignorar a LGPD pode resultar em multas de até 2\% do faturamento da empresa (limite de R\$ 50 milhões por infração). Profissionais de dados têm responsabilidade ativa na criação de sistemas justos e transparentes.
+A ética em Mineração de Dados não é um tema teórico distante da prática profissional ela afeta diretamente projetos reais. Vieses em dados de treino podem causar discriminação sistemática. Ignorar a LGPD pode resultar em multas de até 2\% do faturamento da empresa (limite de R\$ 50 milhões por infração). Profissionais de dados têm responsabilidade ativa na criação de sistemas justos e transparentes.
 \end{atencaobox}
 
 %=============================================================
