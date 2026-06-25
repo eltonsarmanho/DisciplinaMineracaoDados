@@ -407,17 +407,6 @@ IQR = Q_3 - Q_1
 \]
 O fator 1.5 é o critério de Tukey (1977). Usando 3.0 (critério mais restritivo) identifica apenas outliers extremos.
 
-\subsubsection{Z-Score Modificado (MAD)}
-
-Usa a Mediana Absolute Deviation (MAD) em vez de $\sigma$, sendo extremamente robusto:
-\[
-MAD = \text{mediana}(|x_i - \text{mediana}(x)|)
-\]
-\[
-M_i = \frac{0.6745 \cdot (x_i - \text{mediana}(x))}{MAD}
-\]
-Outlier se $|M_i| > 3.5$.
-
 O boxplot a seguir ilustra os elementos do método IQR:
 
 \vspace{0.4cm}
@@ -449,6 +438,19 @@ O boxplot a seguir ilustra os elementos do método IQR:
   \draw[<->,minegreen,thick] (3.0,2.0) -- (6.5,2.0) node[midway,above,font=\small] {$IQR = Q_3 - Q_1$};
 \end{tikzpicture}
 \end{center}
+
+\subsubsection{Z-Score Modificado (MAD)}
+
+Usa a Mediana Absolute Deviation (MAD) em vez de $\sigma$, sendo extremamente robusto:
+\[
+MAD = \text{mediana}(|x_i - \text{mediana}(x)|)
+\]
+\[
+M_i = \frac{0.6745 \cdot (x_i - \text{mediana}(x))}{MAD}
+\]
+Outlier se $|M_i| > 3.5$.
+
+
 
 \subsection{Métodos Multivariados e Baseados em ML}
 
@@ -589,7 +591,7 @@ A seleção acontece durante o próprio treinamento do modelo:
 \begin{center}
 \begin{tikzpicture}[
   tree/.style={rectangle,rounded corners,draw=mineblue,fill=mineblue!10,
-               minimum width=2.5cm,minimum height=0.7cm,font=\small,align=center},
+               minimum width=1.5cm,minimum height=0.7cm,font=\small,align=center},
   edge from parent/.style={draw,->,thick},
   level 1/.style={sibling distance=5.5cm, level distance=1.6cm},
   level 2/.style={sibling distance=1.9cm, level distance=1.5cm}]
@@ -651,7 +653,7 @@ Redes neurais do tipo autoencoder aprendem uma representação comprimida (\text
 O desbalanceamento de classes ocorre quando uma ou mais classes têm muito menos exemplos que as demais. Modelos treinados em dados desbalanceados tendem a favorecer a classe majoritária, resultando em alta acurácia global mas péssimo desempenho na classe minoritária (que frequentemente é a mais importante, como fraude ou diagnóstico positivo).
 
 \begin{exemplobox}{Exemplo: Detecção de Fraude}
-Em um dataset de transações com 0.1\% de fraudes: um modelo que sempre prevê ``não é fraude'' tem 99.9\% de acurácia mas é completamente inútil. As métricas adequadas para dados desbalanceados são Precision, Recall, F1-Score e AUC-ROC, não acurácia.
+Em um dataset de transações com 0.1\% de fraudes: um modelo que sempre prevê ``não é fraude'' tem 99.9\% de acurácia mas é completamente inútil. As métricas adequadas para dados desbalanceados são Precision, Recall, F1-Score e AUC-ROC.
 \end{exemplobox}
 
 \subsubsection{Oversampling}
@@ -690,8 +692,7 @@ ADASYN & Foca nas regiões difíceis & Amplifica ruído & Fronteira de decisão 
 Random Under & Simples e rápido & Perde informação & Dataset grande; custo computacional alto \\
 \midrule
 Tomek Links & Limpa a fronteira & Efeito modesto & Pré-processamento complementar \\
-\midrule
-SMOTETomek & Combina over e under & Mais complexo & Desbalanceamento extremo \\
+
 \bottomrule
 \end{tabular}
 \end{table}
