@@ -65,7 +65,7 @@
 % Header/Footer
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small \textcolor{mineblue}{\textbf{Mineração de Dados}} | UEPA -- CCNT}
+\fancyhead[L]{\small \textcolor{mineblue}{\textbf{Mineração de Dados}}}
 \fancyhead[R]{\small Módulo 1: Introdução ao KDD}
 \fancyfoot[C]{\small \thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -78,14 +78,9 @@
 \title{
 \begin{tcolorbox}[colback=mineblue,coltext=white,colframe=mineblue,width=\textwidth,sharp corners]
 \centering
-\Large\bfseries Universidade do Estado do Pará -- UEPA\\[4pt]
-\normalsize Centro de Ciências Exatas e Naturais -- CCNT\\
-Bacharelado em Engenharia de Software\\[8pt]
-\rule{\linewidth}{0.5pt}\\[6pt]
+
 \LARGE \faIcon{database} Mineração de Dados\\[4pt]
 \Large Módulo 1: Introdução à Mineração de Dados\\e Descoberta de Conhecimento (KDD)\\[6pt]
-\rule{\linewidth}{0.5pt}\\[4pt]
-\normalsize 8º Semestre | Carga Horária: 80h
 \end{tcolorbox}
 }
 \author{}
@@ -234,7 +229,7 @@ A figura a seguir apresenta a evolução histórica das áreas que contribuem pa
 
 \subsection{Etapas do KDD (Fayyad, 1996)}
 
-O processo de Descoberta de Conhecimento em Bancos de Dados (KDD \textit{Knowledge Discovery in Databases}) foi formalizado por Fayyad et al.\ (1996) como um processo iterativo e interativo composto por múltiplas etapas. A mineração de dados, nesse contexto, é apenas uma das fases do processo a mais central, mas dependente de todas as anteriores.
+O processo de Descoberta de Conhecimento em Bancos de Dados (KDD - \textit{Knowledge Discovery in Databases}) foi formalizado por Fayyad et al.\ (1996) como um processo iterativo e interativo composto por múltiplas etapas. A mineração de dados, nesse contexto, é apenas uma das fases do processo a mais central, mas dependente de todas as anteriores.
 
 \begin{enumerate}[leftmargin=*, label=\textbf{Etapa \arabic*:}]
   \item \textbf{Seleção de Dados:} Identificação e seleção dos dados relevantes para o problema em questão. Envolve a definição do universo de análise, a escolha das fontes de dados (bancos de dados transacionais, data warehouses, arquivos externos) e a extração do subconjunto a ser analisado. Uma boa seleção reduz ruído e custo computacional nas etapas subsequentes.
@@ -376,7 +371,7 @@ As tarefas de mineração de dados podem ser organizadas em duas grandes categor
 \centering
 \caption{Principais tarefas de Mineração de Dados}
 \label{tab:tarefas}
-\small
+\footnotesize
 \begin{tabular}{>{\bfseries}p{2.4cm} p{2.0cm} p{2.5cm} p{2.5cm} p{3.5cm}}
 \toprule
 \textbf{Tarefa} & \textbf{Tipo} & \textbf{Objetivo} & \textbf{Exemplos} & \textbf{Algoritmos} \\
@@ -389,7 +384,7 @@ Agrupamento (Clustering) & Não Supervisionado & Descobrir grupos naturais & Seg
 \midrule
 Regras de Associação & Não Supervisionado & Descobrir regras de co-ocorrência & Análise de cesta de compras; recomendação & Apriori, FP-Growth, Eclat \\
 \midrule
-Detecção de Anomalias & Semissupervisionado & Identificar instâncias atípicas & Fraude financeira; falha em equipamentos & Isolation Forest, LOF, One-Class SVM \\
+Detecção de Anomalias & Semi-Supervisionado & Identificar instâncias atípicas & Fraude financeira; falha em equipamentos & Isolation Forest, LOF, One-Class SVM \\
 \midrule
 Sumarização & & Caracterizar e resumir dados & Perfis de usuários; relatórios automáticos & PCA, Estatísticas Descritivas, Autoencoders \\
 \bottomrule
