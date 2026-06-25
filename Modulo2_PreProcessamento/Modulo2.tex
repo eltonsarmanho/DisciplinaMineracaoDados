@@ -697,56 +697,6 @@ Tomek Links & Limpa a fronteira & Efeito modesto & Pré-processamento complement
 \end{tabular}
 \end{table}
 
-%=============================================================
-\section{Pipeline de Pré-processamento}
-%=============================================================
-
-Um pipeline de pré-processamento bem construído é essencial para evitar o \textit{data leakage} (vazamento de informação do conjunto de teste para o treino). O sklearn fornece as abstrações \texttt{Pipeline} e \texttt{ColumnTransformer} para garantir a correta aplicação das transformações.
-
-\begin{lstlisting}[style=mypython, caption={Pipeline completo com ColumnTransformer}]
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.impute import SimpleImputer
-from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestClassifier
-
-# Definir features por tipo
-numeric_features    = ['age', 'salary', 'experience']
-categorical_features = ['education', 'department']
-
-# Pipeline para features numericas
-numeric_transformer = Pipeline(steps=[
-    ('imputer', SimpleImputer(strategy='median')),   # Tratar ausentes
-    ('scaler',  StandardScaler())                     # Normalizar
-])
-
-# Pipeline para features categoricas
-categorical_transformer = Pipeline(steps=[
-    ('imputer', SimpleImputer(strategy='most_frequent')),  # Moda
-    ('encoder', OneHotEncoder(handle_unknown='ignore'))    # One-Hot
-])
-
-# Combinar transformadores por tipo de feature
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', numeric_transformer,    numeric_features),
-        ('cat', categorical_transformer, categorical_features)
-    ]
-)
-
-# Pipeline completo: preprocessamento + modelo
-full_pipeline = Pipeline(steps=[
-    ('preprocessor', preprocessor),
-    ('classifier',   RandomForestClassifier(n_estimators=100, random_state=42))
-])
-
-# Treinar (preprocessamento so ve dados de treino)
-full_pipeline.fit(X_train, y_train)
-
-# Avaliar (preprocessamento aplicado consistentemente)
-accuracy = full_pipeline.score(X_test, y_test)
-print(f'Acuracia no Teste: {accuracy:.4f}')
-\end{lstlisting}
 
 %=============================================================
 \section{Estado da Arte}
