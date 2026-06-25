@@ -148,49 +148,49 @@ As seis dimensões principais de qualidade de dados são:
   \item \textbf{Unicidade:} Não há duplicatas indevidas? Exemplo: o mesmo cliente cadastrado duas vezes com pequenas variações no nome (``João Silva'' e ``Joao Silva''); registros idênticos em tabelas de transações.
 \end{enumerate}
 
-O gráfico a seguir (radar chart) exemplifica o perfil de qualidade de um dataset hipotético:
+% O gráfico a seguir (radar chart) exemplifica o perfil de qualidade de um dataset hipotético:
 
-\vspace{0.4cm}
-\begin{center}
-\begin{tikzpicture}
-\def\n{6}
-\def\maxval{10}
-\def\scale{1.5}
-% Draw radial lines
-\foreach \i in {1,...,\n}{
-  \draw[minegray!40] (0,0) -- ({(\i-1)*360/\n}:\scale*\maxval/10*7);
-}
-% Draw concentric polygons (grids)
-\foreach \r in {2,4,6,8,10}{
-  \draw[minegray!30] \foreach \i in {1,...,\n}{ -- ({(\i-1)*360/\n}:\scale*\r/10*7)} -- cycle;
-}
-% Plot sample values (representing quality scores)
-\fill[mineblue!30,draw=mineblue,line width=1.5pt]
-  (90:{\scale*8/10*7}) --
-  (30:{\scale*6/10*7}) --
-  (-30:{\scale*9/10*7}) --
-  (-90:{\scale*7/10*7}) --
-  (-150:{\scale*5/10*7}) --
-  (150:{\scale*8/10*7}) -- cycle;
-% Dot markers on vertices
-\foreach \angle/\val in {90/8, 30/6, -30/9, -90/7, -150/5, 150/8}{
-  \fill[mineblue] (\angle:{\scale*\val/10*7}) circle(3pt);
-}
-% Labels on each axis
-\node[font=\small\bfseries,above] at (90:{\scale*\maxval/10*7+0.45}) {Acurácia (8)};
-\node[font=\small\bfseries,right] at (30:{\scale*\maxval/10*7+0.45}) {Completude (6)};
-\node[font=\small\bfseries,right] at (-30:{\scale*\maxval/10*7+0.45}) {Consistência (9)};
-\node[font=\small\bfseries,below] at (-90:{\scale*\maxval/10*7+0.45}) {Temporalidade (7)};
-\node[font=\small\bfseries,left] at (-150:{\scale*\maxval/10*7+0.45}) {Validade (5)};
-\node[font=\small\bfseries,left] at (150:{\scale*\maxval/10*7+0.45}) {Unicidade (8)};
-% Scale labels
-\node[font=\tiny,minegray] at (0:{\scale*2/10*7}) {2};
-\node[font=\tiny,minegray] at (0:{\scale*4/10*7}) {4};
-\node[font=\tiny,minegray] at (0:{\scale*6/10*7}) {6};
-\node[font=\tiny,minegray] at (0:{\scale*8/10*7}) {8};
-\node[font=\tiny,minegray] at (0:{\scale*10/10*7}) {10};
-\end{tikzpicture}
-\end{center}
+% \vspace{0.4cm}
+% \begin{center}
+% \begin{tikzpicture}
+% \def\n{6}
+% \def\maxval{10}
+% \def\scale{1.5}
+% % Draw radial lines
+% \foreach \i in {1,...,\n}{
+%   \draw[minegray!40] (0,0) -- ({(\i-1)*360/\n}:\scale*\maxval/10*7);
+% }
+% % Draw concentric polygons (grids)
+% \foreach \r in {2,4,6,8,10}{
+%   \draw[minegray!30] \foreach \i in {1,...,\n}{ -- ({(\i-1)*360/\n}:\scale*\r/10*7)} -- cycle;
+% }
+% % Plot sample values (representing quality scores)
+% \fill[mineblue!30,draw=mineblue,line width=1.5pt]
+%   (90:{\scale*8/10*7}) --
+%   (30:{\scale*6/10*7}) --
+%   (-30:{\scale*9/10*7}) --
+%   (-90:{\scale*7/10*7}) --
+%   (-150:{\scale*5/10*7}) --
+%   (150:{\scale*8/10*7}) -- cycle;
+% % Dot markers on vertices
+% \foreach \angle/\val in {90/8, 30/6, -30/9, -90/7, -150/5, 150/8}{
+%   \fill[mineblue] (\angle:{\scale*\val/10*7}) circle(3pt);
+% }
+% % Labels on each axis
+% \node[font=\small\bfseries,above] at (90:{\scale*\maxval/10*7+0.45}) {Acurácia (8)};
+% \node[font=\small\bfseries,right] at (30:{\scale*\maxval/10*7+0.45}) {Completude (6)};
+% \node[font=\small\bfseries,right] at (-30:{\scale*\maxval/10*7+0.45}) {Consistência (9)};
+% \node[font=\small\bfseries,below] at (-90:{\scale*\maxval/10*7+0.45}) {Temporalidade (7)};
+% \node[font=\small\bfseries,left] at (-150:{\scale*\maxval/10*7+0.45}) {Validade (5)};
+% \node[font=\small\bfseries,left] at (150:{\scale*\maxval/10*7+0.45}) {Unicidade (8)};
+% % Scale labels
+% \node[font=\tiny,minegray] at (0:{\scale*2/10*7}) {2};
+% \node[font=\tiny,minegray] at (0:{\scale*4/10*7}) {4};
+% \node[font=\tiny,minegray] at (0:{\scale*6/10*7}) {6};
+% \node[font=\tiny,minegray] at (0:{\scale*8/10*7}) {8};
+% \node[font=\tiny,minegray] at (0:{\scale*10/10*7}) {10};
+% \end{tikzpicture}
+% \end{center}
 
 %=============================================================
 \section{Tipos de Dados}
@@ -223,7 +223,7 @@ Além das escalas de medida, é importante distinguir:
 \begin{itemize}[leftmargin=*]
   \item \textbf{Dados contínuos vs.\ discretos:} Contínuos assumem qualquer valor em um intervalo (altura, temperatura); discretos assumem valores enumeráveis (número de filhos, contagem de cliques).
 
-  \item \textbf{Dados estruturados vs.\ não estruturados:} Estruturados seguem um esquema tabular rígido (planilhas, tabelas SQL); não estruturados incluem texto livre, imagens, áudio e vídeo --- requerem extração de features antes da mineração tradicional.
+  \item \textbf{Dados estruturados vs.\ não estruturados:} Estruturados seguem um esquema tabular rígido (planilhas, tabelas SQL); não estruturados incluem texto livre, imagens, áudio e vídeo, requerem extração de features antes da mineração tradicional.
 
   \item \textbf{Séries temporais:} Sequências ordenadas no tempo. Exigem técnicas especiais (janelas deslizantes, decomposição de tendência e sazonalidade, modelos ARIMA, LSTM).
 
@@ -245,7 +245,7 @@ Dados ausentes são um problema ubíquo em aplicações reais. A abordagem corre
 
   \item \textbf{MAR} (\textit{Missing At Random}): A probabilidade de ausência depende de outros dados observados, mas não do valor ausente em si. Exemplo: respondentes com renda mais alta tendem a não informar a renda (mas a ausência depende de outras características observadas, como nível de escolaridade). Técnicas de imputação múltipla (como MICE) são adequadas neste caso.
 
-  \item \textbf{MNAR} (\textit{Missing Not At Random}): A probabilidade de ausência depende do próprio valor ausente. Exemplo: pacientes com valores muito altos de pressão arterial tendem a não comparecer às consultas (e portanto não têm a medição registrada). Este é o cenário mais difícil --- qualquer imputação sem modelagem explícita do mecanismo de ausência introduz viés.
+  \item \textbf{MNAR} (\textit{Missing Not At Random}): A probabilidade de ausência depende do próprio valor ausente. Exemplo: pacientes com valores muito altos de pressão arterial tendem a não comparecer às consultas (e portanto não têm a medição registrada). Este é o cenário mais difícil, qualquer imputação sem modelagem explícita do mecanismo de ausência introduz viés.
 \end{itemize}
 
 \begin{atencaobox}{Importância do Diagnóstico do Mecanismo}
@@ -268,7 +268,7 @@ A imputação pela estatística central substitui cada valor ausente pela média
 
 \subsubsection{Hot-Deck Imputation}
 
-Cada valor ausente é substituído pelo valor de um doador --- uma instância similar selecionada da mesma base de dados. A similaridade pode ser definida por vizinhança geográfica, faixa etária, ou outros critérios de domínio.
+Cada valor ausente é substituído pelo valor de um doador, uma instância similar selecionada da mesma base de dados. A similaridade pode ser definida por vizinhança geográfica, faixa etária, ou outros critérios de domínio.
 
 \textbf{Vantagens:} Preserva distribuições e relações entre variáveis melhor que a imputação pela média.\\
 \textbf{Desvantagens:} Pode ser computacionalmente custoso; a definição de ``similar'' é subjetiva.
@@ -310,57 +310,73 @@ A figura a seguir ilustra os três padrões de ausência (MCAR, MAR, MNAR) em um
 
 \vspace{0.4cm}
 \begin{center}
-\begin{tikzpicture}[cell/.style={rectangle,minimum width=0.55cm,minimum height=0.55cm,draw=minegray!50}]
-  % Títulos
-  \node[font=\small\bfseries,color=mineblue] at (1.65,3.5) {MCAR};
-  \node[font=\small\bfseries,color=mineorange] at (5.2,3.5) {MAR};
-  \node[font=\small\bfseries,color=minered] at (8.8,3.5) {MNAR};
+\begin{tikzpicture}[
+  cell/.style={rectangle,minimum width=0.5cm,minimum height=0.5cm,
+               draw=minegray!50,inner sep=0pt}]
 
-  % MCAR: ausências aleatórias
+  % ── Títulos (centralizados em cada grade) ─────────────────────
+  % Grade 6×5, célula 0.5cm: centro da col 1 = 0.25, col 6 = 2.75 → centro grade = 1.5
+  % Offset MAR = +3.5, Offset MNAR = +7.0
+  \node[font=\small\bfseries,color=mineblue]   at (1.5, 3.0)  {MCAR};
+  \node[font=\small\bfseries,color=mineorange] at (5.0, 3.0)  {MAR};
+  \node[font=\small\bfseries,color=minered]    at (8.5, 3.0)  {MNAR};
+
+  % ── Grade MCAR: ausências completamente aleatórias ────────────
   \foreach \c in {1,...,6}{
     \foreach \r in {1,...,5}{
-      \node[cell,fill=mineblue!15] at ({(\c-1)*0.55+0.55},{(\r-1)*0.55+0.55}) {};
+      \node[cell,fill=mineblue!15] at ({(\c-0.5)*0.5},{(\r-0.5)*0.5}) {};
     }
   }
-  % Células ausentes aleatórias (MCAR)
-  \foreach \pos in {(0.55,2.2),(1.65,3.3),(3.3,0.55),(4.4,2.75),(2.2,1.1),(4.95,4.4)}{
-    \node[cell,fill=minered!60] at \pos {};
-  }
-  \node[font=\tiny,align=center,text width=3.3cm] at (1.65,-0.3) {Ausências distribuídas\\aleatoriamente};
+  % 6 células ausentes em posições aleatórias dentro da grade MCAR
+  \node[cell,fill=minered!60] at (0.25,1.75) {};
+  \node[cell,fill=minered!60] at (1.25,2.25) {};
+  \node[cell,fill=minered!60] at (2.75,0.25) {};
+  \node[cell,fill=minered!60] at (2.25,1.75) {};
+  \node[cell,fill=minered!60] at (0.75,0.75) {};
+  \node[cell,fill=minered!60] at (1.75,1.25) {};
+  \node[font=\tiny,align=center,text width=3.2cm] at (1.5,-0.4)
+    {Ausências distribuídas\\aleatoriamente};
 
-  % MAR: ausências concentradas nas primeiras linhas
+  % ── Grade MAR: ausências dependem de variável observada ───────
   \foreach \c in {1,...,6}{
     \foreach \r in {1,...,5}{
-      \node[cell,fill=mineorange!15] at ({(\c-1)*0.55+0.55+3.55},{(\r-1)*0.55+0.55}) {};
+      \node[cell,fill=mineorange!15] at ({(\c-0.5)*0.5+3.5},{(\r-0.5)*0.5}) {};
     }
   }
-  % Células ausentes estruturadas (MAR) — coluna 5 e 6 ausentes nas primeiras linhas
-  \foreach \pos in {(5.1,3.3),(5.65,3.3),(5.1,3.85),(5.65,3.85),(5.1,4.4),(5.65,4.4)}{
-    \node[cell,fill=minered!60] at \pos {};
-  }
-  \node[font=\tiny,align=center,text width=3.3cm] at (5.15,-0.3) {Ausências dependem de\\outras variáveis observadas};
+  % Cols 5-6 (x=5.75, 6.25), linhas 3-5 (y=1.25, 1.75, 2.25) ausentes
+  \node[cell,fill=minered!60] at (5.75,1.25) {};
+  \node[cell,fill=minered!60] at (6.25,1.25) {};
+  \node[cell,fill=minered!60] at (5.75,1.75) {};
+  \node[cell,fill=minered!60] at (6.25,1.75) {};
+  \node[cell,fill=minered!60] at (5.75,2.25) {};
+  \node[cell,fill=minered!60] at (6.25,2.25) {};
+  \node[font=\tiny,align=center,text width=3.2cm] at (5.0,-0.4)
+    {Ausências dependem de\\outras variáveis observadas};
 
-  % MNAR: ausências nos valores mais altos (últimas linhas da última coluna)
+  % ── Grade MNAR: ausências nos valores mais altos ──────────────
   \foreach \c in {1,...,6}{
     \foreach \r in {1,...,5}{
-      \node[cell,fill=minered!10] at ({(\c-1)*0.55+0.55+7.1},{(\r-1)*0.55+0.55}) {};
+      \node[cell,fill=minered!10] at ({(\c-0.5)*0.5+7.0},{(\r-0.5)*0.5}) {};
     }
   }
-  % Valores altos ausentes (MNAR) — última coluna, últimas linhas
-  \foreach \pos in {(12.65,3.3),(12.65,3.85),(12.65,4.4),(12.65,2.75)}{
-    \node[cell,fill=minered!60] at \pos {};
-  }
-  % Indicação de valores crescentes
-  \foreach \r/\val in {1/baixo,2/médio,3/alto,4/muito alto,5/máximo}{
-    \node[font=\tiny\itshape,right] at (12.95,{(\r-1)*0.55+0.55}) {\val};
-  }
-  \node[font=\tiny,align=center,text width=3.3cm] at (8.75,-0.3) {Ausências nos maiores\\valores (sistêmico)};
+  % Col 6 (x=9.75), linhas 3-5 (y=1.25,1.75,2.25): valores altos ausentes
+  \node[cell,fill=minered!60] at (9.75,1.25) {};
+  \node[cell,fill=minered!60] at (9.75,1.75) {};
+  \node[cell,fill=minered!60] at (9.75,2.25) {};
+  % Rótulos de intensidade ao lado da col 6 do MNAR
+  \node[font=\tiny\itshape,anchor=west] at (10.1,0.25) {baixo};
+  \node[font=\tiny\itshape,anchor=west] at (10.1,0.75) {m\'{e}dio};
+  \node[font=\tiny\itshape,anchor=west] at (10.1,1.25) {alto};
+  \node[font=\tiny\itshape,anchor=west] at (10.1,1.75) {muito alto};
+  \node[font=\tiny\itshape,anchor=west] at (10.1,2.25) {m\'{a}ximo};
+  \node[font=\tiny,align=center,text width=3.2cm] at (8.5,-0.4)
+    {Ausências nos maiores\\valores (sistêmico)};
 
-  % Legenda
-  \node[cell,fill=minered!60] at (3.0,-0.9) {};
-  \node[font=\tiny,right] at (3.3,-0.9) {= Valor ausente};
-  \node[cell,fill=mineblue!15] at (5.5,-0.9) {};
-  \node[font=\tiny,right] at (5.8,-0.9) {= Valor presente};
+  % ── Legenda centralizada sob as três grades ───────────────────
+  \node[cell,fill=minered!60]  at (3.6,-1.0) {};
+  \node[font=\tiny,anchor=west] at (3.85,-1.0) {-- Valor ausente};
+  \node[cell,fill=mineblue!15] at (6.1,-1.0) {};
+  \node[font=\tiny,anchor=west] at (6.35,-1.0) {-- Valor presente};
 \end{tikzpicture}
 \end{center}
 
@@ -441,7 +457,7 @@ $D_M(x) = \sqrt{(x - \mu)^T \Sigma^{-1} (x - \mu)}$. Sensível quando $n \gg p$.
 
 \textbf{Isolation Forest} (Liu et al., 2008): Isola outliers construindo árvores aleatórias. Anomalias são isoladas em menos divisões, resultando em caminhos médios mais curtos. Eficiente e eficaz para dados de alta dimensionalidade.
 
-\textbf{LOF} (\textit{Local Outlier Factor} --- Breunig et al., 2000): Mede a densidade local de cada ponto em comparação com seus vizinhos. Pontos em regiões de baixa densidade relativa recebem LOF alto. Detecta outliers locais que métodos globais perdem.
+\textbf{LOF} (\textit{Local Outlier Factor} - Breunig et al., 2000): Mede a densidade local de cada ponto em comparação com seus vizinhos. Pontos em regiões de baixa densidade relativa recebem LOF alto. Detecta outliers locais que métodos globais perdem.
 
 \textbf{One-Class SVM:} Aprende a fronteira da região de normalidade no espaço de features. Pontos fora da fronteira são classificados como anomalias.
 
@@ -622,7 +638,7 @@ O PCA (\textit{Principal Component Analysis}) é uma técnica linear que projeta
 
 \subsection{t-SNE e UMAP}
 
-t-SNE (\textit{t-distributed Stochastic Neighbor Embedding} --- Maaten \& Hinton, 2008) e UMAP (\textit{Uniform Manifold Approximation and Projection} --- McInnes et al., 2018) são técnicas não lineares para \textbf{visualização} em 2D ou 3D. Preservam a estrutura de vizinhança local dos dados. Não devem ser usadas para feature reduction em produção (os eixos resultantes não têm interpretação e não podem ser aplicados a novos dados de forma consistente). UMAP é significativamente mais rápido que t-SNE e escalável para grandes datasets.
+t-SNE (\textit{t-distributed Stochastic Neighbor Embedding} - Maaten \& Hinton, 2008) e UMAP (\textit{Uniform Manifold Approximation and Projection} - McInnes et al., 2018) são técnicas não lineares para \textbf{visualização} em 2D ou 3D. Preservam a estrutura de vizinhança local dos dados. Não devem ser usadas para feature reduction em produção (os eixos resultantes não têm interpretação e não podem ser aplicados a novos dados de forma consistente). UMAP é significativamente mais rápido que t-SNE e escalável para grandes datasets.
 
 \subsection{Autoencoders para Redução}
 
@@ -635,12 +651,12 @@ Redes neurais do tipo autoencoder aprendem uma representação comprimida (\text
 O desbalanceamento de classes ocorre quando uma ou mais classes têm muito menos exemplos que as demais. Modelos treinados em dados desbalanceados tendem a favorecer a classe majoritária, resultando em alta acurácia global mas péssimo desempenho na classe minoritária (que frequentemente é a mais importante, como fraude ou diagnóstico positivo).
 
 \begin{exemplobox}{Exemplo: Detecção de Fraude}
-Em um dataset de transações com 0.1\% de fraudes: um modelo que sempre prevê ``não é fraude'' tem 99.9\% de acurácia mas é completamente inútil. As métricas adequadas para dados desbalanceados são Precision, Recall, F1-Score e AUC-ROC --- não acurácia.
+Em um dataset de transações com 0.1\% de fraudes: um modelo que sempre prevê ``não é fraude'' tem 99.9\% de acurácia mas é completamente inútil. As métricas adequadas para dados desbalanceados são Precision, Recall, F1-Score e AUC-ROC, não acurácia.
 \end{exemplobox}
 
 \subsubsection{Oversampling}
 
-\textbf{SMOTE} (\textit{Synthetic Minority Over-sampling Technique} --- Chawla et al., 2002): Gera exemplos sintéticos da classe minoritária interpolando entre instâncias existentes:
+\textbf{SMOTE} (\textit{Synthetic Minority Over-sampling Technique} - Chawla et al., 2002): Gera exemplos sintéticos da classe minoritária interpolando entre instâncias existentes:
 \[
 x_{new} = x_i + \lambda \cdot (x_{nn} - x_i), \quad \lambda \sim \mathcal{U}[0, 1]
 \]
@@ -656,7 +672,7 @@ onde $x_{nn}$ é um vizinho aleatório de $x_i$ no espaço de features.
 
 \textbf{Tomek Links:} Remove instâncias da classe majoritária que estão muito próximas à fronteira de decisão (pares Tomek), limpando a fronteira.
 
-\textbf{ENN} (\textit{Edited Nearest Neighbors}): Remove instâncias cuja classe difere da maioria dos seus $k$ vizinhos --- remove instâncias ``ruidosas'' de qualquer classe.
+\textbf{ENN} (\textit{Edited Nearest Neighbors}): Remove instâncias cuja classe difere da maioria dos seus $k$ vizinhos, remove instâncias ``ruidosas'' de qualquer classe.
 
 \begin{table}[ht]
 \centering
@@ -736,11 +752,11 @@ print(f'Acuracia no Teste: {accuracy:.4f}')
 %=============================================================
 
 \begin{estadoartebox}{TabPFN (2022) -- Transformers para Dados Tabulares}
-TabPFN (Prior-Fitted Network --- Hollmann et al., 2022) é um modelo transformer pré-treinado especificamente para classificação em dados tabulares pequenos ($< 1000$ amostras, $< 100$ features). Em benchmarks, supera XGBoost e Random Forest em datasets pequenos, sem necessidade de ajuste de hiperparâmetros. Representa uma nova geração de modelos fundacionais para ciência de dados.
+TabPFN (Prior-Fitted Network - Hollmann et al., 2022) é um modelo transformer pré-treinado especificamente para classificação em dados tabulares pequenos ($< 1000$ amostras, $< 100$ features). Em benchmarks, supera XGBoost e Random Forest em datasets pequenos, sem necessidade de ajuste de hiperparâmetros. Representa uma nova geração de modelos fundacionais para ciência de dados.
 \end{estadoartebox}
 
 \begin{estadoartebox}{Deep Learning para Imputação}
-GAIN (\textit{Generative Adversarial Imputation Nets} --- Yoon et al., 2018) usa GANs para imputação: o gerador produz imputações e o discriminador distingue entre valores observados e imputados. GRAPE (\textit{Graph-based Prediction of Missing Data} --- You et al., 2020) modela o problema de imputação como predição em grafos bipartidos. São abordagens de ponta para dados altamente correlacionados.
+GAIN (\textit{Generative Adversarial Imputation Nets} - Yoon et al., 2018) usa GANs para imputação: o gerador produz imputações e o discriminador distingue entre valores observados e imputados. GRAPE (\textit{Graph-based Prediction of Missing Data} - You et al., 2020) modela o problema de imputação como predição em grafos bipartidos. São abordagens de ponta para dados altamente correlacionados.
 \end{estadoartebox}
 
 \begin{estadoartebox}{Engenharia Automática de Features}
