@@ -38,7 +38,7 @@
 
 # ── PDFs gerados (compile localmente com pdflatex) ─────────
 # Remova esta linha se quiser versionar os PDFs compilados:
-*.pdf
+# *.pdf
 
 # ── Jupyter / Python ───────────────────────────────────────
 .ipynb_checkpoints/
