@@ -464,52 +464,80 @@ Uma \textbf{Rede Neural Multicamadas (MLP)} para regressão difere do classifica
 Os resíduos $e_i = y_i - \hat{y}_i$ contêm informação sobre violações das hipóteses do modelo:
 
 \begin{center}
-\begin{tikzpicture}[scale=0.85]
-% Residuals vs Fitted (top-left)
-\begin{scope}[xshift=0cm, yshift=3.5cm]
-  \draw[->] (0,0) -- (3.5,0) node[right,font=\tiny]{Valores Ajustados};
-  \draw[->] (0,-1.3) -- (0,1.3) node[above,font=\tiny]{Resíduos};
-  \draw[dashed, mineblue, thin] (0,0) -- (3.5,0);
-  % Random scatter (good)
-  \foreach \x/\y in {0.3/0.4, 0.6/-0.3, 1.0/0.6, 1.4/-0.5, 1.8/0.2, 2.2/-0.4, 2.6/0.5, 3.0/-0.2, 3.3/0.3}
-    \filldraw[minegray] (\x,\y) circle(0.05);
-  \node[font=\tiny\bfseries, mineblue] at (1.75,1.5) {Resíduos vs. Ajustados};
-  \node[font=\tiny, minegreen] at (1.75,-1.5) {(Bom: aleatório)};
+\begin{tikzpicture}
+% ════════════════════════════════════════════════════════════════
+% Cada subplot: 5.2cm × 3.8cm  |  Colunas: xshift 0 e 6.8cm
+% Linhas: yshift 4.8cm (topo) e 0cm (base)   Gap vertical: 1cm
+% ════════════════════════════════════════════════════════════════
+
+% ── TOP-LEFT: Resíduos vs. Ajustados ─────────────────────────
+\begin{scope}[xshift=-2cm, yshift=7.8cm]
+  \draw[->,minegray!80,thick] (0,-1.7) -- (5.2,-1.7)
+    node[right,font=\tiny]{Val.\ Ajustados};
+  \draw[->,minegray!80,thick] (0,-1.7) -- (0,1.9)
+    node[above,font=\tiny]{Resíduos};
+  \draw[mineblue!50, dashed, thick] (0,0) -- (5.2,0);
+  \foreach \x/\y in {0.3/0.7,0.7/-1.0,1.1/1.1,1.5/-0.8,2.0/0.5,
+                     2.5/-0.7,3.0/1.0,3.5/-0.5,4.0/0.8,4.5/-0.6}
+    \filldraw[minegray!70] (\x,\y) circle(0.08);
+  \node[font=\small\bfseries,color=mineblue] at (2.6,2.0)
+    {Resíduos vs.\ Ajustados};
+  \node[font=\tiny,color=minegreen!70!black] at (2.6,-2.0)
+    {$\checkmark$ Ideal: dispersão aleatória em torno de zero};
 \end{scope}
-% Q-Q Plot (top-right)
-\begin{scope}[xshift=5cm, yshift=3.5cm]
-  \draw[->] (0,0) -- (3.5,0) node[right,font=\tiny]{Quantis Teóricos};
-  \draw[->] (0,-1.3) -- (0,1.3) node[above,font=\tiny]{Quantis Amostrais};
-  \draw[mineorange, thick] (0.2,-1.0) -- (3.3,1.0);
-  \foreach \x/\y in {0.3/-0.97, 0.7/-0.6, 1.1/-0.28, 1.5/0.0, 1.9/0.27, 2.3/0.58, 2.8/0.92, 3.2/0.98}
-    \filldraw[mineblue] (\x,\y) circle(0.05);
-  \node[font=\tiny\bfseries, mineblue] at (1.75,1.5) {Q-Q Plot};
-  \node[font=\tiny, minegreen] at (1.75,-1.5) {(Bom: na reta)};
+
+% ── TOP-RIGHT: Q-Q Plot ──────────────────────────────────────
+\begin{scope}[xshift=6.8cm, yshift=7.8cm]
+  
+  \draw[->,minegray!80,thick] (0,-1.7) -- (5.2,-1.7)
+    node[right,font=\tiny]{Quantis Teóricos};
+  \draw[->,minegray!80,thick] (0,-1.7) -- (0,1.9)
+    node[above,font=\tiny]{Quantis Amostrais};
+  \draw[mineorange, thick] (0.3,-1.5) -- (4.9,1.7);
+  \foreach \x/\y in {0.4/-1.45,0.9/-0.95,1.4/-0.50,1.9/-0.05,
+                     2.4/0.40,2.9/0.85,3.5/1.20,4.0/1.50,4.6/1.65}
+    \filldraw[mineblue!80] (\x,\y) circle(0.08);
+  \node[font=\small\bfseries,color=mineblue] at (2.6,2.0) {Q-Q Plot};
+  \node[font=\tiny,color=minegreen!70!black] at (2.6,-2.0)
+    {$\checkmark$ Ideal: pontos alinhados sobre a reta};
 \end{scope}
-% Scale-Location (bottom-left)
-\begin{scope}[xshift=0cm, yshift=0cm]
-  \draw[->] (0,0) -- (3.5,0) node[right,font=\tiny]{Valores Ajustados};
-  \draw[->] (0,0) -- (0,1.6) node[above,font=\tiny]{$\sqrt{|e_i|}$};
-  \draw[minegreen, thick, dashed] (0,0.7) -- (3.5,0.7);
-  \foreach \x/\y in {0.3/0.6, 0.7/0.8, 1.1/0.65, 1.5/0.7, 1.9/0.75, 2.4/0.72, 2.8/0.68, 3.2/0.73}
-    \filldraw[minegray] (\x,\y) circle(0.05);
-  \node[font=\tiny\bfseries, mineblue] at (1.75,1.7) {Scale-Location};
-  \node[font=\tiny, minegreen] at (1.75,-0.3) {(Bom: horizontal)};
+
+% ── BOTTOM-LEFT: Scale-Location ──────────────────────────────
+\begin{scope}[xshift=-2cm, yshift=0cm]
+  
+  \draw[->,minegray!80,thick] (0,0) -- (5.2,0)
+    node[right,font=\tiny]{Val.\ Ajustados};
+  \draw[->,minegray!80,thick] (0,0) -- (0,3.5)
+    node[above,font=\tiny]{$\sqrt{|e_i|}$};
+  \draw[minegreen!70, dashed, thick] (0,1.8) -- (5.2,1.8);
+  \foreach \x/\y in {0.3/1.7,0.8/1.9,1.3/1.75,1.8/1.8,2.3/1.85,
+                     2.9/1.75,3.4/1.8,3.9/1.85,4.5/1.8}
+    \filldraw[minegray!70] (\x,\y) circle(0.08);
+  \node[font=\small\bfseries,color=mineblue] at (2.6,3.4) {Scale-Location};
+  \node[font=\tiny,color=minegreen!70!black] at (2.6,-0.45)
+    {$\checkmark$ Ideal: linha aproximadamente horizontal};
 \end{scope}
-% Cook's Distance (bottom-right)
-\begin{scope}[xshift=5cm, yshift=0cm]
-  \draw[->] (0,0) -- (3.5,0) node[right,font=\tiny]{Índice};
-  \draw[->] (0,0) -- (0,1.6) node[above,font=\tiny]{Distância de Cook};
-  \draw[minered, dashed] (0,1.1) -- (3.5,1.1) node[right,font=\tiny,minered]{limiar};
-  \foreach \x/\y in {0.3/0.1, 0.6/0.15, 1.0/0.08, 1.4/0.12, 1.7/0.3, 2.1/0.09, 2.5/0.14}
-    \draw[mineblue, thick] (\x,0) -- (\x,\y);
-  \draw[minered, very thick] (2.9,0) -- (2.9,1.3);
-  \node[font=\tiny, minered] at (2.9,1.45) {influente!};
-  \node[font=\tiny\bfseries, mineblue] at (1.75,1.7) {Distância de Cook};
-  \node[font=\tiny] at (1.75,-0.3) {(Detecta influentes)};
+
+% ── BOTTOM-RIGHT: Distância de Cook ──────────────────────────
+\begin{scope}[xshift=6.8cm, yshift=0cm]
+
+  \draw[->,minegray!80,thick] (0,0) -- (5.2,0)
+    node[right,font=\tiny]{Índice};
+  \draw[->,minegray!80,thick] (0,0) -- (0,3.5)
+    node[above,font=\tiny]{Dist.\ de Cook};
+  \draw[minered!80, dashed, thick] (0,2.5) -- (5.2,2.5);
+  \node[font=\tiny,minered,right] at (5.2,2.5) {limiar};
+  \foreach \x/\y in {0.4/0.20,0.9/0.35,1.4/0.18,1.9/0.28,
+                     2.4/0.60,2.9/0.22,3.4/0.32,4.0/0.26}
+    \draw[mineblue!70,line width=1.5pt] (\x,0) -- (\x,\y);
+  \draw[minered, line width=2.5pt] (4.7,0) -- (4.7,2.9);
+  \node[font=\tiny\bfseries,minered,above] at (4.7,2.9) {influente!};
+  \node[font=\small\bfseries,color=mineblue] at (2.6,3.4) {Distância de Cook};
+  \node[font=\tiny] at (2.6,-0.45) {Detecta observações influentes};
 \end{scope}
+
 \end{tikzpicture}
-\captionof{figure}{Quatro gráficos diagnósticos padrão para modelos de regressão.}
+\captionof{figure}{Quatro gráficos diagnósticos padrão para regressão. Superior esq.: resíduos sem padrão indicam bom ajuste. Superior dir.: normalidade dos resíduos pelo Q-Q plot. Inferior esq.: homocedasticidade (variância constante). Inferior dir.: Cook's Distance identifica pontos influentes.}
 \end{center}
 
 \subsection{Testes Estatísticos de Diagnóstico}
