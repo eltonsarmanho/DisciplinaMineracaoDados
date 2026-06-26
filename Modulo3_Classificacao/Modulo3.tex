@@ -653,21 +653,62 @@ Para classificação binária, a matriz de confusão organiza as predições:
 
 \begin{center}
 \begin{tikzpicture}
-\matrix[matrix of nodes,
-  nodes={minimum width=2.5cm,minimum height=1.1cm,draw=minegray!50,align=center,font=\small},
-  row sep=-\pgflinewidth, column sep=-\pgflinewidth] (m) {
-  |[fill=minegray!15,font=\small\bfseries]| {} &
-  |[fill=mineblue!25,font=\small\bfseries]| Previsto $+$ &
-  |[fill=minered!20,font=\small\bfseries]| Previsto $-$ \\
-  |[fill=mineblue!25,font=\small\bfseries]| Real $+$ &
-  |[fill=minegreen!30]| \textbf{VP}\\(Verdadeiro Positivo) &
-  |[fill=minered!20]| \textbf{FN}\\(Falso Negativo) \\
-  |[fill=minered!20,font=\small\bfseries]| Real $-$ &
-  |[fill=minered!20]| \textbf{FP}\\(Falso Positivo) &
-  |[fill=minegreen!30]| \textbf{VN}\\(Verdadeiro Negativo) \\
-};
+  % Dimensões fixas — estrutura independente do texto
+  \def\cw{3.2}   % largura de cada coluna (cm)
+  \def\hh{0.85}  % altura da linha de cabeçalho
+  \def\ch{1.6}   % altura das linhas de dados
+
+  % ── Preenchimento dos retângulos ──────────────────────────
+  % Cabeçalho
+  \fill[minegray!12]  (0,0)        rectangle (\cw,-\hh);
+  \fill[mineblue!20]  (\cw,0)      rectangle ({2*\cw},-\hh);
+  \fill[minered!15]   ({2*\cw},0)  rectangle ({3*\cw},-\hh);
+  % Linha "Real +"
+  \fill[mineblue!20]  (0,-\hh)              rectangle (\cw,{-\hh-\ch});
+  \fill[minegreen!25] (\cw,-\hh)            rectangle ({2*\cw},{-\hh-\ch});
+  \fill[minered!15]   ({2*\cw},-\hh)        rectangle ({3*\cw},{-\hh-\ch});
+  % Linha "Real −"
+  \fill[minered!15]   (0,{-\hh-\ch})        rectangle (\cw,{-\hh-2*\ch});
+  \fill[minered!15]   (\cw,{-\hh-\ch})      rectangle ({2*\cw},{-\hh-2*\ch});
+  \fill[minegreen!25] ({2*\cw},{-\hh-\ch})  rectangle ({3*\cw},{-\hh-2*\ch});
+
+  % ── Grade (bordas das células) ────────────────────────────
+  \foreach \x in {0,\cw,{2*\cw},{3*\cw}}{
+    \draw[minegray!60,line width=0.5pt] (\x,0) -- (\x,{-\hh-2*\ch});
+  }
+  \foreach \y in {0,-\hh,{-\hh-\ch},{-\hh-2*\ch}}{
+    \draw[minegray!60,line width=0.5pt] (0,\y) -- ({3*\cw},\y);
+  }
+
+  % ── Texto: cabeçalho ──────────────────────────────────────
+  \node[font=\small\bfseries]
+    at ({0.5*\cw},{-0.5*\hh}) {};
+  \node[font=\small\bfseries,text=mineblue!80!black]
+    at ({1.5*\cw},{-0.5*\hh}) {Previsto $+$};
+  \node[font=\small\bfseries,text=minered!80!black]
+    at ({2.5*\cw},{-0.5*\hh}) {Previsto $-$};
+
+  % ── Texto: linha "Real +" ─────────────────────────────────
+  \node[font=\small\bfseries,text=mineblue!80!black]
+    at ({0.5*\cw},{-\hh-0.5*\ch}) {Real $+$};
+  \node[font=\small,align=center]
+    at ({1.5*\cw},{-\hh-0.5*\ch})
+    {\textbf{\large VP}\\[2pt]\scriptsize(Verdadeiro Positivo)};
+  \node[font=\small,align=center]
+    at ({2.5*\cw},{-\hh-0.5*\ch})
+    {\textbf{\large FN}\\[2pt]\scriptsize(Falso Negativo)};
+
+  % ── Texto: linha "Real −" ─────────────────────────────────
+  \node[font=\small\bfseries,text=minered!80!black]
+    at ({0.5*\cw},{-\hh-1.5*\ch}) {Real $-$};
+  \node[font=\small,align=center]
+    at ({1.5*\cw},{-\hh-1.5*\ch})
+    {\textbf{\large FP}\\[2pt]\scriptsize(Falso Positivo)};
+  \node[font=\small,align=center]
+    at ({2.5*\cw},{-\hh-1.5*\ch})
+    {\textbf{\large VN}\\[2pt]\scriptsize(Verdadeiro Negativo)};
 \end{tikzpicture}
-\captionof{figure}{Matriz de confusão para classificação binária.}
+\captionof{figure}{Matriz de confusão para classificação binária. Diagonal principal (VP, VN): predições corretas. Fora da diagonal (FN, FP): erros de classificação.}
 \end{center}
 
 \subsubsection{Métricas Derivadas}
