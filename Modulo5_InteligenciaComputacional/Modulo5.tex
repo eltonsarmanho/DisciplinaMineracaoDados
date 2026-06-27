@@ -165,19 +165,19 @@ com $\mathbf{a}^{(0)} = \mathbf{x}$ (entrada) e $\hat{\mathbf{y}} = \mathbf{a}^{
 \foreach \i in {1,2,3,4}{
   \node[neuron] (i\i) at (0, {-\i*1.2+3}) {$x_{\i}$};
 }
-\node[above,font=\small\bfseries,mineblue] at (0,2.0) {Entrada};
+\node[above,font=\small\bfseries,mineblue] at (0,2.5) {Entrada};
 
 % Hidden layer 1 (5 neurons)
 \foreach \i in {1,...,5}{
   \node[hneuron] (h1\i) at (3, {-\i*1.1+3.3}) {$h_{\i}$};
 }
-\node[above,font=\small\bfseries,mineorange] at (3,2.3) {Oculta 1};
+\node[above,font=\small\bfseries,mineorange] at (3,2.5) {Oculta 1};
 
 % Hidden layer 2 (4 neurons)
 \foreach \i in {1,...,4}{
   \node[hneuron] (h2\i) at (6, {-\i*1.2+2.8}) {$h_{\i}$};
 }
-\node[above,font=\small\bfseries,mineorange] at (6,2.0) {Oculta 2};
+\node[above,font=\small\bfseries,mineorange] at (6,2.5) {Oculta 2};
 
 % Output layer (2 neurons)
 \foreach \i in {1,2}{
@@ -253,7 +253,7 @@ Definindo o \textbf{erro local} $\boldsymbol{\delta}^{(l)} = \frac{\partial \mat
 \caption{Backpropagation: Treinamento de MLP}
 \KwIn{Dados $\{(\mathbf{x}_i, y_i)\}_{i=1}^N$; taxa de aprendizado $\eta$; épocas $E$}
 \KwOut{Pesos $\mathbf{W}^{(1)},\ldots,\mathbf{W}^{(L)}$ e vieses $\mathbf{b}^{(1)},\ldots,\mathbf{b}^{(L)}$ treinados}
-Inicializar pesos aleatoriamente (ex.\ Xavier/He initialization)\;
+Inicializar pesos aleatoriamente \;
 \For{época $= 1$ \KwTo $E$}{
   Embaralhar os dados de treinamento\;
   \ForEach{mini-batch $\mathcal{B} \subset \{1,\ldots,N\}$}{
@@ -432,56 +432,45 @@ $F \leftarrow$ EvaluateFitness($P$)\;
 
 \begin{center}
 \begin{tikzpicture}[
-  box/.style={rectangle,draw=mineblue,fill=mineblue!10,rounded corners=3pt,minimum width=2.8cm,minimum height=0.8cm,font=\small\bfseries,align=center},
-  arrow/.style={-{Stealth[length=6pt]},mineblue,thick}]
+  box/.style={rectangle,draw=mineblue,fill=mineblue!10,rounded corners=3pt,
+              minimum width=3.0cm,minimum height=1.0cm,font=\small\bfseries,align=center},
+  arrow/.style={-{Stealth[length=6pt]},mineblue,thick},
+  lbl/.style={font=\small,minegray}]
 
-\node[box] (init)   at (0,0)   {Inicialização\\da População};
-\node[box] (eval)   at (3.5,0) {Avaliação do\\Fitness};
-\node[box] (sel)    at (7,0)   {Seleção de\\Pais};
-\node[box] (cross)  at (7,-2)  {Crossover\\(Recombinação)};
-\node[box] (mut)    at (3.5,-2){Mutação};
-\node[box] (new)    at (0,-2)  {Nova\\Geração};
-\node[box,fill=minegreen!15,draw=minegreen] (fim) at (0,-4) {Critério de\\Parada?};
-\node[box,fill=mineorange!15,draw=mineorange] (out) at (3.5,-4) {Melhor\\Indivíduo};
+% Linha superior
+\node[box] (init)  at (0,0)     {Inicialização\\da População};
+\node[box] (eval)  at (4.2,0)   {Avaliação do\\Fitness};
+\node[box] (sel)   at (8.4,0)   {Seleção de\\Pais};
+% Coluna direita (descendo)
+\node[box] (cross) at (8.4,-2.2){Crossover\\(Recombinação)};
+% Linha do meio (voltando)
+\node[box] (mut)   at (4.2,-2.2){Mutação};
+\node[box] (new)   at (0,-2.2)  {Nova\\Geração};
+% Linha inferior
+\node[box,fill=minegreen!15,draw=minegreen]   (fim) at (0,-4.4)   {Critério de\\Parada?};
+\node[box,fill=mineorange!15,draw=mineorange] (out) at (4.2,-4.4) {Melhor\\Indivíduo};
 
-\draw[arrow] (init)--(eval);
-\draw[arrow] (eval)--(sel);
-\draw[arrow] (sel)--(cross);
-\draw[arrow] (cross)--(mut);
-\draw[arrow] (mut)--(new);
-\draw[arrow] (new)--(fim);
-\draw[arrow] (fim) -- node[right,font=\tiny,minegray]{Sim} (out);
-\draw[arrow] (fim.west) -- ++(-0.8,0) |- node[left,font=\tiny,minegray,pos=0.25]{Não} (eval.west);
+% Fluxo principal
+\draw[arrow] (init)  -- (eval);
+\draw[arrow] (eval)  -- (sel);
+\draw[arrow] (sel)   -- (cross);
+\draw[arrow] (cross) -- (mut);
+\draw[arrow] (mut)   -- (new);
+\draw[arrow] (new)   -- (fim);
+
+% Sim: horizontal para Melhor Indivíduo
+\draw[arrow] (fim) -- node[above,lbl]{Sim} (out);
+
+% Não: desce abaixo do diagrama, vai pela direita, sobe acima da linha 0 e desce em eval
+\draw[arrow] (fim.south) -- ++(0,-0.8)
+    -- ++(10.2,0)
+    -- ++(0,6.4)
+    -- node[above,lbl,pos=0.5]{Não} ($(eval.north)+(0,1.2)$)
+    -- (eval.north);
 \end{tikzpicture}
 \end{center}
 
-\subsection{Programação Genética}
 
-A \textbf{Programação Genética} (Koza, 1992) estende o AG evoluindo \textbf{programas} representados como \textbf{árvores de expressão}, ao invés de cromossomos de tamanho fixo.
-
-Cada nó interno é um operador ($+, -, \times, \div, \sin, \log, \ldots$) e cada folha é uma variável ou constante. O crossover troca subárvores entre indivíduos.
-
-\textbf{Aplicação principal}: \textbf{Regressão Simbólica}: descobrir a equação matemática que melhor descreve os dados (ex.\ descobrir $y = 3x^2 + 2x - 1$ a partir de amostras ruidosas).
-
-\subsection{Particle Swarm Optimization (PSO)}
-
-O \textbf{PSO} (Kennedy \& Eberhart, 1995) simula o comportamento coletivo de um bando de pássaros. Cada partícula $i$ tem posição $\mathbf{x}_i$ e velocidade $\mathbf{v}_i$ no espaço de busca.
-
-\textbf{Equações de atualização:}
-\begin{align}
-  \mathbf{v}_{t+1} &= \underbrace{\omega \mathbf{v}_t}_{\text{inércia}} + \underbrace{c_1 r_1 (p_{best} - \mathbf{x}_t)}_{\text{cognitivo}} + \underbrace{c_2 r_2 (g_{best} - \mathbf{x}_t)}_{\text{social}}\\
-  \mathbf{x}_{t+1} &= \mathbf{x}_t + \mathbf{v}_{t+1}
-\end{align}
-
-onde $\omega \approx 0.7$ (inércia), $c_1 = c_2 \approx 1.5$ (acelerações), $r_1, r_2 \sim U(0,1)$, $p_{best}$ = melhor posição da partícula, $g_{best}$ = melhor posição do enxame.
-
-\textbf{Aplicações em DM:}
-\begin{itemize}
-  \item Otimização dos pesos de redes neurais.
-  \item Busca de centróides iniciais para K-Means.
-  \item Otimização de hiperparâmetros de SVMs.
-  \item Seleção de features com codificação contínua.
-\end{itemize}
 
 % ============================================================
 \section{Sistemas Fuzzy}

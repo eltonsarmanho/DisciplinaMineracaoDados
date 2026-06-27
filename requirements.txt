@@ -22,8 +22,8 @@ imbalanced-learn>=0.10.0
 # ── Deep Learning (escolha um framework) ───────────────────
 torch>=1.13.0
 torchvision>=0.14.0
-# tensorflow>=2.10.0  # Alternativa ao PyTorch (não instalar junto)
-pytorch-tabnet>=4.0.0
+tensorflow>=2.10.0  # Alternativa ao PyTorch (não instalar junto)
+# pytorch-tabnet>=4.0.0
 
 # ── AutoML & Otimização ────────────────────────────────────
 optuna>=3.0.0
