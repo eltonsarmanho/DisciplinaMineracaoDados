@@ -134,7 +134,7 @@ Usage Mining & Logs, cookies, sessões & Padrões sequenciais & Comportamento us
 
 O \textbf{Web Content Mining} foca na extração de conhecimento a partir do conteúdo de páginas web, que pode ser texto, imagens, vídeos ou dados estruturados.
 
-\subsubsection{Extração de Informação (Information Extraction -- IE)}
+\subsubsection{Extração de Informação (Information Extraction, IE)}
 
 \begin{itemize}
   \item \textbf{NER (Named Entity Recognition):} identificação de entidades como pessoas, organizações, locais e datas em texto não estruturado.
@@ -176,7 +176,7 @@ O pipeline típico de pré-processamento inclui:
 
 \subsubsection{TF-IDF: Ponderação de Termos}
 
-O \textbf{TF-IDF} (Term Frequency -- Inverse Document Frequency) é a medida de relevância mais utilizada em recuperação de informação:
+O \textbf{TF-IDF} (Term Frequency, Inverse Document Frequency) é a medida de relevância mais utilizada em recuperação de informação:
 
 \begin{equation}
   \text{TF-IDF}(t, d) = \text{tf}(t, d) \times \log\frac{N}{df(t)}
@@ -413,7 +413,7 @@ A abordagem híbrida combina CF e CB, superando limitações individuais:
 \paragraph{Deep Learning para Recomendação}
 
 \begin{itemize}
-  \item \textbf{NCF} (Neural Collaborative Filtering -- He et al., 2017): substitui o produto escalar de MF por MLP.
+  \item \textbf{NCF} (Neural Collaborative Filtering, He et al., 2017): substitui o produto escalar de MF por MLP.
   \item \textbf{Wide \& Deep} (Google, 2016): combina aprendizado de regras memorizadas (Wide) com generalização (Deep) para recomendação em app stores.
   \item \textbf{BERT4Rec} (Sun et al., 2019): modelagem sequencial de sessões do usuário com mecanismo de atenção bidirecional.
   \item \textbf{LightGCN} (He et al., 2020): graph neural network simplificada para CF, propagando embeddings no grafo usuário-item.
@@ -452,8 +452,8 @@ A \textbf{Análise de Sentimentos} (Sentiment Analysis, Opinion Mining) é a ár
 \begin{enumerate}
   \item \textbf{Análise de sentimento em nível de documento:} classifica o documento inteiro como positivo, negativo ou neutro.
   \item \textbf{Análise de sentimento em nível de sentença:} classifica cada sentença individualmente.
-  \item \textbf{Análise de sentimento baseada em aspectos (ABSA -- Aspect-Based Sentiment Analysis):} identifica aspectos mencionados e o sentimento associado a cada um.
-  \item \textbf{Reconhecimento de emoções:} classifica texto em emoções básicas -- alegria, tristeza, raiva, medo, desgosto, surpresa (Ekman, 1992).
+  \item \textbf{Análise de sentimento baseada em aspectos (ABSA, Aspect-Based Sentiment Analysis):} identifica aspectos mencionados e o sentimento associado a cada um.
+  \item \textbf{Reconhecimento de emoções:} classifica texto em emoções básicas, a saber: alegria, tristeza, raiva, medo, desgosto e surpresa (Ekman, 1992).
   \item \textbf{Mineração de opiniões:} extração estruturada de (detentor da opinião, alvo da opinião, expressão de opinião, sentimento, tempo).
 \end{enumerate}
 

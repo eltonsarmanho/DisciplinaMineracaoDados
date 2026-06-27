@@ -146,7 +146,7 @@ Sigmoid e Tanh sofrem do problema do \textit{vanishing gradient}: suas derivadas
 
 \subsection{Perceptron Multicamadas (MLP)}
 
-Um \textbf{Perceptron Multicamadas} (MLP -- \textit{Multilayer Perceptron}) organiza neurônios em camadas: \textbf{entrada}, uma ou mais camadas \textbf{ocultas} e \textbf{saída}. Cada neurônio em uma camada está conectado a todos os neurônios da camada seguinte (\textit{fully connected} ou \textit{dense}).
+Um \textbf{Perceptron Multicamadas} (MLP: \textit{Multilayer Perceptron}) organiza neurônios em camadas: \textbf{entrada}, uma ou mais camadas \textbf{ocultas} e \textbf{saída}. Cada neurônio em uma camada está conectado a todos os neurônios da camada seguinte (\textit{fully connected} ou \textit{dense}).
 
 \textbf{Notação:} Para uma rede com $L$ camadas, seja $\mathbf{a}^{(l)}$ a ativação da camada $l$, $\mathbf{W}^{(l)}$ a matriz de pesos e $\mathbf{b}^{(l)}$ o vetor de vieses:
 \[
@@ -250,7 +250,7 @@ Definindo o \textbf{erro local} $\boldsymbol{\delta}^{(l)} = \frac{\partial \mat
 \]
 
 \begin{algorithm}[H]
-\caption{Backpropagation -- Treinamento de MLP}
+\caption{Backpropagation: Treinamento de MLP}
 \KwIn{Dados $\{(\mathbf{x}_i, y_i)\}_{i=1}^N$; taxa de aprendizado $\eta$; épocas $E$}
 \KwOut{Pesos $\mathbf{W}^{(1)},\ldots,\mathbf{W}^{(L)}$ e vieses $\mathbf{b}^{(1)},\ldots,\mathbf{b}^{(L)}$ treinados}
 Inicializar pesos aleatoriamente (ex.\ Xavier/He initialization)\;
@@ -461,7 +461,7 @@ A \textbf{Programação Genética} (Koza, 1992) estende o AG evoluindo \textbf{p
 
 Cada nó interno é um operador ($+, -, \times, \div, \sin, \log, \ldots$) e cada folha é uma variável ou constante. O crossover troca subárvores entre indivíduos.
 
-\textbf{Aplicação principal}: \textbf{Regressão Simbólica} -- descobrir a equação matemática que melhor descreve os dados (ex.\ descobrir $y = 3x^2 + 2x - 1$ a partir de amostras ruidosas).
+\textbf{Aplicação principal}: \textbf{Regressão Simbólica}: descobrir a equação matemática que melhor descreve os dados (ex.\ descobrir $y = 3x^2 + 2x - 1$ a partir de amostras ruidosas).
 
 \subsection{Particle Swarm Optimization (PSO)}
 

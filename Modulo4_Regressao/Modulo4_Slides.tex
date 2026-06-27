@@ -90,11 +90,11 @@ Perda & Cross-entropy & MSE, MAE \\
 \column{0.42\textwidth}
 \begin{block}{Exemplos Práticos}
 \begin{itemize}\small
-  \item \textbf{Preço de imóvel} — área, localização
-  \item \textbf{Temperatura} — dados climáticos
-  \item \textbf{Demanda} — estoque e logística
-  \item \textbf{Risco financeiro} — spreads, VaR
-  \item \textbf{Dosagem médica} — peso, idade
+  \item \textbf{Preço de imóvel}: área, localização
+  \item \textbf{Temperatura}: dados climáticos
+  \item \textbf{Demanda}: estoque e logística
+  \item \textbf{Risco financeiro}: spreads, VaR
+  \item \textbf{Dosagem médica}: peso, idade
 \end{itemize}
 \end{block}
 \end{columns}
@@ -110,31 +110,31 @@ A saída é \textbf{contínua}: $y \in \mathbb{R}$, não uma classe discreta.
 \column{0.5\textwidth}
 \begin{block}{Modelos Lineares}
 \begin{itemize}
-  \item \textbf{Linear Simples} — $\hat{y} = \beta_0 + \beta_1 x$
-  \item \textbf{Múltipla} — $\hat{y} = \boldsymbol{\beta}^T\mathbf{x}$
-  \item \textbf{Polinomial} — inclui $x^2, x^3, \ldots$
+  \item \textbf{Linear Simples}: $\hat{y} = \beta_0 + \beta_1 x$
+  \item \textbf{Múltipla}: $\hat{y} = \boldsymbol{\beta}^T\mathbf{x}$
+  \item \textbf{Polinomial}: inclui $x^2, x^3, \ldots$
 \end{itemize}
 \end{block}
 \vspace{0.5em}
 \begin{block}{Regularizada}
 \begin{itemize}
-  \item \textbf{Ridge} — penalidade L2
-  \item \textbf{LASSO} — penalidade L1 (esparsidade)
-  \item \textbf{ElasticNet} — L1 + L2
+  \item \textbf{Ridge}: penalidade L2
+  \item \textbf{LASSO}: penalidade L1 (esparsidade)
+  \item \textbf{ElasticNet}: L1 + L2
 \end{itemize}
 \end{block}
 \column{0.47\textwidth}
 \begin{exampleblock}{Não-Linear / Ensemble}
 \begin{itemize}
-  \item \textbf{SVR} — kernel trick
-  \item \textbf{Random Forest} — média de árvores
-  \item \textbf{XGBoost / LightGBM} — boosting
-  \item \textbf{Redes Neurais} — MLP com saída linear
+  \item \textbf{SVR}: kernel trick
+  \item \textbf{Random Forest}: média de árvores
+  \item \textbf{XGBoost / LightGBM}: boosting
+  \item \textbf{Redes Neurais}: MLP com saída linear
 \end{itemize}
 \end{exampleblock}
 \vspace{0.5em}
 \begin{alertblock}{\small Consulte o Material Didático}
-\small Módulo 4 — Seções 1 e 2
+\small Módulo 4, Seções 1 e 2
 \end{alertblock}
 \end{columns}
 \end{frame}
@@ -191,7 +191,7 @@ Minimiza $\displaystyle\sum_i (y_i - \hat{y}_i)^2$
 \end{columns}
 \end{frame}
 
-\begin{frame}{Métricas de Avaliação}
+\begin{frame}[shrink=5]{Métricas de Avaliação}
 \begin{table}
 \centering\small
 \begin{tabular}{>{\bfseries}p{2.0cm}p{4.5cm}p{4.0cm}}
@@ -230,7 +230,7 @@ R² Ajust. & $1-(1-R^2)\frac{n-1}{n-p-1}$ & Penaliza features desnecessárias \\
 \begin{itemize}
   \item Modelo complexo memoriza os dados de treino
   \item Erro baixo no treino, alto no teste
-  \item Coeficientes muito grandes — instáveis
+  \item Coeficientes muito grandes, tornando-os instáveis
 \end{itemize}
 \end{block}
 \vspace{0.5em}
@@ -250,9 +250,9 @@ Adicionar um termo à função de perda que \textbf{penaliza coeficientes grande
 \end{itemize}
 \end{exampleblock}
 \vspace{0.5em}
-\begin{block}{\small $\lambda$ — hiperparâmetro}
+\begin{block}{\small $\lambda$: hiperparâmetro}
 \small $\lambda \uparrow$ mais regularização\\
-$\lambda = 0$ — sem penalidade (OLS)\\
+$\lambda = 0$: sem penalidade (OLS)\\
 Escolher via validação cruzada
 \end{block}
 \end{columns}
@@ -269,7 +269,7 @@ Escolher via validação cruzada
 \vspace{0.4em}
 \begin{block}{LASSO (L1)}
 \small $\|\mathbf{y}-X\boldsymbol{\beta}\|^2 + \lambda\|\boldsymbol{\beta}\|_1$\\[0.3em]
-\textbf{Efeito:} produz \textbf{soluções esparsas} --- alguns coeficientes $= 0$ (seleção de features)
+\textbf{Efeito:} produz \textbf{soluções esparsas}: alguns coeficientes $= 0$ (seleção de features)
 \end{block}
 \column{0.6\textwidth}
 \centering
@@ -350,7 +350,7 @@ ElasticNet & Grupos de features correlacionadas & Combina estabilidade + esparsi
 
 \vspace{0.4em}
 \begin{alertblock}{\small Implicação}
-\small Regularização aumenta o viés mas reduz a variância — em geral melhora a generalização.
+\small Regularização aumenta o viés mas reduz a variância, melhorando a generalização em geral.
 \end{alertblock}
 
 \column{0.58\textwidth}
@@ -399,7 +399,7 @@ O modelo é \textbf{linear nos parâmetros}, resolvido por OLS.
 \end{block}
 
 \vspace{0.4em}
-\begin{block}{Grau $d$ — como escolher?}
+\begin{block}{Grau $d$: como escolher?}
 \begin{itemize}\small
   \item Grau baixo: underfitting (alto viés)
   \item Grau alto: overfitting (alta variância)
@@ -409,7 +409,7 @@ O modelo é \textbf{linear nos parâmetros}, resolvido por OLS.
 
 \column{0.47\textwidth}
 \begin{alertblock}{Risco com Grau Alto}
-Polinômio de grau $n-1$ interpola \textbf{todos} os pontos do treino com erro zero --- mas generaliza pessimamente!
+Polinômio de grau $n-1$ interpola \textbf{todos} os pontos do treino com erro zero, mas generaliza pessimamente!
 
 \vspace{0.3em}
 \small Oscilações de Runge: o polinômio oscila violentamente entre os pontos de treino.
@@ -417,7 +417,7 @@ Polinômio de grau $n-1$ interpola \textbf{todos} os pontos do treino com erro z
 
 \vspace{0.4em}
 \begin{exampleblock}{\small Alternativa}
-\small Usar regularização Ridge/LASSO junto com termos polinomiais --- controla as oscilações.
+\small Usar regularização Ridge/LASSO junto com termos polinomiais: controla as oscilações.
 \end{exampleblock}
 \end{columns}
 \end{frame}
@@ -454,7 +454,7 @@ Polinômio de grau $n-1$ interpola \textbf{todos} os pontos do treino com erro z
 \end{block}
 \vspace{0.4em}
 \begin{alertblock}{\small Consulte o Colab}
-\small Módulo 4 — Notebook com implementação, importância de features e comparação de métricas.
+\small Módulo 4, Notebook com implementação, importância de features e comparação de métricas.
 \end{alertblock}
 \end{columns}
 \end{frame}
@@ -490,7 +490,7 @@ reg\_lambda (L2) & Regularização nos pesos \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{alertblock}{\small Colab — Módulo 4}
+\begin{alertblock}{\small Colab, Módulo 4}
 \small Tuning com Optuna: \texttt{XGBRegressor} e \texttt{LGBMRegressor} com early stopping.
 \end{alertblock}
 \end{columns}

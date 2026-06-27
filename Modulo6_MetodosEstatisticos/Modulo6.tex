@@ -282,7 +282,7 @@ Inicializar centróides $\boldsymbol{\mu}_1, \ldots, \boldsymbol{\mu}_K$ aleator
 
 \textbf{Variantes do K-Means:}
 \begin{itemize}
-  \item \textbf{K-Means++} (Arthur \& Vassilvitskii, 2007): Inicialização melhorada -- cada centróide é escolhido com probabilidade proporcional à distância ao centróide mais próximo já escolhido. Garante aproximação $O(\log K)$ do ótimo.
+  \item \textbf{K-Means++} (Arthur \& Vassilvitskii, 2007): Inicialização melhorada: cada centróide é escolhido com probabilidade proporcional à distância ao centróide mais próximo já escolhido. Garante aproximação $O(\log K)$ do ótimo.
   \item \textbf{K-Medoids (PAM)}: Usa exemplos reais do dataset como centróides (medóides). Mais robusto a outliers.
   \item \textbf{Mini-Batch K-Means}: Processa mini-lotes aleatórios; escala para datasets de milhões de exemplos.
 \end{itemize}
@@ -297,10 +297,10 @@ O clustering hierárquico cria uma \textbf{hierarquia} de agrupamentos represent
 
 \textbf{Critérios de Ligação (Linkage):}
 \begin{align}
-  d_{\text{single}}(A,B) &= \min_{a \in A, b \in B} d(a,b) && \text{(single linkage -- sensível a outliers)}\\
-  d_{\text{complete}}(A,B) &= \max_{a \in A, b \in B} d(a,b) && \text{(complete linkage -- clusters compactos)}\\
-  d_{\text{average}}(A,B) &= \frac{1}{|A||B|} \sum_{a \in A} \sum_{b \in B} d(a,b) && \text{(UPGMA -- balanço)}\\
-  d_{\text{ward}}(A,B) &= \Delta J \text{ ao mesclar } A \text{ e } B && \text{(Ward -- minimiza variância intra-cluster)}
+  d_{\text{single}}(A,B) &= \min_{a \in A, b \in B} d(a,b) && \text{(single linkage, sensível a outliers)}\\
+  d_{\text{complete}}(A,B) &= \max_{a \in A, b \in B} d(a,b) && \text{(complete linkage, clusters compactos)}\\
+  d_{\text{average}}(A,B) &= \frac{1}{|A||B|} \sum_{a \in A} \sum_{b \in B} d(a,b) && \text{(UPGMA, balanço)}\\
+  d_{\text{ward}}(A,B) &= \Delta J \text{ ao mesclar } A \text{ e } B && \text{(Ward, minimiza variância intra-cluster)}
 \end{align}
 
 \textbf{Dendrograma (exemplo esquemático):}
@@ -332,7 +332,7 @@ O clustering hierárquico cria uma \textbf{hierarquia} de agrupamentos represent
 \end{tikzpicture}
 \end{center}
 
-A \textbf{correlação cofenética} mede o quão fiel o dendrograma é às distâncias originais -- valores $> 0.75$ indicam boa representação hierárquica.
+A \textbf{correlação cofenética} mede o quão fiel o dendrograma é às distâncias originais; valores $> 0.75$ indicam boa representação hierárquica.
 
 \subsection{DBSCAN}
 
@@ -431,12 +431,12 @@ onde $\pi_k$ são os pesos da mistura ($\sum_k \pi_k = 1$, $\pi_k > 0$).
 
 O GMM é treinado pelo \textbf{algoritmo EM} (Dempster et al., 1977):
 
-\textbf{E-step} -- Calcular responsabilidades:
+\textbf{E-step}: Calcular responsabilidades:
 \[
   r_{ik} = \frac{\pi_k \, \mathcal{N}(\mathbf{x}_i \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)}{\sum_{j=1}^{K} \pi_j \, \mathcal{N}(\mathbf{x}_i \mid \boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j)}
 \]
 
-\textbf{M-step} -- Atualizar parâmetros:
+\textbf{M-step}: Atualizar parâmetros:
 \[
   \pi_k = \frac{1}{N}\sum_i r_{ik}, \quad
   \boldsymbol{\mu}_k = \frac{\sum_i r_{ik} \mathbf{x}_i}{\sum_i r_{ik}}, \quad
@@ -566,7 +566,7 @@ O FP-Growth elimina a geração de candidatos construindo uma estrutura compacta
 
 \textbf{Funcionamento:} (1) Varre a base, conta frequências de itens, ordena por frequência decrescente. (2) Varre novamente, inserindo transações na FP-Tree. (3) Extrai itemsets frequentes recursivamente usando bases de padrões condicionais.
 
-\textbf{ECLAT (Equivalence CLAss Transformation)}: Usa formato vertical dos dados (lista de transações por item -- TidList). Interseção de TidLists para computar suporte; eficiente para muitas transações.
+\textbf{ECLAT (Equivalence CLAss Transformation)}: Usa formato vertical dos dados (lista de transações por item, TidList). Interseção de TidLists para computar suporte; eficiente para muitas transações.
 
 \subsection{Regras de Associação para Cenários Específicos}
 
@@ -607,7 +607,7 @@ O FP-Growth elimina a geração de candidatos construindo uma estrutura compacta
 \begin{estadoartebox}{Deep Clustering}
 Integração de redes neurais profundas com objetivos de clustering:
 \begin{itemize}
-  \item \textbf{DEC -- Deep Embedded Clustering} (Xie et al., 2016): Autoencoder treinado conjuntamente com uma função de perda de clustering; aprende representações otimizadas para agrupamento.
+  \item \textbf{DEC: Deep Embedded Clustering} (Xie et al., 2016): Autoencoder treinado conjuntamente com uma função de perda de clustering; aprende representações otimizadas para agrupamento.
   \item \textbf{SCAN} (Van Gansbeke et al., 2020): Self-supervised clustering; usa similaridade de vizinhos para treinar sem rótulos; state-of-the-art em clustering de imagens.
   \item \textbf{DINO} (Caron et al., 2021): Recursos do Vision Transformer (ViT) pré-treinados auto-supervisionados revelam estrutura de clustering sem fine-tuning; propriedade emergente dos Transformers.
 \end{itemize}

@@ -146,12 +146,12 @@
     \begin{columns}[T]
         \column{0.5\textwidth}
         \begin{exampleblock}{Estruturados vs.\ Não Estruturados}
-            \small Dados tabulares (SQL) vs.\ texto, imagem, áudio — requerem extração de features.
+            \small Dados tabulares (SQL) vs.\ texto, imagem, áudio, que requerem extração de features.
         \end{exampleblock}
 
         \column{0.5\textwidth}
         \begin{exampleblock}{Séries Temporais e Espaciais}
-            \small Sequências ordenadas no tempo ou com componente geográfico — técnicas especiais necessárias.
+            \small Sequências ordenadas no tempo ou com componente geográfico, exigindo técnicas especiais.
         \end{exampleblock}
     \end{columns}
 \end{frame}
@@ -183,12 +183,12 @@
             \textbf{Missing Not At Random}\\[0.3em]
             \small Ausência depende do \textbf{próprio valor ausente}.\\[0.3em]
             \textit{Ex.:} Pacientes com pressão muito alta faltam às consultas.\\[0.3em]
-            \footnotesize \textbf{Tratamento:} Modelagem explícita do mecanismo — qualquer imputação simples introduz viés.
+            \footnotesize \textbf{Tratamento:} Modelagem explícita do mecanismo: qualquer imputação simples introduz viés.
         \end{block}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Padrões de Ausência --- Visualização}
+\begin{frame}{Padrões de Ausência: Visualização}
     \begin{center}
     \scalebox{0.65}{%
     \begin{tikzpicture}[
@@ -248,9 +248,9 @@
 
       % Legenda
       \node[cell,fill=minered!60]  at (3.6,-1.0) {};
-      \node[font=\tiny,anchor=west] at (3.85,-1.0) {-- Valor ausente};
+      \node[font=\tiny,anchor=west] at (3.85,-1.0) {: valor ausente};
       \node[cell,fill=mineblue!15] at (6.1,-1.0) {};
-      \node[font=\tiny,anchor=west] at (6.35,-1.0) {-- Valor presente};
+      \node[font=\tiny,anchor=west] at (6.35,-1.0) {: valor presente};
     \end{tikzpicture}
     }
     \end{center}
@@ -282,7 +282,7 @@
 \section{Outliers}
 %============================================================
 
-\begin{frame}{O que é um Outlier? --- Método IQR}
+\begin{frame}{O que é um Outlier? Critério IQR}
     \begin{columns}[T]
         \column{0.4\textwidth}
         \begin{block}{Definição}
@@ -333,7 +333,7 @@
                 \footnotesize Robusto; usa quartis. Não assume normalidade.
                 \vspace{0.3em}
                 \item \textbf{Z-Score Modificado (MAD):}\\
-                \footnotesize Usa mediana — extremamente robusto.
+                \footnotesize Usa mediana, extremamente robusto.
             \end{itemize}
         \end{block}
 
@@ -420,7 +420,7 @@
         \midrule
         Robust & Dados com outliers que devem ser mantidos & Algoritmos que exigem $[0,1]$ \\
         \midrule
-        Log & Features com distribuição log-normal; contagens; preços & Dados com zeros — use $\log(1+x)$ \\
+        Log \& Features com distribuição log-normal; contagens; preços \& Dados com zeros: use $\log(1+x)$ \\
         \bottomrule
     \end{tabular}
     \end{center}
@@ -494,11 +494,11 @@
         \end{itemize}
 
         \column{0.48\textwidth}
-        \begin{block}{SMOTE --- Como funciona}
+        \begin{block}{SMOTE: Como Funciona}
             \small Gera exemplos \textbf{sintéticos} da classe minoritária interpolando entre instâncias existentes:
             \[x_{new} = x_i + \lambda \cdot (x_{nn} - x_i)\]
             \footnotesize onde $x_{nn}$ é um vizinho aleatório e $\lambda \sim \mathcal{U}[0,1]$.\\[0.3em]
-            Não copia instâncias existentes --- \textbf{cria novas} no espaço de features.
+            Não copia instâncias existentes: \textbf{cria novas} no espaço de features.
         \end{block}
     \end{columns}
 \end{frame}
