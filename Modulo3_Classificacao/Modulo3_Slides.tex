@@ -1,0 +1,719 @@
+\documentclass[aspectratio=169]{beamer}
+\setbeamerfont{headline}{size=\footnotesize}
+
+\mode<presentation>{
+    \usetheme{Montpellier}
+    \setbeamercovered{transparent}
+    \usecolortheme{beaver}
+}
+
+\usepackage[english,brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fontawesome}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{colortbl}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{scalefnt}
+
+\definecolor{mineblue}{RGB}{0,90,180}
+\definecolor{mineorange}{RGB}{230,115,0}
+\definecolor{minegreen}{RGB}{34,139,34}
+\definecolor{minered}{RGB}{180,20,40}
+\definecolor{minegray}{RGB}{100,100,100}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,shapes.geometric,positioning,fit,backgrounds,calc,shadows.blur,trees}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcommand{\reflexao}[1]{\begin{alertblock}{Reflexão}#1\end{alertblock}}
+\newcommand{\key}[1]{\underline{#1}}
+
+\title[Mineração de Dados]{Mineração de Dados: Conceitos e Aplicações}
+\subtitle{Módulo 3: Técnicas de Classificação}
+\author[Elton Sarmanho]{Prof. Elton Sarmanho\inst{1}\\\footnotesize \href{mailto:eltonss@ufpa.br}{eltonss@ufpa.br}}
+\institute[UFPA]{\inst{1} Faculdade de Sistemas de Informação - UFPA Campus Cametá}
+\date{\today}
+
+\begin{document}
+
+% ==============================================================================
+% 1. TITLE FRAME
+% ==============================================================================
+\begin{frame}
+    \titlepage
+    \begin{center}
+        \tiny \faGithub\ \href{https://github.com/eltonsarmanho}{github.com/eltonsarmanho} \quad
+        \faLinkedinSquare\ \href{https://www.linkedin.com/in/elton-sarmanho-836553185/}{Elton Sarmanho}
+    \end{center}
+\end{frame}
+
+% ==============================================================================
+% 2. ROTEIRO
+% ==============================================================================
+\begin{frame}{Roteiro}
+    \tableofcontents
+\end{frame}
+
+% ==============================================================================
+\section{Introdução à Classificação}
+% ==============================================================================
+
+\begin{frame}{O que é Classificação?}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{block}{Aprendizado Supervisionado}
+\begin{itemize}
+  \item Aprender a partir de \textbf{exemplos rotulados}
+  \item Cada exemplo: atributos + classe
+  \item Meta: prever a classe de novos exemplos
+\end{itemize}
+\end{block}
+\vspace{0.4em}
+\begin{alertblock}{Definição}
+  Dado um conjunto de treino $(\mathbf{x}_i, y_i)$, aprender $f(\mathbf{x}) \rightarrow y$
+\end{alertblock}
+
+\column{0.5\textwidth}
+\textbf{Aplicações:}
+\vspace{0.3em}
+
+\begin{tabular}{cl}
+\faEnvelope & \textbf{Spam:} e-mail legítimo ou lixo \\[4pt]
+\faHeartbeat & \textbf{Médico:} tumor benigno/maligno \\[4pt]
+\faCreditCard & \textbf{Crédito:} aprovação de empréstimo \\[4pt]
+\faUsers & \textbf{Churn:} cliente irá cancelar? \\[4pt]
+\faShield & \textbf{Fraude:} transação suspeita \\[4pt]
+\faCamera & \textbf{Imagem:} reconhecimento de objetos \\
+\end{tabular}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Tipos de Classificação}
+\begin{center}
+\begin{tabular}{>{\bfseries\color{mineblue}}p{3.2cm}p{4.5cm}p{4.5cm}}
+\toprule
+Tipo & Descrição & Exemplo \\
+\midrule
+Binária & 2 classes: $y \in \{0, 1\}$ & Spam vs. Não-spam \\[4pt]
+Multiclasse & $k > 2$ classes & Dígito reconhecido (0--9) \\[4pt]
+Multirótulo & Múltiplos rótulos simultâneos & Gêneros de um filme \\[4pt]
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.5em}
+\begin{block}{Nota}
+  A maioria dos algoritmos clássicos é projetada para \textbf{classificação binária}. Extensões para multiclasse: \textit{One-vs-Rest} (OvR) e \textit{One-vs-One} (OvO).
+\end{block}
+\end{frame}
+
+% ==============================================================================
+\section{Árvores de Decisão}
+% ==============================================================================
+
+\begin{frame}[t]{Árvores de Decisão: Conceito}
+\vspace{-0.3em}
+\begin{columns}[T]
+\column{0.38\textwidth}
+\begin{block}{Como funciona?}
+\begin{itemize}
+  \item \textbf{Nó interno:} teste em um atributo
+  \item \textbf{Ramo:} resultado do teste
+  \item \textbf{Folha:} classe predita
+\end{itemize}
+\end{block}
+\vspace{0.3em}
+Para classificar: percorra da raiz até uma folha seguindo os atributos do exemplo.
+
+\column{0.62\textwidth}
+\vspace{-0.3em}
+\begin{center}
+\scalebox{0.85}{%
+\begin{tikzpicture}[
+  internal/.style={rectangle,rounded corners,draw=mineblue,fill=mineblue!15,minimum width=2.8cm,minimum height=0.75cm,font=\small,align=center,drop shadow},
+  leaf/.style={rectangle,rounded corners,draw=minegreen,fill=minegreen!15,minimum width=2.2cm,minimum height=0.65cm,font=\small\bfseries,align=center,drop shadow},
+  edge from parent/.append style={draw,->,thick,mineblue!70},
+  level distance=1.7cm,
+  level 1/.style={sibling distance=5.5cm},
+  level 2/.style={sibling distance=2.8cm}
+]
+\node[internal] (root) {Renda $>$ 50k?}
+  child {
+    node[internal] {Histórico\\Limpo?}
+    child { node[leaf] {\textcolor{minegreen}{APROVADO}\\(78\%)} edge from parent node[left,font=\tiny\color{minegray}]{Sim} }
+    child { node[leaf] {\textcolor{minered}{NEGADO}\\(62\%)} edge from parent node[right,font=\tiny\color{minegray}]{Não} }
+    edge from parent node[left,font=\small\color{minegray}]{Não}
+  }
+  child {
+    node[internal] {Emprego\\$>$ 2 anos?}
+    child { node[leaf] {\textcolor{minered}{NEGADO}\\(55\%)} edge from parent node[left,font=\tiny\color{minegray}]{Não} }
+    child { node[leaf] {\textcolor{minegreen}{APROVADO}\\(91\%)} edge from parent node[right,font=\tiny\color{minegray}]{Sim} }
+    edge from parent node[right,font=\small\color{minegray}]{Sim}
+  };
+\end{tikzpicture}
+}
+\end{center}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Algoritmos: ID3, C4.5 e CART}
+\begin{center}
+\begin{tabular}{>{\bfseries}p{3.2cm}ccc}
+\toprule
+Característica & \textcolor{mineblue}{ID3} & \textcolor{mineorange}{C4.5} & \textcolor{minegreen}{CART} \\
+\midrule
+Critério & Entropia/IG & Gain Ratio & Índice Gini \\
+Tipo de divisão & Multiway & Multiway & Binária \\
+Atrib. contínuos & Não & Sim & Sim \\
+Valores ausentes & Não & Sim & Sim \\
+Regressão & Não & Não & Sim \\
+Poda & Não & Pós-poda & Custo-complexidade \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.3em}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{block}{Critério de impureza}
+  \begin{itemize}
+    \item \textbf{Entropia:} $H(S) = -\sum_i p_i \log_2 p_i$
+    \item \textbf{Gini:} $G(S) = 1 - \sum_i p_i^2$
+  \end{itemize}
+\end{block}
+\column{0.5\textwidth}
+\begin{alertblock}{Poda (Pruning)}
+  Evita \textbf{overfitting}: limita profundidade, mínimo de amostras por folha, ou remove ramos após a construção.
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Propriedades das Árvores de Decisão}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{block}{\faThumbsUp\ Vantagens}
+\begin{itemize}
+  \item \textbf{Interpretabilidade:} regras legíveis por humanos
+  \item \textbf{Não-paramétrico:} sem hipóteses sobre a distribuição
+  \item \textbf{Sem normalização:} não precisa escalar features
+  \item \textbf{Tipos mistos:} numérico e categórico nativamente
+\end{itemize}
+\end{block}
+\column{0.5\textwidth}
+\begin{alertblock}{\faWarning\ Limitações}
+\begin{itemize}
+  \item \textbf{Instabilidade:} pequenas mudanças nos dados $\Rightarrow$ árvore diferente
+  \item \textbf{Overfitting:} árvores profundas memorizam o treino
+  \item Fronteiras de decisão apenas horizontais/verticais
+\end{itemize}
+\end{alertblock}
+\vspace{0.4em}
+\begin{exampleblock}{Solução}
+  \textbf{Métodos Ensemble} (Random Forest, Boosting) combinam múltiplas árvores para superar essas limitações.
+\end{exampleblock}
+\end{columns}
+\end{frame}
+
+% ==============================================================================
+\section{Métodos Probabilísticos}
+% ==============================================================================
+
+\begin{frame}{Naive Bayes}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\begin{block}{Teorema de Bayes}
+\vspace{0.3em}
+\[\large P(c \mid \mathbf{x}) = \frac{P(\mathbf{x} \mid c)\, P(c)}{P(\mathbf{x})}\]
+\vspace{0.1em}
+\begin{itemize}
+  \item $P(c)$: probabilidade \textit{a priori}
+  \item $P(\mathbf{x}|c)$: verossimilhança
+  \item $P(c|\mathbf{x})$: probabilidade \textit{a posteriori}
+\end{itemize}
+\end{block}
+\vspace{0.3em}
+\textbf{Hipótese ``ingênua''}: atributos são condicionalmente independentes dada a classe.
+
+\column{0.52\textwidth}
+\textbf{Variantes:}
+\vspace{0.3em}
+
+\begin{tabular}{>{\bfseries\footnotesize}p{2.3cm}p{2.0cm}p{2.0cm}}
+\toprule
+Variante & Distribuição & Uso \\
+\midrule
+Gaussiano & Normal & Features contínuas \\[3pt]
+Multinomial & Multinomial & Texto (freq. palavras) \\[3pt]
+Bernoulli & Bernoulli & Features binárias \\[3pt]
+\bottomrule
+\end{tabular}
+\vspace{0.4em}
+\begin{alertblock}{Suavização de Laplace}
+  Evita probabilidade zero para valores não vistos no treino: adiciona $\alpha=1$ às contagens.
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Regressão Logística}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{block}{Função Sigmoide}
+\vspace{0.3em}
+\[\sigma(z) = \frac{1}{1 + e^{-z}}\]
+\vspace{0.1em}
+onde $z = \mathbf{w}^T \mathbf{x} + b$
+\vspace{0.3em}
+\begin{itemize}
+  \item Saída em $(0, 1)$: probabilidade
+  \item Limiar $= 0.5$: classe positiva se $\sigma > 0.5$
+\end{itemize}
+\end{block}
+\vspace{0.3em}
+\textbf{Multiclasse:} usa função \textbf{Softmax} para $k$ classes.
+
+\column{0.5\textwidth}
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+\begin{axis}[
+  width=6cm, height=4.5cm,
+  xlabel={$z$}, ylabel={$\sigma(z)$},
+  xmin=-6, xmax=6, ymin=-0.05, ymax=1.05,
+  xtick={-4,-2,0,2,4},
+  ytick={0,0.5,1},
+  grid=major, grid style={dotted,minegray!40},
+  axis lines=left,
+  tick label style={font=\tiny},
+  label style={font=\small},
+]
+\addplot[mineblue,very thick,domain=-6:6,samples=100] {1/(1+exp(-x))};
+\addplot[dashed,minered,thin] coordinates {(-6,0.5)(6,0.5)};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\begin{exampleblock}{Quando usar?}
+  Classificação \textbf{binária linear} com necessidade de probabilidades calibradas.
+\end{exampleblock}
+\end{columns}
+\end{frame}
+
+% ==============================================================================
+\section{K-Vizinhos Mais Próximos (KNN)}
+% ==============================================================================
+
+\begin{frame}{KNN: K-Vizinhos Mais Próximos}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{block}{Como funciona?}
+\begin{enumerate}
+  \item Dado novo exemplo $\mathbf{x}$
+  \item Calcule a distância para \textbf{todos} os exemplos de treino
+  \item Encontre os $k$ mais próximos
+  \item \textbf{Vote} pela classe majoritária
+\end{enumerate}
+\end{block}
+\vspace{0.3em}
+\textbf{Distância mais comum:} Euclidiana
+\[d(\mathbf{a},\mathbf{b}) = \sqrt{\sum_i (a_i - b_i)^2}\]
+
+\column{0.5\textwidth}
+\begin{alertblock}{Efeito de $k$}
+\begin{itemize}
+  \item $k=1$: fronteira irregular \newline \textbf{Overfitting} (muito sensível ao ruído)
+  \vspace{0.3em}
+  \item $k=n$: fronteira suave \newline \textbf{Underfitting} (ignora estrutura)
+  \vspace{0.3em}
+  \item $k$ ótimo via \textbf{validação cruzada} \newline (ponto de partida: $k \approx \sqrt{n}$)
+\end{itemize}
+\end{alertblock}
+\begin{exampleblock}{Atenção}
+  Requer \textbf{normalização} das features! Distâncias são sensíveis à escala.
+\end{exampleblock}
+\end{columns}
+\end{frame}
+
+% ==============================================================================
+\section{Máquinas de Vetores de Suporte (SVM)}
+% ==============================================================================
+
+\begin{frame}[t]{SVM: Margem Máxima}
+\begin{columns}[T]
+\column{0.38\textwidth}
+\vspace{0.3em}
+\begin{block}{Conceito}
+  Encontrar o hiperplano que \textbf{maximiza a margem} entre as classes.
+\end{block}
+\vspace{0.3em}
+\textbf{Vetores de Suporte:} os exemplos mais próximos do hiperplano — são os únicos que determinam a fronteira.
+\vspace{0.3em}
+
+\begin{alertblock}{Soft Margin}
+  Parâmetro $C$ controla o trade-off entre margem e erros de treino.
+\end{alertblock}
+
+\column{0.62\textwidth}
+\vspace{-0.2em}
+\begin{center}
+\begin{tikzpicture}[scale=1.0]
+% Positive class points (circles - blue)
+\foreach \x/\y in {3.5/2.5, 4/3.5, 4.5/2, 5/3, 3.8/1.8}{
+  \filldraw[mineblue,fill=mineblue!70] (\x,\y) circle(0.09);
+}
+% Negative class points (squares - red)
+\foreach \x/\y in {1/1.5, 1.5/2.5, 0.8/3, 2/1, 1.8/2.8}{
+  \fill[minered,rotate around={45:(\x,\y)}] (\x-0.09,\y-0.09) rectangle (\x+0.09,\y+0.09);
+}
+% Decision boundary
+\draw[very thick,minegreen] (2.5,-0.2) -- (2.5,4.2) node[right,font=\small]{$\mathbf{w}\cdot\mathbf{x}+b=0$};
+% Margin boundaries
+\draw[dashed,mineblue,thick] (3.2,-0.2) -- (3.2,4.2) node[above,font=\tiny]{$+1$};
+\draw[dashed,minered,thick] (1.8,-0.2) -- (1.8,4.2) node[above,font=\tiny]{$-1$};
+% Margin annotation
+\draw[<->,very thick,mineorange] (1.8,4.0) -- (3.2,4.0) node[midway,above,font=\small]{Margem $\frac{2}{\|\mathbf{w}\|}$};
+% Support vectors highlighted
+\draw[mineorange,very thick] (3.2,2.5) circle(0.17) node[right,font=\tiny,mineorange]{SV};
+\draw[mineorange,very thick] (1.8,2.5) circle(0.17) node[left,font=\tiny,mineorange]{SV};
+% Labels
+\node[mineblue,font=\small\bfseries] at (4.5,4) {Classe $+1$};
+\node[minered,font=\small\bfseries] at (0.8,4) {Classe $-1$};
+\end{tikzpicture}
+\end{center}
+\end{columns}
+\end{frame}
+
+\begin{frame}{SVM: Kernel Trick}
+\begin{block}{Por que kernels?}
+  Quando os dados \textbf{não são linearmente separáveis}, o kernel mapeia para um espaço de maior dimensão \textit{sem calcular o mapeamento explicitamente}.
+\end{block}
+\vspace{0.5em}
+\begin{center}
+\begin{tabular}{>{\bfseries\color{mineblue}}p{2.8cm}p{4.5cm}p{4cm}}
+\toprule
+Kernel & Fórmula & Quando usar \\
+\midrule
+Linear & $K(\mathbf{x},\mathbf{z}) = \mathbf{x} \cdot \mathbf{z}$ & Dados linearmente separáveis, texto \\[4pt]
+Polinomial & $K(\mathbf{x},\mathbf{z}) = (\mathbf{x} \cdot \mathbf{z} + c)^d$ & Interações de grau $d$ \\[4pt]
+RBF (Gaussiano) & $K(\mathbf{x},\mathbf{z}) = e^{-\gamma\|\mathbf{x}-\mathbf{z}\|^2}$ & Fronteiras complexas (padrão) \\[4pt]
+Sigmoide & $K(\mathbf{x},\mathbf{z}) = \tanh(\kappa\mathbf{x}\cdot\mathbf{z} + c)$ & Inspirado em redes neurais \\[4pt]
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.3em}
+\begin{exampleblock}{Dica prática}
+  Comece com \textbf{RBF} (default no scikit-learn). Use \textbf{Linear} para texto esparso ou dados de alta dimensão.
+\end{exampleblock}
+\end{frame}
+
+% ==============================================================================
+\section{Métodos Ensemble}
+% ==============================================================================
+
+\begin{frame}[t]{Métodos Ensemble: Visão Geral}
+\begin{columns}[T]
+\column{0.38\textwidth}
+\vspace{0.3em}
+\begin{block}{Princípio}
+  \textbf{Muitos modelos} simples $>$ \textbf{um modelo} complexo
+\end{block}
+\vspace{0.3em}
+\begin{itemize}
+  \item \textbf{Bagging:} paralelo, reduz \textit{variância}
+  \vspace{0.2em}
+  \item \textbf{Boosting:} sequencial, reduz \textit{viés}
+\end{itemize}
+
+\column{0.62\textwidth}
+\vspace{-0.2em}
+\begin{center}
+\scalebox{0.75}{%
+\begin{tikzpicture}[scale=0.95]
+% BAGGING side
+\node[font=\bfseries\small,color=mineblue] at (-3.2,4.0) {BAGGING};
+\node[draw=minegray,rounded corners,font=\tiny\bfseries,minimum width=1.8cm,minimum height=0.5cm,fill=minegray!10] (dbag) at (-3.2,3.3) {Dataset $\mathcal{D}$};
+
+\node[draw=mineblue,fill=mineblue!10,rounded corners,font=\tiny,minimum width=1.4cm,minimum height=0.5cm] (b1) at (-4.5,2.2) {Bootstrap 1};
+\node[draw=mineblue,fill=mineblue!10,rounded corners,font=\tiny,minimum width=1.4cm,minimum height=0.5cm] (b2) at (-3.2,2.2) {Bootstrap 2};
+\node[draw=mineblue,fill=mineblue!10,rounded corners,font=\tiny,minimum width=1.4cm,minimum height=0.5cm] (b3) at (-1.9,2.2) {Bootstrap 3};
+
+\draw[->,minegray,thin] (dbag) -- (b1); \draw[->,minegray,thin] (dbag) -- (b2); \draw[->,minegray,thin] (dbag) -- (b3);
+
+\node[draw=mineblue,fill=mineblue!20,rounded corners,font=\tiny,minimum width=1.4cm,minimum height=0.5cm] (bt1) at (-4.5,1.2) {Modelo 1};
+\node[draw=mineblue,fill=mineblue!20,rounded corners,font=\tiny,minimum width=1.4cm,minimum height=0.5cm] (bt2) at (-3.2,1.2) {Modelo 2};
+\node[draw=mineblue,fill=mineblue!20,rounded corners,font=\tiny,minimum width=1.4cm,minimum height=0.5cm] (bt3) at (-1.9,1.2) {Modelo 3};
+
+\draw[->,mineblue,thin] (b1)--(bt1); \draw[->,mineblue,thin] (b2)--(bt2); \draw[->,mineblue,thin] (b3)--(bt3);
+
+\node[draw=minegreen,fill=minegreen!10,rounded corners,font=\tiny,minimum width=2.2cm,minimum height=0.5cm] (bagg) at (-3.2,0.2) {Votação / Média};
+\draw[->,minegreen,thin] (bt1)--(bagg); \draw[->,minegreen,thin] (bt2)--(bagg); \draw[->,minegreen,thin] (bt3)--(bagg);
+
+% Divider
+\draw[dashed,minegray!60,thick] (0,4.5) -- (0,-0.3);
+
+% BOOSTING side
+\node[font=\bfseries\small,color=mineorange] at (3.2,4.0) {BOOSTING};
+\node[draw=minegray,rounded corners,font=\tiny\bfseries,minimum width=1.8cm,minimum height=0.5cm,fill=minegray!10] (dbst) at (3.2,3.3) {Dataset $\mathcal{D}$};
+
+\node[draw=mineorange,fill=mineorange!10,rounded corners,font=\tiny,minimum width=2cm,minimum height=0.5cm] (bst1) at (3.2,2.5) {Modelo 1};
+\draw[->,minegray,thin] (dbst)--(bst1);
+
+\node[draw=mineorange,fill=mineorange!15,rounded corners,font=\tiny,minimum width=2cm,minimum height=0.5cm,align=center] (bst2) at (3.2,1.7) {Modelo 2\\{\color{minegray}(foco erros M1)}};
+\draw[->,mineorange,thin] (bst1)--(bst2);
+
+\node[draw=mineorange,fill=mineorange!20,rounded corners,font=\tiny,minimum width=2cm,minimum height=0.5cm,align=center] (bst3) at (3.2,0.8) {Modelo 3\\{\color{minegray}(foco erros M2)}};
+\draw[->,mineorange,thin] (bst2)--(bst3);
+
+\node[draw=minegreen,fill=minegreen!10,rounded corners,font=\tiny,minimum width=2.2cm,minimum height=0.5cm,align=center] (bstf) at (3.2,0.0) {Combinação\\ponderada};
+\draw[->,minegreen,thin] (bst3)--(bstf);
+\end{tikzpicture}
+}
+\end{center}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Random Forest}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{block}{Como funciona?}
+\begin{enumerate}
+  \item \textbf{Bootstrap:} criar $T$ amostras com reposição
+  \item \textbf{Árvore aleatória:} em cada divisão, avaliar apenas $m \approx \sqrt{p}$ features aleatórias
+  \item \textbf{Votação:} predição final = classe majoritária das $T$ árvores
+\end{enumerate}
+\end{block}
+\vspace{0.4em}
+A aleatoriedade nas features \textbf{descorrelaciona} as árvores, reduzindo a variância.
+
+\column{0.5\textwidth}
+\begin{exampleblock}{Vantagens}
+\begin{itemize}
+  \item Muito robusto a overfitting
+  \item Lida bem com muitas features
+  \item \textbf{Importância de features} (MDI, MDA)
+  \item Poucas decisões de hiperparâmetros
+\end{itemize}
+\end{exampleblock}
+\vspace{0.4em}
+\begin{alertblock}{Limitação}
+  Menos interpretável que uma única árvore. Para explicabilidade: usar \textbf{SHAP}.
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+\begin{frame}{XGBoost, LightGBM e CatBoost}
+\begin{block}{Gradient Boosted Decision Trees (GBDT)}
+  Constroem árvores \textbf{sequencialmente}, cada uma corrigindo os erros da anterior. Dominam benchmarks em dados tabulares.
+\end{block}
+\vspace{0.4em}
+\begin{center}
+\begin{tabular}{>{\bfseries\color{mineblue}}p{2.8cm}p{4cm}p{4.5cm}}
+\toprule
+Algoritmo & Inovação chave & Destaque \\
+\midrule
+XGBoost & Regularização L1/L2 & Competições Kaggle desde 2015 \\[3pt]
+LightGBM & GOSS + crescimento leaf-wise & $\sim$10$\times$ mais rápido em dados grandes \\[3pt]
+CatBoost & Ordered target encoding & Suporte nativo a categóricas \\[3pt]
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.4em}
+\begin{exampleblock}{Consulte o Material Didático e o Notebook Colab}
+  Implementações completas com tuning de hiperparâmetros e comparação de desempenho estão disponíveis no \textbf{Módulo 3} do material didático.
+\end{exampleblock}
+\end{frame}
+
+% ==============================================================================
+\section{Avaliação de Modelos}
+% ==============================================================================
+
+\begin{frame}[t]{Matriz de Confusão}
+\begin{columns}[T]
+\column{0.45\textwidth}
+\vspace{0.3em}
+\begin{block}{O que é?}
+  Tabela que organiza as predições vs. rótulos reais. Revela \textbf{tipos de erros} cometidos pelo modelo.
+\end{block}
+\vspace{0.3em}
+\begin{itemize}
+  \item \textbf{VP}: acertou positivo
+  \item \textbf{VN}: acertou negativo
+  \item \textbf{FP}: disse positivo, era negativo
+  \item \textbf{FN}: disse negativo, era positivo
+\end{itemize}
+
+\column{0.55\textwidth}
+\begin{center}
+\scalebox{0.55}{%
+\begin{tikzpicture}
+  \def\cw{3.2}
+  \def\hh{0.85}
+  \def\ch{1.6}
+
+  % Preenchimento
+  \fill[minegray!12]  (0,0)        rectangle (\cw,-\hh);
+  \fill[mineblue!20]  (\cw,0)      rectangle ({2*\cw},-\hh);
+  \fill[minered!15]   ({2*\cw},0)  rectangle ({3*\cw},-\hh);
+  \fill[mineblue!20]  (0,-\hh)              rectangle (\cw,{-\hh-\ch});
+  \fill[minegreen!25] (\cw,-\hh)            rectangle ({2*\cw},{-\hh-\ch});
+  \fill[minered!15]   ({2*\cw},-\hh)        rectangle ({3*\cw},{-\hh-\ch});
+  \fill[minered!15]   (0,{-\hh-\ch})        rectangle (\cw,{-\hh-2*\ch});
+  \fill[minered!15]   (\cw,{-\hh-\ch})      rectangle ({2*\cw},{-\hh-2*\ch});
+  \fill[minegreen!25] ({2*\cw},{-\hh-\ch})  rectangle ({3*\cw},{-\hh-2*\ch});
+
+  % Grade
+  \foreach \x in {0,\cw,{2*\cw},{3*\cw}}{
+    \draw[minegray!60,line width=0.5pt] (\x,0) -- (\x,{-\hh-2*\ch});
+  }
+  \foreach \y in {0,-\hh,{-\hh-\ch},{-\hh-2*\ch}}{
+    \draw[minegray!60,line width=0.5pt] (0,\y) -- ({3*\cw},\y);
+  }
+
+  % Cabeçalho
+  \node[font=\small\bfseries] at ({0.5*\cw},{-0.5*\hh}) {};
+  \node[font=\small\bfseries,text=mineblue!80!black]
+    at ({1.5*\cw},{-0.5*\hh}) {Previsto $+$};
+  \node[font=\small\bfseries,text=minered!80!black]
+    at ({2.5*\cw},{-0.5*\hh}) {Previsto $-$};
+
+  % Linha Real +
+  \node[font=\small\bfseries,text=mineblue!80!black]
+    at ({0.5*\cw},{-\hh-0.5*\ch}) {Real $+$};
+  \node[font=\small,align=center]
+    at ({1.5*\cw},{-\hh-0.5*\ch})
+    {\textbf{\large VP}\\[2pt]\scriptsize(Verdadeiro Positivo)};
+  \node[font=\small,align=center]
+    at ({2.5*\cw},{-\hh-0.5*\ch})
+    {\textbf{\large FN}\\[2pt]\scriptsize(Falso Negativo)};
+
+  % Linha Real -
+  \node[font=\small\bfseries,text=minered!80!black]
+    at ({0.5*\cw},{-\hh-1.5*\ch}) {Real $-$};
+  \node[font=\small,align=center]
+    at ({1.5*\cw},{-\hh-1.5*\ch})
+    {\textbf{\large FP}\\[2pt]\scriptsize(Falso Positivo)};
+  \node[font=\small,align=center]
+    at ({2.5*\cw},{-\hh-1.5*\ch})
+    {\textbf{\large VN}\\[2pt]\scriptsize(Verdadeiro Negativo)};
+\end{tikzpicture}
+}
+\end{center}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Métricas de Avaliação}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{block}{Fórmulas}
+\begin{align*}
+\text{Acurácia} &= \frac{VP + VN}{VP+VN+FP+FN} \\[6pt]
+\text{Precisão} &= \frac{VP}{VP + FP} \\[6pt]
+\text{Recall} &= \frac{VP}{VP + FN} \\[6pt]
+\text{F1-Score} &= 2 \cdot \frac{\text{P} \cdot \text{R}}{\text{P} + \text{R}}
+\end{align*}
+\end{block}
+
+\column{0.5\textwidth}
+\begin{exampleblock}{Exemplo: Detecção de Doença}
+Imagine 100 pacientes (10 doentes, 90 saudáveis):
+\begin{itemize}
+  \item Modelo detectou 8 dos 10 doentes (VP=8)
+  \item 5 saudáveis foram ditos doentes (FP=5)
+  \item \textbf{Precisão} = 8/13 = 0,62
+  \item \textbf{Recall} = 8/10 = 0,80
+  \item \textbf{F1} = 0,70
+\end{itemize}
+\end{exampleblock}
+\begin{alertblock}{Acurácia engana!}
+  Se 95\% dos e-mails são legítimos, um modelo que classifica \textit{tudo} como legítimo tem 95\% de acurácia.
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Quando Usar Cada Métrica?}
+\begin{center}
+\begin{tabular}{>{\bfseries\color{mineblue}}p{3cm}p{3.5cm}p{5cm}}
+\toprule
+Situação & Métrica & Motivo \\
+\midrule
+Classes balanceadas & Acurácia & Simples e intuitiva \\[4pt]
+FP tem alto custo & Precisão & Spam: não bloquear e-mail legítimo \\[4pt]
+FN tem alto custo & Recall & Diagnóstico: não perder paciente doente \\[4pt]
+Equilíbrio P/R & F1-Score & Geral para dados desbalanceados \\[4pt]
+Threshold incerto & AUC-ROC & Avalia ranking de probabilidades \\[4pt]
+Alta desbalanceamento & AUC-PR & Fraude, doenças raras \\[4pt]
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.3em}
+\begin{exampleblock}{Regra prática}
+  Para dados \textbf{desbalanceados}: prefira F1-Score, AUC-PR ou MCC no lugar da acurácia.
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}{Validação Cruzada (k-fold)}
+\begin{columns}[T]
+\column{0.55\textwidth}
+\begin{block}{Como funciona? (k=5)}
+\begin{enumerate}
+  \item Divide os dados em $k$ partes (\textit{folds})
+  \item Em cada rodada: usa $k-1$ folds para treino, 1 para validação
+  \item Repete $k$ vezes (cada fold serve como validação uma vez)
+  \item Resultado: média e desvio-padrão das $k$ avaliações
+\end{enumerate}
+\end{block}
+\vspace{0.3em}
+\textbf{Variante:} \textit{Stratified k-fold} mantém proporção de classes em cada fold --- essencial para dados desbalanceados.
+
+\column{0.45\textwidth}
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+\foreach \i in {1,...,5}{
+  \foreach \j in {1,...,5}{
+    \pgfmathsetmacro{\isequal}{int(\i==\j)}
+    \ifnum\isequal=1
+      \fill[mineorange!50] ({(\j-1)*1.1},{\i*0.6}) rectangle ({(\j)*1.1-0.05},{(\i)*0.6+0.5});
+      \node[font=\tiny,white] at ({(\j-0.5)*1.1-0.025},{(\i)*0.6+0.25}) {Val};
+    \else
+      \fill[mineblue!30] ({(\j-1)*1.1},{\i*0.6}) rectangle ({(\j)*1.1-0.05},{(\i)*0.6+0.5});
+      \node[font=\tiny] at ({(\j-0.5)*1.1-0.025},{(\i)*0.6+0.25}) {Tr};
+    \fi
+  }
+  \node[font=\tiny,left] at (0,{(\i)*0.6+0.25}) {Fold \i};
+}
+\end{tikzpicture}
+\end{center}
+\vspace{0.2em}
+\begin{exampleblock}{Vantagem}
+  Usa \textbf{todos os dados} para treino e validação.
+\end{exampleblock}
+\end{columns}
+\end{frame}
+
+% ==============================================================================
+% REFERÊNCIAS
+% ==============================================================================
+\begin{frame}{Referências}
+\begin{thebibliography}{9}
+\setbeamertemplate{bibliography item}[text]
+{\small
+\bibitem{quinlan1986} Quinlan, J. R. (1986). Induction of decision trees. \textit{Machine Learning}, 1(1), 81--106.
+\bibitem{breiman2001} Breiman, L. (2001). Random forests. \textit{Machine Learning}, 45(1), 5--32.
+\bibitem{vapnik1995} Vapnik, V. N. (1995). \textit{The Nature of Statistical Learning Theory}. Springer.
+\bibitem{chen2016} Chen, T., \& Guestrin, C. (2016). XGBoost. \textit{KDD 2016}, 785--794.
+\bibitem{ke2017} Ke, G., et al. (2017). LightGBM. \textit{NeurIPS 2017}, 3149--3157.
+}
+\end{thebibliography}
+\end{frame}
+
+\begin{frame}[c]
+\begin{center}
+{\Large \textbf{Consulte o Material Didático}}\\[0.8em]
+{\large \textcolor{mineblue}{Módulo 3: Técnicas de Classificação}}\\[1.2em]
+{\normalsize Exemplos práticos, exercícios resolvidos e implementações em Python disponíveis no \textbf{Notebook Colab}.}\\[1.5em]
+\faGithub\ \href{https://github.com/eltonsarmanho}{github.com/eltonsarmanho}\\[0.4em]
+\faEnvelope\ \href{mailto:eltonss@ufpa.br}{eltonss@ufpa.br}
+\end{center}
+\end{frame}
+
+\end{document}

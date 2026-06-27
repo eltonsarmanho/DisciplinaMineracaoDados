@@ -1,0 +1,640 @@
+\documentclass[aspectratio=169]{beamer}
+\setbeamerfont{headline}{size=\footnotesize}
+
+\mode<presentation>{
+    \usetheme{Montpellier}
+    \setbeamercovered{transparent}
+    \usecolortheme{beaver}
+}
+
+\usepackage[english,brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fontawesome}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{colortbl}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{ragged2e}
+
+\definecolor{mineblue}{RGB}{0,90,180}
+\definecolor{mineorange}{RGB}{230,115,0}
+\definecolor{minegreen}{RGB}{34,139,34}
+\definecolor{minered}{RGB}{180,20,40}
+\definecolor{minegray}{RGB}{100,100,100}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,shapes.geometric,positioning,fit,backgrounds,calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\newcommand{\reflexao}[1]{\begin{alertblock}{Reflexão}#1\end{alertblock}}
+\newcommand{\key}[1]{\underline{#1}}
+
+\title[Mineração de Dados]{Mineração de Dados: Conceitos e Aplicações}
+\subtitle{Módulo 4: Técnicas de Regressão}
+\author[Elton Sarmanho]{Prof. Elton Sarmanho\inst{1}\\\footnotesize \href{mailto:eltonss@ufpa.br}{eltonss@ufpa.br}}
+\institute[UFPA]{\inst{1} Faculdade de Sistemas de Informação - UFPA Campus Cametá}
+\date{\today}
+
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse, fill=red!20, node distance=3cm, minimum height=2em]
+
+\begin{document}
+
+% ============================================================
+% 1. TÍTULO
+% ============================================================
+\begin{frame}
+    \titlepage
+    \begin{center}
+        \tiny \faGithub \ \href{https://github.com/eltonsarmanho}{github.com/eltonsarmanho} \quad
+        \faLinkedinSquare \ \href{https://www.linkedin.com/in/elton-sarmanho-836553185/}{Elton Sarmanho}
+    \end{center}
+\end{frame}
+
+% ============================================================
+% 2. ROTEIRO
+% ============================================================
+\begin{frame}{Roteiro da Aula}
+    \tableofcontents
+\end{frame}
+
+% ============================================================
+\section{O Problema de Regressão}
+% ============================================================
+
+\begin{frame}{Classificação vs.\ Regressão}
+\begin{columns}
+\column{0.55\textwidth}
+\begin{table}
+\centering\small
+\begin{tabular}{>{\bfseries}p{2.0cm}p{2.0cm}p{2.0cm}}
+\toprule
+Aspecto & Classificação & Regressão \\
+\midrule
+Saída & Discreta & Contínua \\
+Exemplo & Spam/Ham & Preço \\
+Métrica & Acurácia, F1 & RMSE, R² \\
+Perda & Cross-entropy & MSE, MAE \\
+\bottomrule
+\end{tabular}
+\end{table}
+\column{0.42\textwidth}
+\begin{block}{Exemplos Práticos}
+\begin{itemize}\small
+  \item \textbf{Preço de imóvel} — área, localização
+  \item \textbf{Temperatura} — dados climáticos
+  \item \textbf{Demanda} — estoque e logística
+  \item \textbf{Risco financeiro} — spreads, VaR
+  \item \textbf{Dosagem médica} — peso, idade
+\end{itemize}
+\end{block}
+\end{columns}
+\vspace{0.3em}
+\begin{alertblock}{}
+\centering\small
+A saída é \textbf{contínua}: $y \in \mathbb{R}$, não uma classe discreta.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Tipos de Regressão}
+\begin{columns}
+\column{0.5\textwidth}
+\begin{block}{Modelos Lineares}
+\begin{itemize}
+  \item \textbf{Linear Simples} — $\hat{y} = \beta_0 + \beta_1 x$
+  \item \textbf{Múltipla} — $\hat{y} = \boldsymbol{\beta}^T\mathbf{x}$
+  \item \textbf{Polinomial} — inclui $x^2, x^3, \ldots$
+\end{itemize}
+\end{block}
+\vspace{0.5em}
+\begin{block}{Regularizada}
+\begin{itemize}
+  \item \textbf{Ridge} — penalidade L2
+  \item \textbf{LASSO} — penalidade L1 (esparsidade)
+  \item \textbf{ElasticNet} — L1 + L2
+\end{itemize}
+\end{block}
+\column{0.47\textwidth}
+\begin{exampleblock}{Não-Linear / Ensemble}
+\begin{itemize}
+  \item \textbf{SVR} — kernel trick
+  \item \textbf{Random Forest} — média de árvores
+  \item \textbf{XGBoost / LightGBM} — boosting
+  \item \textbf{Redes Neurais} — MLP com saída linear
+\end{itemize}
+\end{exampleblock}
+\vspace{0.5em}
+\begin{alertblock}{\small Consulte o Material Didático}
+\small Módulo 4 — Seções 1 e 2
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+% ============================================================
+\section{Regressão Linear}
+% ============================================================
+
+\begin{frame}[t]{Regressão Linear Simples}
+\begin{columns}
+\column{0.42\textwidth}
+\small
+\textbf{Objetivo:} encontrar a reta que melhor ajusta os dados.
+
+\vspace{0.5em}
+$\hat{y} = \beta_0 + \beta_1 x$
+
+\vspace{0.4em}
+Estimadores OLS (Mínimos Quadrados):
+\[
+  \hat{\beta}_1 = \frac{S_{xy}}{S_{xx}}, \quad \hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x}
+\]
+
+\vspace{0.4em}
+Minimiza $\displaystyle\sum_i (y_i - \hat{y}_i)^2$
+
+\vspace{0.4em}
+\begin{exampleblock}{\small Resíduos}
+\small $\varepsilon_i = y_i - \hat{y}_i$ (linhas laranjas)
+\end{exampleblock}
+
+\column{0.56\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+  width=8cm, height=5cm,
+  xlabel={$x$}, ylabel={$y$},
+  title={\small Regressão Linear Simples com Resíduos},
+  grid=major, grid style={minegray!25},
+  xmin=0, xmax=11, ymin=0, ymax=20,
+  title style={font=\small}
+]
+\addplot[only marks, mineblue, mark size=2.5pt] coordinates {
+  (1,2.1)(2,3.8)(3,5.2)(4,7.1)(5,8.9)(6,10.5)(7,12.1)(8,14.3)(9,15.7)(10,17.5)
+  (1.5,3.0)(3.5,6.5)(5.5,9.8)(7.5,13.0)(9.5,16.5)
+};
+\addplot[thick, minered, domain=0.5:10.5, samples=50] {1.8*x + 0.3};
+\addlegendentry{$\hat{y} = 1{,}8x + 0{,}3$}
+\addplot[dashed, mineorange, thin] coordinates {(3,5.2)(3,5.7)};
+\addplot[dashed, mineorange, thin] coordinates {(7,12.1)(7,12.9)};
+\addplot[dashed, mineorange, thin] coordinates {(5,8.9)(5,9.3)};
+\node[font=\tiny, mineorange] at (axis cs:3.5,5.45) {$\varepsilon_i$};
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Métricas de Avaliação}
+\begin{table}
+\centering\small
+\begin{tabular}{>{\bfseries}p{2.0cm}p{4.5cm}p{4.0cm}}
+\toprule
+Métrica & Fórmula & Quando usar \\
+\midrule
+MSE  & $\frac{1}{n}\sum(y_i-\hat{y}_i)^2$ & Penaliza outliers; otimização \\
+RMSE & $\sqrt{MSE}$ & Mesma unidade de $y$ \\
+MAE  & $\frac{1}{n}\sum|y_i-\hat{y}_i|$ & Robusto a outliers \\
+R²   & $1 - \frac{\sum(y_i-\hat{y}_i)^2}{\sum(y_i-\bar{y})^2}$ & Proporção da variância explicada \\
+R² Ajust. & $1-(1-R^2)\frac{n-1}{n-p-1}$ & Penaliza features desnecessárias \\
+\bottomrule
+\end{tabular}
+\end{table}
+\vspace{0.3em}
+\begin{columns}
+\column{0.48\textwidth}
+\begin{alertblock}{\small Atenção ao R²}
+\small Sempre cresce com mais features! Use R² ajustado para comparar modelos com diferente número de variáveis.
+\end{alertblock}
+\column{0.48\textwidth}
+\begin{exampleblock}{\small Dica Prática}
+\small MAE é preferível quando há outliers. RMSE é preferível quando erros grandes são muito custosos.
+\end{exampleblock}
+\end{columns}
+\end{frame}
+
+% ============================================================
+\section{Regularização}
+% ============================================================
+
+\begin{frame}{Por que Regularizar?}
+\begin{columns}
+\column{0.55\textwidth}
+\begin{block}{O Problema: Overfitting}
+\begin{itemize}
+  \item Modelo complexo memoriza os dados de treino
+  \item Erro baixo no treino, alto no teste
+  \item Coeficientes muito grandes — instáveis
+\end{itemize}
+\end{block}
+\vspace{0.5em}
+\begin{alertblock}{Solução: Penalidade}
+Adicionar um termo à função de perda que \textbf{penaliza coeficientes grandes}:
+\[
+\text{Perda} + \lambda \cdot \text{Penalidade}(\boldsymbol{\beta})
+\]
+\end{alertblock}
+\column{0.42\textwidth}
+\begin{exampleblock}{Benefícios}
+\begin{itemize}\small
+  \item Generalização melhor
+  \item Reduz variância
+  \item LASSO: seleção de features
+  \item Ridge: lida com multicolinearidade
+\end{itemize}
+\end{exampleblock}
+\vspace{0.5em}
+\begin{block}{\small $\lambda$ — hiperparâmetro}
+\small $\lambda \uparrow$ mais regularização\\
+$\lambda = 0$ — sem penalidade (OLS)\\
+Escolher via validação cruzada
+\end{block}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{Ridge vs.\ LASSO}
+\begin{columns}
+\column{0.38\textwidth}
+\small
+\begin{block}{Ridge (L2)}
+\small $\|\mathbf{y}-X\boldsymbol{\beta}\|^2 + \lambda\|\boldsymbol{\beta}\|_2^2$\\[0.3em]
+\textbf{Efeito:} encolhe todos os coeficientes, mas \textbf{nenhum é zerado exatamente}
+\end{block}
+\vspace{0.4em}
+\begin{block}{LASSO (L1)}
+\small $\|\mathbf{y}-X\boldsymbol{\beta}\|^2 + \lambda\|\boldsymbol{\beta}\|_1$\\[0.3em]
+\textbf{Efeito:} produz \textbf{soluções esparsas} --- alguns coeficientes $= 0$ (seleção de features)
+\end{block}
+\column{0.6\textwidth}
+\centering
+\scalebox{0.75}{%
+\begin{tikzpicture}[scale=1.4]
+% L2 ball
+\begin{scope}[xshift=-2.8cm]
+  \draw[mineblue, thick, fill=mineblue!10] (0,0) circle (1);
+  \draw[->, minegray, thin] (-1.4,0) -- (1.4,0) node[right,font=\tiny]{$\beta_1$};
+  \draw[->, minegray, thin] (0,-1.4) -- (0,1.4) node[above,font=\tiny]{$\beta_2$};
+  \draw[minered, dashed, thin] (0.7, 0.714) ellipse (0.5 and 0.35);
+  \draw[minered, dashed, thin] (0.7, 0.714) ellipse (0.85 and 0.6);
+  \filldraw[minered] (0.7, 0.714) circle(0.05) node[above right,font=\tiny,minered]{ótimo};
+  \node[below,font=\tiny,align=center] at (0,-1.6) {\textbf{Ridge (L2)}\\$\|\beta\|_2 \leq t$};
+\end{scope}
+% L1 diamond
+\begin{scope}[xshift=2.0cm]
+  \draw[mineorange, thick, fill=mineorange!10] (1,0)--(0,1)--(-1,0)--(0,-1)--cycle;
+  \draw[->, minegray, thin] (-1.4,0) -- (1.4,0) node[right,font=\tiny]{$\beta_1$};
+  \draw[->, minegray, thin] (0,-1.4) -- (0,1.4) node[above,font=\tiny]{$\beta_2$};
+  \draw[minered, dashed, thin] (0.3, 1) ellipse (0.65 and 0.45);
+  \draw[minered, dashed, thin] (0.3, 1) ellipse (1.1 and 0.8);
+  \filldraw[minered] (0, 1) circle(0.05) node[right,font=\tiny,minered,align=left]{ótimo\\(esparsidade!)};
+  \node[below,font=\tiny,align=center] at (0,-1.6) {\textbf{LASSO (L1)}\\$\|\beta\|_1 \leq t$};
+\end{scope}
+\end{tikzpicture}%
+}
+
+\vspace{0.2em}
+\tiny O ótimo do LASSO toca o losango num \textbf{vértice} onde $\beta_1=0$, gerando esparsidade.
+\end{columns}
+\end{frame}
+
+\begin{frame}{ElasticNet e Quando Usar Cada Método}
+\begin{block}{ElasticNet = Ridge + LASSO}
+\[
+\hat{\boldsymbol{\beta}}_{EN} = \arg\min_{\boldsymbol{\beta}} \left\{ \|\mathbf{y}-X\boldsymbol{\beta}\|^2 + \lambda_1\|\boldsymbol{\beta}\|_1 + \lambda_2\|\boldsymbol{\beta}\|_2^2 \right\}
+\]
+\end{block}
+\vspace{0.3em}
+\begin{table}
+\centering\small
+\begin{tabular}{>{\bfseries}p{2.5cm}p{4.0cm}p{4.0cm}}
+\toprule
+Método & Use quando\ldots & Vantagem \\
+\midrule
+Ridge & Muitas features correlacionadas & Coeficientes estáveis \\
+LASSO & Quer seleção automática de features & Modelo esparso / interpretável \\
+ElasticNet & Grupos de features correlacionadas & Combina estabilidade + esparsidade \\
+\bottomrule
+\end{tabular}
+\end{table}
+\vspace{0.3em}
+\begin{exampleblock}{\small Dica}
+\small Sempre escolha $\lambda$ por validação cruzada (\texttt{RidgeCV}, \texttt{LassoCV}, \texttt{ElasticNetCV} no scikit-learn).
+\end{exampleblock}
+\end{frame}
+
+% ============================================================
+\section{Trade-off Viés-Variância}
+% ============================================================
+
+\begin{frame}[t]{Trade-off Viés-Variância}
+\begin{columns}
+\column{0.4\textwidth}
+\small
+\textbf{Decomposição do erro:}
+\[
+\text{Erro} = \text{Viés}^2 + \text{Variância} + \sigma^2
+\]
+
+\vspace{0.4em}
+\begin{itemize}\small
+  \item \textbf{Underfitting:} modelo simples, alto viés, baixa variância
+  \item \textbf{Overfitting:} modelo complexo, baixo viés, alta variância
+  \item \textbf{Ótimo:} ponto que minimiza o erro total
+\end{itemize}
+
+\vspace{0.4em}
+\begin{alertblock}{\small Implicação}
+\small Regularização aumenta o viés mas reduz a variância — em geral melhora a generalização.
+\end{alertblock}
+
+\column{0.58\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+  width=8cm, height=5cm,
+  xlabel={Complexidade do Modelo},
+  ylabel={Erro},
+  title={\small Trade-off Viés-Variância},
+  grid=major, grid style={minegray!20},
+  xmin=0, xmax=10, ymin=0, ymax=6,
+  xtick={0,...,10}, ytick={0,1,...,6},
+  xticklabels={,,Simples,,,,,,,,Complexo},
+  legend pos=north east,
+  legend style={font=\tiny},
+  title style={font=\small}
+]
+\addplot[thick, mineblue, smooth, domain=0.5:9.5] {5/(x^0.7 + 1)};
+\addlegendentry{Viés$^2$}
+\addplot[thick, mineorange, smooth, domain=0.5:9.5] {0.05 * x^1.8};
+\addlegendentry{Variância}
+\addplot[thick, minegreen, smooth, dashed, domain=0.5:9.5] {5/(x^0.7+1) + 0.05*x^1.8 + 0.5};
+\addlegendentry{Erro Total}
+\addplot[only marks, minered, mark=*, mark size=3pt] coordinates {(4.2, 2.3)};
+\node[font=\tiny, minered, above right] at (axis cs:4.2,2.3) {Ótimo};
+\addplot[gray, dashed, domain=0:10] {0.5};
+\node[font=\tiny, gray, right] at (axis cs:9.5,0.5) {Ruído};
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\end{frame}
+
+% ============================================================
+\section{Regressão Polinomial}
+% ============================================================
+
+\begin{frame}{Regressão Polinomial}
+\begin{columns}
+\column{0.5\textwidth}
+\begin{block}{Ideia}
+Adicionar $x^2, x^3, \ldots$ como novas features:
+\[
+\phi(\mathbf{x}) = [1,\; x,\; x^2,\; \ldots,\; x^d]^T
+\]
+O modelo é \textbf{linear nos parâmetros}, resolvido por OLS.
+\end{block}
+
+\vspace{0.4em}
+\begin{block}{Grau $d$ — como escolher?}
+\begin{itemize}\small
+  \item Grau baixo: underfitting (alto viés)
+  \item Grau alto: overfitting (alta variância)
+  \item \textbf{Solução:} validação cruzada
+\end{itemize}
+\end{block}
+
+\column{0.47\textwidth}
+\begin{alertblock}{Risco com Grau Alto}
+Polinômio de grau $n-1$ interpola \textbf{todos} os pontos do treino com erro zero --- mas generaliza pessimamente!
+
+\vspace{0.3em}
+\small Oscilações de Runge: o polinômio oscila violentamente entre os pontos de treino.
+\end{alertblock}
+
+\vspace{0.4em}
+\begin{exampleblock}{\small Alternativa}
+\small Usar regularização Ridge/LASSO junto com termos polinomiais --- controla as oscilações.
+\end{exampleblock}
+\end{columns}
+\end{frame}
+
+% ============================================================
+\section{Métodos Ensemble para Regressão}
+% ============================================================
+
+\begin{frame}{Random Forest Regressor}
+\begin{columns}
+\column{0.5\textwidth}
+\begin{block}{Como funciona}
+\begin{itemize}\small
+  \item Treina $T$ árvores de regressão (CART) com bootstrap
+  \item Cada árvore usa subconjunto aleatório de features
+  \item Predição final: \textbf{média} das árvores
+\end{itemize}
+\[
+\hat{y}(\mathbf{x}) = \frac{1}{T}\sum_{t=1}^T h_t(\mathbf{x})
+\]
+\end{block}
+\vspace{0.4em}
+\begin{exampleblock}{OOB Error}
+\small $\approx 36,8\%$ dos exemplos não são sorteados em cada bootstrap --- usados como \textbf{validação gratuita} (Out-of-Bag Error), sem necessidade de conjunto de validação separado.
+\end{exampleblock}
+\column{0.47\textwidth}
+\begin{block}{Vantagens}
+\begin{itemize}\small
+  \item Robusto a outliers
+  \item Pouco ajuste de hiperparâmetros
+  \item Importância de features nativa
+  \item Paralelo por natureza
+\end{itemize}
+\end{block}
+\vspace{0.4em}
+\begin{alertblock}{\small Consulte o Colab}
+\small Módulo 4 — Notebook com implementação, importância de features e comparação de métricas.
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+\begin{frame}{XGBoost / LightGBM para Regressão}
+\begin{columns}
+\column{0.42\textwidth}
+\begin{block}{Ideia do Boosting}
+\small Constrói árvores \textbf{sequencialmente}: cada nova árvore aprende com os erros (resíduos) da anterior.
+\[
+F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \nu \cdot h_m(\mathbf{x})
+\]
+\small $\nu$ = taxa de aprendizado (shrinkage)
+\end{block}
+\vspace{0.4em}
+\begin{exampleblock}{\small Vantagem prática}
+\small Em dados tabulares com $n < 100k$, XGBoost/LightGBM tipicamente superam redes neurais.
+\end{exampleblock}
+\column{0.55\textwidth}
+\begin{table}
+\centering\scriptsize
+\begin{tabular}{>{\ttfamily\small}p{3.2cm}p{3.5cm}}
+\toprule
+\normalfont\textbf{Hiperparâmetro} & \normalfont\textbf{Efeito} \\
+\midrule
+n\_estimators & Nº de árvores (+ early stop) \\
+learning\_rate & $\nu$: menor $\Rightarrow$ mais robusto \\
+max\_depth & Profundidade (3--6 ideal) \\
+subsample & Fração de exemplos/árvore \\
+colsample\_bytree & Fração de features/árvore \\
+reg\_alpha (L1) & Regularização nos pesos \\
+reg\_lambda (L2) & Regularização nos pesos \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{alertblock}{\small Colab — Módulo 4}
+\small Tuning com Optuna: \texttt{XGBRegressor} e \texttt{LGBMRegressor} com early stopping.
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+% ============================================================
+\section{Diagnóstico de Modelos}
+% ============================================================
+
+\begin{frame}[t]{Gráficos Diagnósticos}
+\centering
+\resizebox{0.88\textwidth}{!}{%
+\begin{tikzpicture}
+% ── TOP-LEFT: Resíduos vs. Ajustados ─────────────────────────
+\begin{scope}[xshift=-2cm, yshift=7.8cm]
+  \draw[->,minegray!80,thick] (0,-1.7) -- (5.2,-1.7)
+    node[right,font=\tiny]{Val.\ Ajustados};
+  \draw[->,minegray!80,thick] (0,-1.7) -- (0,1.9)
+    node[above,font=\tiny]{Resíduos};
+  \draw[mineblue!50, dashed, thick] (0,0) -- (5.2,0);
+  \foreach \x/\y in {0.3/0.7,0.7/-1.0,1.1/1.1,1.5/-0.8,2.0/0.5,
+                     2.5/-0.7,3.0/1.0,3.5/-0.5,4.0/0.8,4.5/-0.6}
+    \filldraw[minegray!70] (\x,\y) circle(0.08);
+  \node[font=\small\bfseries,color=mineblue] at (2.6,2.0)
+    {Resíduos vs.\ Ajustados};
+  \node[font=\tiny,color=minegreen!70!black] at (2.6,-2.0)
+    {$\checkmark$ Ideal: dispersão aleatória em torno de zero};
+\end{scope}
+% ── TOP-RIGHT: Q-Q Plot ──────────────────────────────────────
+\begin{scope}[xshift=6.8cm, yshift=7.8cm]
+  \draw[->,minegray!80,thick] (0,-1.7) -- (5.2,-1.7)
+    node[right,font=\tiny]{Quantis Teóricos};
+  \draw[->,minegray!80,thick] (0,-1.7) -- (0,1.9)
+    node[above,font=\tiny]{Quantis Amostrais};
+  \draw[mineorange, thick] (0.3,-1.5) -- (4.9,1.7);
+  \foreach \x/\y in {0.4/-1.45,0.9/-0.95,1.4/-0.50,1.9/-0.05,
+                     2.4/0.40,2.9/0.85,3.5/1.20,4.0/1.50,4.6/1.65}
+    \filldraw[mineblue!80] (\x,\y) circle(0.08);
+  \node[font=\small\bfseries,color=mineblue] at (2.6,2.0) {Q-Q Plot};
+  \node[font=\tiny,color=minegreen!70!black] at (2.6,-2.0)
+    {$\checkmark$ Ideal: pontos alinhados sobre a reta};
+\end{scope}
+% ── BOTTOM-LEFT: Scale-Location ──────────────────────────────
+\begin{scope}[xshift=-2cm, yshift=0cm]
+  \draw[->,minegray!80,thick] (0,0) -- (5.2,0)
+    node[right,font=\tiny]{Val.\ Ajustados};
+  \draw[->,minegray!80,thick] (0,0) -- (0,3.5)
+    node[above,font=\tiny]{$\sqrt{|e_i|}$};
+  \draw[minegreen!70, dashed, thick] (0,1.8) -- (5.2,1.8);
+  \foreach \x/\y in {0.3/1.7,0.8/1.9,1.3/1.75,1.8/1.8,2.3/1.85,
+                     2.9/1.75,3.4/1.8,3.9/1.85,4.5/1.8}
+    \filldraw[minegray!70] (\x,\y) circle(0.08);
+  \node[font=\small\bfseries,color=mineblue] at (2.6,3.4) {Scale-Location};
+  \node[font=\tiny,color=minegreen!70!black] at (2.6,-0.45)
+    {$\checkmark$ Ideal: linha aproximadamente horizontal};
+\end{scope}
+% ── BOTTOM-RIGHT: Distância de Cook ──────────────────────────
+\begin{scope}[xshift=6.8cm, yshift=0cm]
+  \draw[->,minegray!80,thick] (0,0) -- (5.2,0)
+    node[right,font=\tiny]{Índice};
+  \draw[->,minegray!80,thick] (0,0) -- (0,3.5)
+    node[above,font=\tiny]{Dist.\ de Cook};
+  \draw[minered!80, dashed, thick] (0,2.5) -- (5.2,2.5);
+  \node[font=\tiny,minered,right] at (5.2,2.5) {limiar};
+  \foreach \x/\y in {0.4/0.20,0.9/0.35,1.4/0.18,1.9/0.28,
+                     2.4/0.60,2.9/0.22,3.4/0.32,4.0/0.26}
+    \draw[mineblue!70,line width=1.5pt] (\x,0) -- (\x,\y);
+  \draw[minered, line width=2.5pt] (4.7,0) -- (4.7,2.9);
+  \node[font=\tiny\bfseries,minered,above] at (4.7,2.9) {influente!};
+  \node[font=\small\bfseries,color=mineblue] at (2.6,3.4) {Distância de Cook};
+  \node[font=\tiny] at (2.6,-0.45) {Detecta observações influentes};
+\end{scope}
+\end{tikzpicture}%
+}
+\end{frame}
+
+\begin{frame}{O que Procurar em Cada Gráfico}
+\begin{columns}
+\column{0.48\textwidth}
+\begin{block}{Resíduos vs.\ Ajustados}
+\begin{itemize}\small
+  \item \textcolor{minegreen}{$\checkmark$} Pontos dispersos aleatoriamente
+  \item \textcolor{minered}{$\times$} Padrão em funil $\Rightarrow$ heterocedasticidade
+  \item \textcolor{minered}{$\times$} Padrão curvo $\Rightarrow$ não-linearidade não capturada
+\end{itemize}
+\end{block}
+\vspace{0.3em}
+\begin{block}{Q-Q Plot}
+\begin{itemize}\small
+  \item \textcolor{minegreen}{$\checkmark$} Pontos sobre a reta $\Rightarrow$ normalidade
+  \item \textcolor{minered}{$\times$} Desvios nas caudas $\Rightarrow$ assimetria / caudas pesadas
+\end{itemize}
+\end{block}
+\column{0.48\textwidth}
+\begin{block}{Scale-Location}
+\begin{itemize}\small
+  \item \textcolor{minegreen}{$\checkmark$} Linha horizontal $\Rightarrow$ variância constante
+  \item \textcolor{minered}{$\times$} Linha crescente $\Rightarrow$ heterocedasticidade
+  \item Solução: transformar $y$ (ex.: $\log y$)
+\end{itemize}
+\end{block}
+\vspace{0.3em}
+\begin{block}{Distância de Cook}
+\begin{itemize}\small
+  \item \textcolor{minegreen}{$\checkmark$} Todos abaixo do limiar
+  \item \textcolor{minered}{$\times$} Pontos acima $\Rightarrow$ influentes (investigar)
+  \item Limiar usual: $4/n$
+\end{itemize}
+\end{block}
+\end{columns}
+\end{frame}
+
+% ============================================================
+% REFERÊNCIAS
+% ============================================================
+\begin{frame}{Referências Bibliográficas}
+\begin{thebibliography}{99}
+\small
+\bibitem{tibshirani1996} Tibshirani, R. (1996). Regression shrinkage and selection via the LASSO. \textit{JRSS-B}, 58(1), 267--288.
+\bibitem{breiman2001} Breiman, L. (2001). Random forests. \textit{Machine Learning}, 45(1), 5--32.
+\bibitem{chen2016} Chen, T.; Guestrin, C. (2016). XGBoost: A scalable tree boosting system. \textit{KDD 2016}.
+\bibitem{friedman2001} Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. \textit{Annals of Statistics}, 29(5).
+\bibitem{james2021} James, G. et al. (2021). \textit{An Introduction to Statistical Learning} (2nd ed.). Springer.
+\end{thebibliography}
+\end{frame}
+
+\begin{frame}{}
+\centering
+\vspace{1em}
+{\Large \textcolor{mineblue}{\textbf{Consulte o Material Didático}}}
+
+\vspace{0.8em}
+{\large Módulo 4: Técnicas de Regressão}
+
+\vspace{1em}
+\begin{block}{\centering Conteúdo Complementar}
+\centering
+Notebook Google Colab com exemplos práticos de\\
+Regressão Linear, Ridge, LASSO, ElasticNet,\\
+Random Forest, XGBoost e Diagnóstico de Modelos
+\end{block}
+
+\vspace{0.8em}
+\small \faGithub \ \href{https://github.com/eltonsarmanho}{github.com/eltonsarmanho}
+\end{frame}
+
+\end{document}
