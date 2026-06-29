@@ -10,8 +10,6 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 \usepackage{fontawesome5}
-\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
-\usepackage{listings}
 \usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{multirow}
@@ -31,14 +29,11 @@
 \definecolor{minegreen}{RGB}{34,139,34}
 \definecolor{minered}{RGB}{180,20,40}
 \definecolor{minegray}{RGB}{100,100,100}
-\definecolor{codebg}{RGB}{250,250,250}
 \newtcolorbox{definicaobox}[1]{title={\faIcon{book} #1},colback=blue!4!white,colframe=mineblue,fonttitle=\bfseries,breakable,enhanced}
 \newtcolorbox{exemplobox}[1]{title={\faIcon{lightbulb} #1},colback=orange!4!white,colframe=mineorange,fonttitle=\bfseries,breakable,enhanced}
 \newtcolorbox{dicabox}[1]{title={\faIcon{info-circle} #1},colback=green!4!white,colframe=minegreen,fonttitle=\bfseries,breakable,enhanced}
 \newtcolorbox{atencaobox}[1]{title={\faIcon{exclamation-triangle} #1},colback=red!4!white,colframe=minered,fonttitle=\bfseries,breakable,enhanced}
 \newtcolorbox{estadoartebox}[1]{title={\faIcon{rocket} #1},colback=purple!4!white,colframe=purple!60!black,fonttitle=\bfseries,breakable,enhanced}
-\lstdefinestyle{mypython}{language=Python,backgroundcolor=\color{codebg},commentstyle=\color{minegray}\itshape,keywordstyle=\color{mineblue}\bfseries,stringstyle=\color{minegreen},basicstyle=\ttfamily\footnotesize,breaklines=true,frame=single,rulecolor=\color{minegray!40},numbers=left,numberstyle=\tiny\color{minegray},tabsize=4,showstringspaces=false}
-\lstset{style=mypython}
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small \textcolor{mineblue}{\textbf{Mineração de Dados}}}
@@ -66,14 +61,30 @@
 Ao concluir este módulo, o estudante será capaz de:
 
 \begin{enumerate}[label=\faIcon{check-circle}~\textbf{\arabic*.}, leftmargin=2cm, itemsep=0.3em]
-  \item Compreender os princípios fundamentais de visualização de dados segundo Tufte e a Gramática dos Gráficos de Wilkinson.
-  \item Selecionar o tipo de gráfico mais adequado para cada combinação de tipo de dado e objetivo comunicativo.
-  \item Implementar gráficos estatísticos fundamentais (distribuição, relação, comparação, composição) com Matplotlib e Seaborn.
-  \item Aplicar técnicas de redução de dimensionalidade (PCA, t-SNE, UMAP) para visualização de dados de alta dimensão.
-  \item Criar visualizações interativas com Plotly e construir dashboards analíticos básicos com Dash e Streamlit.
-  \item Visualizar resultados de modelos de mineração de dados: curvas ROC, matrizes de confusão, importância de atributos e gráficos SHAP.
-  \item Identificar e evitar armadilhas comuns de visualização (eixos truncados, distorção 3D, excesso de informação).
-  \item Aplicar boas práticas de acessibilidade em visualizações, incluindo paletas acessíveis a daltônicos e uso de texto alternativo.
+  \item Criar mais de 12 tipos de gráficos estatísticos (distribuição, relação, comparação e composição) com Matplotlib e Seaborn.
+  \item Aplicar técnicas de redução de dimensionalidade (PCA, t-SNE e UMAP) para visualização de dados de alta dimensão.
+  \item Construir visualizações interativas e animadas com Plotly (séries temporais, bubble charts animados, sunburst).
+  \item Visualizar e interpretar resultados de modelos de ML: curvas ROC, Precision-Recall, matrizes de confusão, importância de atributos e gráficos SHAP.
+  \item Visualizar resultados de clustering com silhouette plot, curva do cotovelo, t-SNE e radar charts de centroides.
+  \item Visualizar regras de associação com grafos direcionados, heatmaps de co-ocorrência e bubble charts suporte vs.\ confiança.
+  \item Gerar relatórios automáticos de EDA com \texttt{ydata-profiling}.
+  \item Construir um dashboard analítico completo e exportável (HTML) com Plotly Subplots.
+\end{enumerate}
+
+% ============================================================
+\section*{Sumário}
+% ============================================================
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=1.5cm, itemsep=0.2em]
+  \item Quarteto de Anscombe --- Por que Visualizar?
+  \item Gráficos Estatísticos Fundamentais
+  \item Visualização Interativa com Plotly
+  \item Visualização de Resultados de ML
+  \item Visualização de Clustering
+  \item Visualização de Regras de Associação
+  \item Auto-EDA com \texttt{ydata-profiling}
+  \item Mini-Dashboard com Plotly Subplots
+  \item Exercícios
 \end{enumerate}
 
 % ============================================================
@@ -228,21 +239,9 @@ Parallel Coord. & Multivariado & Alta dimensão & Comparar clusters & plotly \\
   \item \textbf{Q-Q Plot:} compara a distribuição observada com uma teórica (e.g., normal); pontos na diagonal indicam ajuste.
 \end{itemize}
 
-\begin{lstlisting}[caption={Gráficos de distribuição com seaborn}]
-import seaborn as sns, matplotlib.pyplot as plt
-
-fig, axes = plt.subplots(1, 3, figsize=(14, 4))
-sns.histplot(data=df, x='feature', kde=True, ax=axes[0])
-axes[0].set_title('Histograma + KDE')
-
-sns.boxplot(data=df, x='category', y='feature', ax=axes[1])
-axes[1].set_title('Boxplot por Grupo')
-
-sns.violinplot(data=df, x='category', y='feature',
-               inner='quartile', ax=axes[2])
-axes[2].set_title('Violin Plot')
-plt.tight_layout(); plt.show()
-\end{lstlisting}
+\begin{dicabox}{Implementação no Colab}
+Veja o notebook do Módulo 8 para implementação completa com Matplotlib e Seaborn: histograma + KDE, boxplot por grupo e violin plot com dataset California Housing.
+\end{dicabox}
 
 \subsection{Relação entre Variáveis}
 
@@ -332,23 +331,9 @@ Transform novos & Sim & Não & Sim \\
 \end{tabular}
 \end{table}
 
-\begin{lstlisting}[caption={Comparação PCA, t-SNE, UMAP para visualização}]
-from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
-import umap
-
-# PCA
-pca = PCA(n_components=2)
-X_pca = pca.fit_transform(X_scaled)
-
-# t-SNE
-tsne = TSNE(n_components=2, perplexity=30, random_state=42)
-X_tsne = tsne.fit_transform(X_scaled)
-
-# UMAP
-reducer = umap.UMAP(n_neighbors=15, min_dist=0.1, random_state=42)
-X_umap = reducer.fit_transform(X_scaled)
-\end{lstlisting}
+\begin{dicabox}{Implementação no Colab}
+O notebook do Módulo 8 implementa PCA, t-SNE e UMAP com dataset Iris normalizado, gerando projeções 2D coloridas por espécie para comparação visual das três técnicas.
+\end{dicabox}
 
 \subsection{Parallel Coordinates}
 
@@ -373,23 +358,9 @@ Plotly é a biblioteca de visualização interativa mais popular para Python, ge
   \item \textbf{Subplots:} \texttt{make\_subplots(rows, cols)} com compartilhamento de eixos.
 \end{itemize}
 
-\begin{lstlisting}[caption={Dashboard interativo com Plotly subplots}]
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
-fig = make_subplots(rows=2, cols=2,
-    subplot_titles=["ROC Curve", "Confusion Matrix",
-                    "Feature Importance", "Learning Curve"])
-
-fig.add_trace(go.Scatter(x=fpr, y=tpr, name=f"AUC={auc:.2f}"),
-              row=1, col=1)
-fig.add_trace(go.Heatmap(z=cm, colorscale="Blues"), row=1, col=2)
-fig.add_trace(go.Bar(x=importances, y=features, orientation='h'),
-              row=2, col=1)
-fig.update_layout(title="Dashboard de Avaliacao de Modelo",
-                  height=700)
-fig.show()
-\end{lstlisting}
+\begin{dicabox}{Implementação no Colab}
+O notebook do Módulo 8 constrói um painel \texttt{make\_subplots} 2$\times$2 com curva ROC, matriz de confusão, importância de atributos e curvas de aprendizado, tudo interativo no browser.
+\end{dicabox}
 
 \subsection{Bokeh}
 
@@ -402,45 +373,15 @@ Bokeh oferece interatividade server-side avançada:
 
 \subsection{Dash}
 
-Dash (Plotly) é um framework para construção de aplicações analíticas web em Python puro:
-
-\begin{lstlisting}[caption={Aplicação Dash básica com callback}]
-import dash
-from dash import dcc, html, Input, Output
-import plotly.express as px
-
-app = dash.Dash(__name__)
-app.layout = html.Div([
-    dcc.Dropdown(id='x-axis', options=['feature1','feature2'], value='feature1'),
-    dcc.Graph(id='scatter-plot')
-])
-
-@app.callback(Output('scatter-plot', 'figure'),
-              Input('x-axis', 'value'))
-def update_figure(x_col):
-    return px.scatter(df, x=x_col, y='target', color='cluster')
-
-if __name__ == '__main__':
-    app.run(debug=True)
-\end{lstlisting}
+Dash (Plotly) é um framework para construção de aplicações analíticas web em Python puro. Seus principais componentes são: \texttt{dcc.Graph} para gráficos interativos, \texttt{dcc.Dropdown/Slider} para controles de entrada e \texttt{@app.callback} para atualização reativa de gráficos em resposta a interações do usuário.
 
 \subsection{Streamlit}
 
-Streamlit permite criar dashboards analíticos em minutos:
-\begin{lstlisting}[caption={Dashboard Streamlit para resultados de DM}]
-import streamlit as st
-import plotly.express as px
+Streamlit permite criar dashboards analíticos em minutos, com suporte a abas (\texttt{st.tabs}), sliders laterais (\texttt{st.sidebar}), gráficos Plotly e tabelas interativas --- tudo sem HTML ou JavaScript.
 
-st.title("Dashboard: Mineracao de Dados - UEPA")
-with st.sidebar:
-    k = st.slider("Numero de clusters", 2, 10, 4)
-
-tab1, tab2 = st.tabs(["Clustering", "Classificacao"])
-with tab1:
-    st.plotly_chart(px.scatter(df_tsne, x='x', y='y', color=f'cluster_{k}'))
-with tab2:
-    st.dataframe(df_metrics, use_container_width=True)
-\end{lstlisting}
+\begin{dicabox}{Implementação no Colab}
+O notebook do Módulo 8 inclui exemplos de Dash com callbacks e Streamlit com slider de clusters. Execute localmente ou via \texttt{ngrok} para expor o servidor no Colab.
+\end{dicabox}
 
 % ============================================================
 \section{Visualização de Resultados de Mineração de Dados}
@@ -468,22 +409,9 @@ SHAP (Lundberg \& Lee, 2017) atribui a cada feature a contribuição marginal pa
   \item \textbf{Dependence Plot:} SHAP value vs valor da feature, colorido por feature de interação.
 \end{itemize}
 
-\begin{lstlisting}[caption={Visualizações SHAP para interpretabilidade}]
-import shap
-
-explainer = shap.TreeExplainer(model)
-shap_values = explainer.shap_values(X_test)
-
-# Summary beeswarm
-shap.summary_plot(shap_values, X_test, feature_names=feature_names)
-
-# Waterfall para observacao 0
-shap.waterfall_plot(shap.Explanation(
-    values=shap_values[0],
-    base_values=explainer.expected_value,
-    data=X_test.iloc[0],
-    feature_names=feature_names))
-\end{lstlisting}
+\begin{dicabox}{Implementação no Colab}
+O notebook do Módulo 8 aplica SHAP com XGBoost no dataset Cancer de Mama, gerando beeswarm summary plot, bar summary e waterfall plot para exemplos individuais.
+\end{dicabox}
 
 \subsubsection{LIME}
 
@@ -542,7 +470,7 @@ Um dashboard é uma interface visual que consolida múltiplos indicadores e grá
 
 % Left chart
 \fill[minegray!10,draw=minegray!40] (0.3,3.5) rectangle (7.8,7.0);
-\node[font=\small,minegray] at (4,5.2) {Importância de Atributos};
+\node[font=\small,minegray] at (4,6.2) {Importância de Atributos};
 % Bar chart sketch
 \foreach \bx/\bh in {1.0/2.0, 1.8/1.4, 2.6/1.8, 3.4/1.1, 4.2/0.8}{
   \fill[mineblue!50] (\bx,3.8) rectangle (\bx+0.6,3.8+\bh*0.9);
