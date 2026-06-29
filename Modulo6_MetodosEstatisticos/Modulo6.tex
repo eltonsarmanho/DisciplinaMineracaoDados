@@ -41,7 +41,7 @@
 \lstset{style=mypython}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small \textcolor{mineblue}{\textbf{Mineração de Dados}} | UEPA -- CCNT}
+\fancyhead[L]{\small \textcolor{mineblue}{\textbf{Mineração de Dados}}}
 \fancyhead[R]{\small Módulo 6: Métodos Estatísticos e Clustering}
 \fancyfoot[C]{\small \thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -54,9 +54,6 @@
 \begin{center}
   {\LARGE\bfseries\color{mineblue} Módulo 6: Métodos Estatísticos}\\[0.4em]
   {\large\color{mineorange} e Mineração Não-Supervisionada}\\[0.6em]
-  {\normalsize Universidade do Estado do Pará (UEPA) -- CCNT\\
-  Curso: Engenharia de Software, 8$^{\circ}$ Semestre\\
-  Disciplina: Mineração de Dados | Carga Horária: 80h}\\[0.3em]
   \rule{\linewidth}{0.8pt}
 \end{center}
 
@@ -209,76 +206,246 @@ Inicializar centróides $\boldsymbol{\mu}_1, \ldots, \boldsymbol{\mu}_K$ aleator
 \end{algorithm}
 
 \textbf{Visualização das etapas do K-Means:}
+ \begin{figure}[h]
+         \centering
+         \includegraphics[width=0.5\textwidth]{figs/EtapasKmeans.png}
+    \end{figure}
+
+
+\textbf{Passo a Passo do Algoritmo K-Means:}
+
+\begin{enumerate}
+
+  \item \textbf{Definir o número de clusters $K$.}\\
+  Escolha o valor de $K$ de acordo com o problema. Por exemplo, se os dados apresentam dois grupos visíveis, define-se $K=2$. Quando $K$ não é óbvio, utiliza-se o \textit{Método do Cotovelo} (discutido adiante) para identificar o valor mais adequado.
+
+  \item \textbf{Inicializar os centróides aleatoriamente.}\\
+  Selecione $K$ pontos de dados aleatoriamente como posições iniciais dos centróides $\boldsymbol{\mu}_1, \boldsymbol{\mu}_2, \ldots, \boldsymbol{\mu}_K$. A qualidade da inicialização influencia a convergência; por isso, variantes como K-Means++ melhoram essa etapa.
+
+  \item \textbf{Atribuir cada ponto de dados ao centróide mais próximo.}\\
+  Para cada ponto $\mathbf{x}_i$, calcula-se a distância a cada centróide e atribui-se o ponto ao cluster cujo centróide é o mais próximo:
+  \[
+    c_i = \arg\min_{k}\, d(\mathbf{x}_i,\, \boldsymbol{\mu}_k)
+  \]
+  A medida de distância mais comum é a \textbf{distância euclidiana}:
+  \[
+    d(\mathbf{x}, \boldsymbol{\mu}) = \sqrt{\sum_{j=1}^{n}(x_j - \mu_j)^2}
+  \]
+
+  \textbf{Exemplo numérico:} Considere o ponto $\mathbf{x} = (5, 3)$ e dois centróides $C_1 = (2, 4)$ e $C_2 = (6, 1)$.
+  \begin{align*}
+    d(\mathbf{x}, C_1) &= \sqrt{(5-2)^2 + (3-4)^2} = \sqrt{9+1} = \sqrt{10} \approx 3{,}16 \\
+    d(\mathbf{x}, C_2) &= \sqrt{(5-6)^2 + (3-1)^2} = \sqrt{1+4} = \sqrt{5}  \approx 2{,}24
+  \end{align*}
+  Como $d(\mathbf{x}, C_2) < d(\mathbf{x}, C_1)$, o ponto $(5,3)$ é atribuído ao cluster $C_2$.
+
+  \item \textbf{Recalcular os centróides.}\\
+  Após a atribuição, cada centróide é movido para a \textbf{média} dos pontos pertencentes ao seu cluster:
+  \[
+    \boldsymbol{\mu}_k \leftarrow \frac{1}{|C_k|} \sum_{\mathbf{x}_i \in C_k} \mathbf{x}_i
+  \]
+
+  \textbf{Exemplo numérico:} Suponha que os seguintes 5 pontos foram atribuídos a um cluster:
+  \[
+    D_1=(3,4),\; D_2=(4,1),\; D_3=(2,3),\; D_4=(2,6),\; D_5=(3,3)
+  \]
+  \begin{align*}
+    \bar{x} &= \tfrac{1}{5}(3+4+2+2+3) = \tfrac{14}{5} = 2{,}8 \\
+    \bar{y} &= \tfrac{1}{5}(4+1+3+6+3) = \tfrac{17}{5} = 3{,}4
+  \end{align*}
+  O centróide é movido de sua posição anterior para $(2{,}8,\; 3{,}4)$.
+
+  \item \textbf{Repetir os Passos 3 e 4 até a convergência.}\\
+  O algoritmo itera os passos de atribuição e recálculo até que os centróides não se movam mais (ou a variação seja menor que um limiar $\varepsilon$). Nesse ponto, cada ponto de dados pertence ao mesmo cluster entre iterações consecutivas e o algoritmo converge.
+
+\end{enumerate}
+
+\textbf{Escolha de K:}
+
+\subsubsection*{Método do Cotovelo (Elbow Method)}
+
+\begin{definicaobox}{Método do Cotovelo}
+O Método do Cotovelo consiste em executar o K-Means para diferentes valores de $K$ e plotar a \textbf{inércia} (WCSS - Within-Cluster Sum of Squares) em função de $K$. O ponto onde a redução da inércia desacelera drasticamente forma um ``cotovelo'' no gráfico, indicando o valor ótimo de $K$.
+\[
+  \text{WCSS}(K) = \sum_{k=1}^{K} \sum_{\mathbf{x}_i \in C_k} \|\mathbf{x}_i - \boldsymbol{\mu}_k\|^2
+\]
+\end{definicaobox}
+
+\textbf{Como funciona:}
+\begin{enumerate}
+  \item Execute o K-Means para $K = 1, 2, 3, \ldots, K_{\max}$.
+  \item Para cada $K$, calcule a inércia $\text{WCSS}(K)$.
+  \item Plote a curva WCSS $\times$ $K$.
+  \item Identifique o ponto de inflexão (cotovelo): onde o ganho marginal de adicionar mais um cluster se torna pequeno.
+\end{enumerate}
+
+\textbf{Exemplo numérico:} Dataset com 3 grupos naturais. Inércias calculadas para cada $K$:
 
 \begin{center}
-\begin{tikzpicture}[scale=0.75]
-% ---- Painel 1: Inicialização ----
-\begin{scope}[xshift=0cm]
-\node[above,font=\small\bfseries,mineblue] at (2.5,4.2) {1. Inicialização};
-% Cluster azul (canto superior esquerdo)
-\foreach \x/\y in {0.8/3.2, 1.3/2.6, 0.6/3.7, 1.5/3.0, 1.0/2.8}{
-  \filldraw[mineblue!50] (\x,\y) circle(0.09);
-}
-% Cluster laranja (canto superior direito)
-\foreach \x/\y in {3.2/3.4, 3.8/2.8, 3.5/3.8, 4.0/3.2, 3.6/2.6}{
-  \filldraw[mineorange!50] (\x,\y) circle(0.09);
-}
-% Cluster verde (baixo centro)
-\foreach \x/\y in {2.0/0.8, 2.5/1.3, 1.8/1.5, 2.3/0.6, 2.8/1.0}{
-  \filldraw[minegreen!50] (\x,\y) circle(0.09);
-}
-% Centróides aleatórios (vermelho)
-\filldraw[minered] (2.5,2.5) node[above,font=\tiny]{$\mu_1$} circle(0.15);
-\filldraw[minered] (1.8,2.0) node[above,font=\tiny]{$\mu_2$} circle(0.15);
-\filldraw[minered] (3.0,1.5) node[above,font=\tiny]{$\mu_3$} circle(0.15);
-\draw[minegray,dashed] (-0.2,0.0) rectangle (5.0,4.5);
-\end{scope}
+\begin{tabular}{ccc}
+\toprule
+$K$ & WCSS & Redução relativa \\
+\midrule
+1 & 2400 & --- \\
+2 & 1200 & $-50{,}0\%$ \\
+3 & 480  & $-60{,}0\%$ \\
+4 & 420  & $-12{,}5\%$ \\
+5 & 390  & $-7{,}1\%$ \\
+6 & 375  & $-3{,}8\%$ \\
+\bottomrule
+\end{tabular}
+\end{center}
 
-% ---- Painel 2: Primeira Atribuição ----
-\begin{scope}[xshift=5.5cm]
-\node[above,font=\small\bfseries,mineblue] at (2.5,4.2) {2. Primeira Atribuição};
-\foreach \x/\y in {0.8/3.2, 1.3/2.6, 0.6/3.7, 1.5/3.0, 1.0/2.8}{
-  \filldraw[mineblue!70] (\x,\y) circle(0.09);
-}
-\foreach \x/\y in {3.2/3.4, 3.8/2.8, 3.5/3.8, 4.0/3.2, 3.6/2.6}{
-  \filldraw[mineorange!70] (\x,\y) circle(0.09);
-}
-\foreach \x/\y in {2.0/0.8, 2.5/1.3, 1.8/1.5, 2.3/0.6, 2.8/1.0}{
-  \filldraw[minegreen!70] (\x,\y) circle(0.09);
-}
-\filldraw[mineblue!80] (1.04,3.06) node[above,font=\tiny,mineblue]{$\mu_1$} circle(0.15);
-\filldraw[mineorange!80] (3.62,3.16) node[above,font=\tiny,mineorange]{$\mu_2$} circle(0.15);
-\filldraw[minegreen!80] (2.28,1.04) node[right,font=\tiny,minegreen]{$\mu_3$} circle(0.15);
-\draw[minegray,dashed] (-0.2,0.0) rectangle (5.0,4.5);
-\end{scope}
+A maior queda ocorre de $K=2$ para $K=3$ ($-60\%$). De $K=3$ em diante, as reduções ficam marginais, indicando que $\mathbf{K=3}$ é o número ótimo de clusters.
 
-% ---- Painel 3: Convergência ----
-\begin{scope}[xshift=11cm]
-\node[above,font=\small\bfseries,minegreen] at (2.5,4.2) {3. Convergência};
-\foreach \x/\y in {0.8/3.2, 1.3/2.6, 0.6/3.7, 1.5/3.0, 1.0/2.8}{
-  \filldraw[mineblue] (\x,\y) circle(0.09);
-}
-\foreach \x/\y in {3.2/3.4, 3.8/2.8, 3.5/3.8, 4.0/3.2, 3.6/2.6}{
-  \filldraw[mineorange] (\x,\y) circle(0.09);
-}
-\foreach \x/\y in {2.0/0.8, 2.5/1.3, 1.8/1.5, 2.3/0.6, 2.8/1.0}{
-  \filldraw[minegreen] (\x,\y) circle(0.09);
-}
-\filldraw[mineblue] (1.04,3.06) node[star,star points=5,fill=mineblue,draw=mineblue,minimum size=0.3cm,font=\tiny,above]{$\mu_1$} circle(0.15);
-\filldraw[mineorange] (3.62,3.16) node[above,font=\tiny,mineorange]{$\mu_2$} circle(0.15);
-\filldraw[minegreen] (2.28,1.04) node[right,font=\tiny,minegreen]{$\mu_3$} circle(0.15);
-\draw[minegreen,dashed,thick] (-0.2,0.0) rectangle (5.0,4.5);
-\node[below,font=\tiny\itshape,minegray] at (2.5,-0.1) {Centróides estabilizados};
-\end{scope}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=10cm, height=6cm,
+  xlabel={Número de Clusters ($K$)},
+  ylabel={Inércia (WCSS)},
+  xmin=0.5, xmax=6.5,
+  ymin=0, ymax=2600,
+  xtick={1,2,3,4,5,6},
+  grid=major,
+  grid style={dotted,gray!40},
+  axis lines=left,
+  title={\textbf{Método do Cotovelo com Inércia vs $K$}},
+  title style={color=mineblue},
+  xlabel style={font=\small},
+  ylabel style={font=\small},
+  tick label style={font=\small},
+]
+  \addplot[mineblue, very thick, mark=*, mark size=3pt,
+           mark options={fill=mineblue}]
+    coordinates {(1,2400)(2,1200)(3,480)(4,420)(5,390)(6,375)};
+  \draw[minered, dashed, thick] (axis cs:3,0) -- (axis cs:3,480);
+  \node[above right, font=\small, color=minered] at (axis cs:3,480)
+      {Cotovelo ($K^*=3$)};
+  \fill[minered] (axis cs:3,480) circle (4pt);
+  \node[font=\footnotesize, color=mineorange, align=left] at (axis cs:4.9,900)
+      {Ganho marginal\\pequeno};
+  \draw[->, mineorange, thick] (axis cs:4.4,820) -- (axis cs:4.1,430);
+\end{axis}
 \end{tikzpicture}
 \end{center}
 
-\textbf{Escolha de K:}
+\begin{dicabox}{Limitações do Método do Cotovelo}
 \begin{itemize}
-  \item \textbf{Método do Cotovelo (Elbow)}: Plota inércia vs $K$; o ``cotovelo'' indica o $K$ ótimo.
-  \item \textbf{Análise de Silhouette}: Para cada $K$, calcula o coeficiente médio; escolhe $K$ com maior silhouette.
-  \item \textbf{Gap Statistic} (Tibshirani et al., 2001): Compara inércia com a esperada sob distribuição de referência.
+  \item O cotovelo pode ser \textbf{ambíguo} em datasets com clusters sobrepostos (curva suave sem ponto claro).
+  \item Não considera a forma ou densidade dos clusters, apenas a compacidade interna.
+  \item Combine sempre com a \textbf{Análise de Silhouette} para confirmação.
 \end{itemize}
+\end{dicabox}
+
+\subsubsection*{Análise de Silhouette}
+
+\begin{definicaobox}{Coeficiente de Silhouette}
+O coeficiente de Silhouette avalia a qualidade do agrupamento para cada ponto, combinando \textbf{coesão interna} e \textbf{separação externa}. Para cada ponto $\mathbf{x}_i$ no cluster $C_k$:
+\begin{align*}
+  a(i) &= \frac{1}{|C_k|-1}\sum_{\mathbf{x}_j \in C_k,\, j \neq i} d(\mathbf{x}_i, \mathbf{x}_j)
+         \quad \text{(distância média intra-cluster)}\\
+  b(i) &= \min_{l \neq k}\; \frac{1}{|C_l|}\sum_{\mathbf{x}_j \in C_l} d(\mathbf{x}_i, \mathbf{x}_j)
+         \quad \text{(distância média ao vizinho mais próximo)}
+\end{align*}
+\[
+  s(i) = \frac{b(i) - a(i)}{\max\{a(i),\, b(i)\}} \in [-1,\; 1]
+  \qquad
+  \bar{s} = \frac{1}{N}\sum_{i=1}^{N} s(i)
+\]
+\end{definicaobox}
+
+\textbf{Interpretação de $s(i)$:}
+\begin{itemize}
+  \item $s(i) \approx +1$: Ponto bem posicionado no seu cluster, longe dos demais.
+  \item $s(i) \approx 0$: Ponto na fronteira entre dois clusters.
+  \item $s(i) \approx -1$: Ponto provavelmente atribuído ao cluster errado.
+\end{itemize}
+
+\textbf{Exemplo prático --- Cálculo detalhado para $P_1$:}
+
+Considere 5 pontos distribuídos em 2 clusters: $C_1 = \{P_1, P_2\}$ e $C_2 = \{P_3, P_4, P_5\}$.
+
+\begin{center}
+\begin{tabular}{clcc}
+\toprule
+Ponto & Coordenadas & Cluster & $s(i)$ \\
+\midrule
+$P_1$ & $(1{,}0,\ 1{,}0)$ & $C_1$ & 0{,}74 \\
+$P_2$ & $(1{,}5,\ 2{,}0)$ & $C_1$ & 0{,}69 \\
+$P_3$ & $(3{,}0,\ 4{,}0)$ & $C_2$ & 0{,}61 \\
+$P_4$ & $(4{,}0,\ 4{,}5)$ & $C_2$ & 0{,}66 \\
+$P_5$ & $(3{,}5,\ 5{,}0)$ & $C_2$ & 0{,}63 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Cálculo passo a passo para $P_1 = (1{,}0,\; 1{,}0)$:
+\begin{align*}
+  a(P_1) &= d(P_1, P_2) = \sqrt{(1{,}5-1)^2+(2-1)^2} = \sqrt{1{,}25} \approx 1{,}12\\[4pt]
+  b(P_1) &= \frac{d(P_1,P_3)+d(P_1,P_4)+d(P_1,P_5)}{3}\\
+          &= \frac{\sqrt{(3-1)^2+(4-1)^2}+\sqrt{(4-1)^2+(4{,}5-1)^2}+\sqrt{(3{,}5-1)^2+(5-1)^2}}{3}\\
+          &= \frac{\sqrt{13}+\sqrt{21{,}25}+\sqrt{22{,}25}}{3}
+           \approx \frac{3{,}61+4{,}61+4{,}72}{3} \approx 4{,}31\\[4pt]
+  s(P_1) &= \frac{4{,}31 - 1{,}12}{\max\{1{,}12,\; 4{,}31\}}
+           = \frac{3{,}19}{4{,}31} \approx \mathbf{0{,}74}
+\end{align*}
+
+$s(P_1) = 0{,}74$ indica que $P_1$ está bem posicionado dentro de $C_1$ e bem separado de $C_2$.
+
+\textbf{Comparação entre valores de $K$ (mesmo dataset):}
+
+\begin{center}
+\begin{tabular}{ccc}
+\toprule
+$K$ & Silhouette Score médio ($\bar{s}$) & Avaliação \\
+\midrule
+2 & 0{,}71 & \textbf{Ótimo} \\
+3 & 0{,}58 & Aceitável \\
+4 & 0{,}42 & Clusters sobrepostos \\
+5 & 0{,}29 & Agrupamento fraco \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=10cm, height=5.5cm,
+  xlabel={Número de Clusters ($K$)},
+  ylabel={Silhouette Score médio ($\bar{s}$)},
+  xmin=1.5, xmax=5.5,
+  ymin=0, ymax=0.85,
+  xtick={2,3,4,5},
+  ytick={0,0.2,0.4,0.6,0.8},
+  grid=major,
+  grid style={dotted,gray!40},
+  axis lines=left,
+  title={\textbf{Silhouette Score por $K$}},
+  title style={color=mineblue},
+  xlabel style={font=\small},
+  ylabel style={font=\small},
+  tick label style={font=\small},
+]
+  \addplot[minegreen, very thick, mark=square*, mark size=3pt,
+           mark options={fill=minegreen}]
+    coordinates {(2,0.71)(3,0.58)(4,0.42)(5,0.29)};
+  \draw[minered, dashed, thick] (axis cs:2,0) -- (axis cs:2,0.71);
+  \node[above right, font=\small, color=minered] at (axis cs:2,0.71)
+      {Melhor ($K^*=2$)};
+  \fill[minered] (axis cs:2,0.71) circle (4pt);
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\begin{dicabox}{Boas Práticas na Escolha de $K$}
+\begin{itemize}
+  \item Use \textbf{Método do Cotovelo} e \textbf{Silhouette} em conjunto para maior confiabilidade.
+  \item Silhouette Score $> 0{,}5$ indica clustering de qualidade razoável; $< 0{,}2$ sugere ausência de estrutura.
+  \item O \textbf{Gap Statistic} (Tibshirani et al., 2001) é mais robusto estatisticamente: compara a inércia observada com a esperada sob distribuição uniforme de referência.
+  \item Sempre visualize os clusters em 2D (com PCA se necessário) para validação qualitativa.
+\end{itemize}
+\end{dicabox}
 
 \textbf{Variantes do K-Means:}
 \begin{itemize}
@@ -286,6 +453,7 @@ Inicializar centróides $\boldsymbol{\mu}_1, \ldots, \boldsymbol{\mu}_K$ aleator
   \item \textbf{K-Medoids (PAM)}: Usa exemplos reais do dataset como centróides (medóides). Mais robusto a outliers.
   \item \textbf{Mini-Batch K-Means}: Processa mini-lotes aleatórios; escala para datasets de milhões de exemplos.
 \end{itemize}
+
 
 \subsection{Clustering Hierárquico}
 

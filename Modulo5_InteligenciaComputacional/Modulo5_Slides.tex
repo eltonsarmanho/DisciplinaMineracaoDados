@@ -1580,89 +1580,347 @@ Veja o GIF animado:
     \end{columns}
 \end{frame}
 
-\begin{frame}{Transformers e Mecanismo de Atenção}
-    \begin{columns}
-        \column{0.5\textwidth}
-        \begin{block}{Atenção Escalada (Vaswani et al., 2017)}
-            \begin{equation*}
-                \text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
-            \end{equation*}
-            Permite que cada posição ``atenda'' a todas as outras
-        \end{block}
-        \begin{block}{BERT}
-            Embeddings de texto de alta qualidade via pré-treino bidirecional
-        \end{block}
-        \column{0.5\textwidth}
-        \begin{block}{TabNet (Arik \& Pfister, 2021)}
-            \begin{itemize}
-                \item Transformer adaptado para \textbf{dados tabulares}
-                \item Seleção de features \textbf{interpretável} passo a passo
-                \item Atenção esparsa: foca nas features mais relevantes
-                \item Competitivo com GBDTs em benchmarks
-            \end{itemize}
-        \end{block}
-        \vspace{0.2cm}
-        \tiny \textit{Ver Material Didático Módulo 5 para detalhes matemáticos}
-    \end{columns}
-\end{frame}
+
 
 %=============================================================
 \section{AutoML e Otimização de Hiperparâmetros}
 %=============================================================
 
-\begin{frame}[shrink=5]{HPO: Otimização de Hiperparâmetros}
+% ------------------------------------------------------------------
+% HPO Frame 1 — O Problema
+% ------------------------------------------------------------------
+\begin{frame}{HPO: O Problema de Otimização de Hiperparâmetros}
     \begin{columns}
-        \column{0.5\textwidth}
-        \begin{block}{Grid Search}
-            $\mathcal{O}(n^k)$, método exaustivo e impraticável em alta dimensão\\
-            \small Testa todas as combinações possíveis
+        \column{0.54\textwidth}
+        \begin{block}{Definição Formal}
+            \footnotesize
+            Encontrar $\lambda^*$ que minimize a perda de validação:
+            \[
+            \lambda^* = \arg\min_{\lambda \in \Lambda}\,
+            \mathcal{L}_{\mathrm{val}}\!\bigl(A(\lambda,\, D_{\mathrm{train}})\bigr)
+            \]
+            $\Lambda$: espaço de hiperparâmetros;\quad $A$: algoritmo de aprendizado
         \end{block}
-        \begin{block}{Random Search (Bergstra \& Bengio, 2012)}
-            Melhor cobertura do espaço de busca\\
-            \small Encontra boas soluções com menos avaliações
-        \end{block}
-        \begin{block}{Otimização Bayesiana (TPE)}
-            Usa modelo \textit{surrogate} para balancear\\
-            \textbf{exploração} $\times$ \textbf{explotação}\\
-            \small Tree-structured Parzen Estimator
-        \end{block}
-        \column{0.5\textwidth}
-        \begin{block}{Optuna (Akiba et al., 2019)}
-            Framework Python com:
-            \begin{itemize}
-                \item \faCheck\ Sampler TPE por padrão
-                \item \faCheck\ Pruning de trials não promissoras
-                \item \faCheck\ Dashboard visual interativo
-                \item \faCheck\ Suporte a otimização paralela
-                \item \faCheck\ API simples e flexível
+        \begin{block}{Parâmetros \textit{vs} Hiperparâmetros}
+            \begin{itemize}\footnotesize
+                \item \textbf{Parâmetros}: aprendidos durante o treino (pesos $W$, vieses $b$)
+                \item \textbf{Hiperparâmetros}: definidos antes do treino:
+                      taxa de aprendizado $\eta$, profundidade, dropout, batch size
             \end{itemize}
         \end{block}
-        \vspace{0.2cm}
-        \centering\tiny \textit{\faArrowRight\ Consulte o Material Didático e Colab para experimentos}
+        \begin{alertblock}{}\footnotesize
+            HPO resolve o desafio de navegar em espaços de alta dimensão com avaliações computacionalmente custosas.
+        \end{alertblock}
+        \column{0.46\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.82,font=\tiny]
+            \draw[->,thick,minegray] (-0.2,0) -- (4.4,0)
+                node[right,black] {$\lambda$};
+            \draw[->,thick,minegray] (0,-0.2) -- (0,3.4)
+                node[above,black] {$\mathcal{L}$};
+            \draw[minered,very thick,domain=0.3:4.1,samples=100]
+                plot[smooth] (\x,{2.9 - 2.4*exp(-1.4*(\x-2.1)^2)
+                     + 0.22*sin(deg(5.5*\x))});
+            \draw[minegreen,dashed] (2.1,0)
+                node[below,minegreen] {$\lambda^*$} -- (2.1,0.51);
+            \fill[minegreen] (2.1,0.51) circle (2.5pt)
+                node[above right,minegreen] {ótimo global};
+            \fill[mineorange] (3.4,1.8) circle (2.5pt)
+                node[right,mineorange] {ótimo local};
+            \node[minered,align=left] at (0.8,3.1) {Objetivo\\(não convexa)};
+        \end{tikzpicture}
     \end{columns}
 \end{frame}
 
-\begin{frame}{AutoML: Aprendizado de Máquina Automatizado}
+% ------------------------------------------------------------------
+% HPO Frame 2 — Grid Search
+% ------------------------------------------------------------------
+\begin{frame}{Grid Search}
+       \begin{block}{Conceito}
+            \footnotesize
+            Busca exaustiva: define grades de valores e testa \textbf{todas} as combinações com validação cruzada.\\
+            Complexidade: $\mathcal{O}(n^k)$, onde $k$ é o número de hiperparâmetros.
+        \end{block}
     \begin{columns}
-        \column{0.5\textwidth}
-        \begin{block}{TPOT}
-            \textbf{Programação Genética} para otimizar automaticamente pipelines de ML\\
-            Evolui combinações de pré-processamento, transformações e modelos
+                    \footnotesize
+
+        \column{0.7\textwidth}
+     
+        \begin{block}{Teoria}
+            \begin{itemize}\footnotesize
+                \item Conjunto finito de valores por dimensão ($n$ valores, $k$ dimensões)
+                \item Total de avaliações: $n^k$ cresce exponencialmente
+                \item Seleciona pela menor perda média de validação cruzada
+                \item \textbf{Garantia}: encontra o melhor ponto \textit{dentro} da grade definida
+            \end{itemize}
         \end{block}
-        \begin{block}{Auto-sklearn}
-            \textbf{Bayesian Optimization} + \textit{meta-learning} + \textit{ensemble}\\
-            Aprende de resultados em datasets anteriores (warm start)
-        \end{block}
-        \column{0.5\textwidth}
-        \begin{block}{AutoGluon}
-            \textit{Stacking} multicamadas automático\\
-            Combina múltiplos modelos em estrutura de ensemble hierárquico
-        \end{block}
-        \begin{alertblock}{Consulte}
-            Material Didático Módulo 5 e Colab para experimentos práticos com AutoML e Optuna. Compare Grid Search e Bayesian Optimization em datasets reais.
+        \begin{alertblock}{Quando usar}
+            \begin{itemize}\footnotesize
+                \item Espaço pequeno ($\leq 3$ hiperparâmetros, $\leq 5$ valores cada)              
+            \end{itemize}
         \end{alertblock}
+        \column{0.5\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.50,font=\tiny]
+            \draw[->,thick,minegray] (-0.3,0) -- (4.8,0)
+                node[right,black] {\small $\eta$ (aprendizado)};
+            \draw[->,thick,minegray] (0,-0.3) -- (0,4.5)
+                node[above,black] {\small n\_estimators};
+            \foreach \xl [count=\xi] in {$10^{-4}$,$10^{-3}$,$10^{-2}$,$10^{-1}$}{
+                \node[below,minegray] at (0.9*\xi,0) {\xl};
+            }
+            \foreach \yl [count=\yi] in {50,100,200,500}{
+                \node[left,minegray] at (0,0.9*\yi) {\yl};
+            }
+            \foreach \xi in {1,...,4}{
+                \foreach \yi in {1,...,4}{
+                    \fill[mineblue,opacity=0.75] (0.9*\xi, 0.9*\yi) circle (4pt);
+                }
+            }
+            \fill[minered] (0.9*3, 0.9*2) circle (5.5pt)
+                node[above right,minered] {melhor};
+            \node[mineblue,align=center] at (2.2,4.2)
+                {\textbf{16 avaliações} ($4{\times}4$)};
+        \end{tikzpicture}
+        \vspace{0.1cm}
+        \textit{\faArrowRight\ Todos os pontos da grade \\são avaliados igualmente}
     \end{columns}
 \end{frame}
+
+% ------------------------------------------------------------------
+% HPO Frame 3 — Random Search
+% ------------------------------------------------------------------
+\begin{frame}{Random Search}
+     \begin{block}{Conceito (Bergstra \& Bengio, 2012)}
+            \footnotesize
+            Amostra aleatória do espaço de hiperparâmetros com distribuições configuráveis: uniforme, log-uniforme, categórica.
+        \end{block}
+    \begin{columns}
+        \column{0.72\textwidth}
+       
+        \begin{block}{Teoria}
+            \begin{itemize}\footnotesize
+                \item Hiperparâmetros mais importantes são capturados em mais combinações distintas
+                \item Com $n$ avaliações, a probabilidade de encontrar um ponto no top-$p\%$ é:
+                $Pr = 1 - \Bigl(1 - \tfrac{p}{100}\Bigr)^{n}$
+            \end{itemize}
+        \end{block}
+        \begin{alertblock}{Quando usar}
+            \begin{itemize}\footnotesize
+                \item Espaços de alta dimensão ($\geq 4$ hiperparâmetros)
+                \item Orçamento de avaliações limitado
+                \item Exploração inicial de espaço desconhecido
+            \end{itemize}
+        \end{alertblock}
+        \column{0.3\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.50,font=\tiny]
+            \draw[->,thick,minegray] (-0.3,0) -- (4.8,0)
+                node[right,black] {\small $\eta$};
+            \draw[->,thick,minegray] (0,-0.3) -- (0,4.5)
+                node[above,black] {\small n\_estimators};
+            \foreach \x/\y in {
+                0.4/3.9, 1.0/0.8, 1.2/2.8, 1.7/1.4,
+                1.9/3.6, 2.2/0.5, 2.5/2.0, 2.8/3.2,
+                3.0/1.1, 3.2/2.7, 3.5/0.3, 3.7/3.5,
+                0.7/1.8, 1.5/4.1, 4.2/0.7, 2.7/0.8}{
+                \fill[mineorange,opacity=0.80] (\x,\y) circle (3.5pt);
+            }
+            \fill[minered] (1.7,1.4) circle (5.5pt)
+                node[above right,minered] {melhor};
+            \node[mineorange,align=center] at (3.4,4.2)
+                {\textbf{16 avaliações}\\(espaço contínuo)};
+        \end{tikzpicture}
+        \vspace{0.1cm}
+        \textit{\faArrowRight\ Melhor cobertura do espaço com o mesmo orçamento}
+    \end{columns}
+\end{frame}
+
+% % ------------------------------------------------------------------
+% % HPO Frame 4 — Bayesian Optimization
+% % ------------------------------------------------------------------
+% \begin{frame}{Otimização Bayesiana}
+%      \begin{block}{Conceito}
+%             \footnotesize
+%             Constrói um \textbf{modelo substituto} (\textit{surrogate}) probabilístico da função objetivo e usa uma \textbf{função de aquisição} para decidir onde avaliar a seguir, equilibrando \textbf{exploração} e \textbf{explotação}.
+%         \end{block}
+%     \begin{columns}
+%         \column{0.7\textwidth}
+       
+%         \begin{block}{Ciclo iterativo}
+%             \footnotesize
+%             \begin{enumerate}
+%                 \item Avalia $\lambda_i$ e observa $\mathcal{L}(\lambda_i)$
+%                 \item Atualiza o surrogate (GP ou TPE)
+%                 \item Maximiza a aquisição: $\lambda_{i+1} = \arg\max EI(\lambda)$
+%                 \item Repete até o orçamento se esgotar
+%             \end{enumerate}
+%         \end{block}
+%         \begin{alertblock}{Quando usar}
+%             \footnotesize Avaliações caras (treino de DNN); espaço contínuo; orçamento $\leq 200$ trials.
+%         \end{alertblock}
+%         \column{0.48\textwidth}
+%         \centering
+%         \begin{tikzpicture}[scale=0.75,font=\tiny]
+%             \draw[->,thick,minegray] (0,0) -- (5.2,0)
+%                 node[right,black] {$\lambda$};
+%             \draw[->,thick,minegray] (0,-0.2) -- (0,3.6)
+%                 node[above,black] {$\mathcal{L}$};
+%             \draw[minered,dashed,thick,domain=0.2:5.0,samples=80]
+%                 plot[smooth] (\x,{2.9-2.4*exp(-1.5*(\x-2.5)^2)+0.2*sin(deg(5*\x))});
+%             \draw[mineblue,thick,domain=0.2:5.0,samples=60]
+%                 plot[smooth] (\x,{2.7-2.1*exp(-1.2*(\x-2.5)^2)});
+%             \foreach \x/\y in {0.5/2.5, 1.2/1.8, 2.0/0.95, 3.8/2.4, 4.6/2.8}{
+%                 \fill[minegreen] (\x,\y) circle (3pt);
+%             }
+%             \fill[mineorange] (2.5,0.6) circle (4.5pt)
+%                 node[right,mineorange] {próximo (EI máx.)};
+%             \draw[minered,dashed,thick] (0.1,3.3) -- (0.65,3.3)
+%                 node[right,minered] {Objetivo};
+%             \draw[mineblue,thick] (0.1,3.0) -- (0.65,3.0)
+%                 node[right,mineblue] {Surrogate};
+%             \fill[minegreen] (0.38,2.7) circle (3pt)
+%                 node[right,minegreen] {Avaliados};
+%             \fill[mineorange] (0.38,2.4) circle (4pt)
+%                 node[right,mineorange] {Próximo};
+%         \end{tikzpicture}
+%         \vspace{0.1cm}
+%         \textit{\faArrowRight\ Surrogate guia avaliações para regiões promissoras}
+%     \end{columns}
+% \end{frame}
+
+% \begin{frame}{Otimização Bayesiana: TPE}
+%     \begin{columns}
+%         \column{0.55\textwidth}
+%         \begin{block}{TPE — Tree-structured Parzen Estimator}
+%             \footnotesize
+%             O TPE (usado pelo Optuna) modela a distribuição de hiperparâmetros separadamente para os \textbf{bons} e \textbf{maus} resultados:
+%             \[
+%             \ell(\lambda) = p(\lambda \mid \mathcal{L} < \tau), \quad
+%             g(\lambda) = p(\lambda \mid \mathcal{L} \geq \tau)
+%             \]
+%             A função de aquisição \textbf{Expected Improvement} é proporcional a:
+%             \[
+%             EI(\lambda) \propto \frac{\ell(\lambda)}{g(\lambda)}
+%             \]
+%             Favorece regiões onde bons resultados são prováveis e maus resultados são improváveis.
+%         \end{block}
+%         \begin{block}{Vantagens do TPE}
+%             \begin{itemize}\footnotesize
+%                 \item Funciona bem com hiperparâmetros condicionais (espaços em árvore)
+%                 \item Robusto a hiperparâmetros irrelevantes
+%                 \item Mais eficiente que Gaussian Process em alta dimensão
+%             \end{itemize}
+%         \end{block}
+%         \column{0.45\textwidth}
+%         \centering
+%         \begin{tikzpicture}[scale=0.75,font=\tiny]
+%             \draw[->,thick,minegray] (0,0) -- (5.0,0)
+%                 node[right,black] {$\lambda$};
+%             \draw[->,thick,minegray] (0,-0.1) -- (0,3.4)
+%                 node[above,black] {$p(\lambda)$};
+%             % l(lambda): good distribution
+%             \draw[minegreen,very thick,domain=0.2:4.8,samples=60]
+%                 plot[smooth] (\x,{2.0*exp(-3.0*(\x-2.0)^2)});
+%             \node[minegreen] at (2.0,2.4) {$\ell(\lambda)$ (bons)};
+%             % g(lambda): bad distribution
+%             \draw[minered,very thick,domain=0.2:4.8,samples=60]
+%                 plot[smooth] (\x,{1.2*exp(-0.8*(\x-3.2)^2)+0.3*exp(-2*(\x-0.8)^2)});
+%             \node[minered] at (3.8,1.5) {$g(\lambda)$ (ruins)};
+%             % threshold tau
+%             \draw[mineorange,dashed] (0,0.5) node[left,mineorange] {$\tau$} -- (4.8,0.5);
+%             % next point
+%             \draw[mineblue,dashed] (2.0,0) node[below,mineblue] {$\lambda^*$} -- (2.0,2.0);
+%         \end{tikzpicture}
+%         \vspace{0.2cm}
+%         \begin{alertblock}{Quando usar}
+%             \footnotesize Optuna usa TPE por padrão — ideal para a maioria dos problemas de HPO em DL e ML.
+%         \end{alertblock}
+%     \end{columns}
+% \end{frame}
+
+% % ------------------------------------------------------------------
+% % HPO Frame 5 — Optuna
+% % ------------------------------------------------------------------
+% \begin{frame}[shrink=5]{Optuna: Framework de HPO}
+%     \begin{columns}
+%         \column{0.50\textwidth}
+%         \begin{block}{Optuna (Akiba et al., 2019)}
+%             Framework Python moderno, integra sampler, pruner e visualização.
+%             \begin{itemize}\footnotesize
+%                 \item \faCheck\ Sampler TPE por padrão (Bayesiano)
+%                 \item \faCheck\ Pruning de trials não promissoras (\textit{MedianPruner})
+%                 \item \faCheck\ Dashboard visual interativo
+%                 \item \faCheck\ Otimização paralela (multi-processo/nó)
+%                 \item \faCheck\ \textit{Define-by-run}: espaço de busca dinâmico
+%                 \item \faCheck\ Otimização multi-objetivo (Pareto)
+%             \end{itemize}
+%         \end{block}
+%         \begin{block}{Oportunidades de uso}\footnotesize
+%             \begin{itemize}
+%                 \item Ajuste automático de MLP, CNN, LSTM, XGBoost sem tentativa-erro manual
+%                 \item Pipeline AutoML integrado com Scikit-Learn
+%                 \item Comparar múltiplos modelos em um único \textit{study}
+%                 \item Otimizar acurácia \textit{vs} tempo de inferência simultaneamente
+%                 \item Integração com MLflow/W\&B para rastreamento de experimentos
+%             \end{itemize}
+%         \end{block}
+%         \column{0.50\textwidth}
+%         \centering
+%         \begin{tikzpicture}[
+%             box/.style={rectangle,draw=mineblue,fill=mineblue!10,
+%                         rounded corners=3pt,minimum width=3.2cm,
+%                         minimum height=0.75cm,font=\small\bfseries,
+%                         align=center},
+%             act/.style={rectangle,draw=mineorange,fill=mineorange!10,
+%                          rounded corners=3pt,minimum width=2.6cm,
+%                          minimum height=0.65cm,font=\footnotesize,
+%                          align=center},
+%             arr/.style={-{Stealth[length=5pt]},thick}]
+%             \node[box]  (study) at (0, 0.0)  {Criar Study};
+%             \node[box]  (sug)   at (0,-1.15) {Sugerir $\lambda$\\(TPE Sampler)};
+%             \node[box]  (eval)  at (0,-2.30) {Treinar e Avaliar\\$\mathcal{L}(\lambda)$};
+%             \node[box]  (prune) at (0,-3.45) {Pruning?};
+%             \node[box]  (rep)   at (0,-4.60) {Reportar Trial};
+%             \node[act]  (best)  at (3.4,-4.60) {Melhor\\$\lambda^*$};
+%             \node[act]  (dash)  at (3.4,-2.30) {Dashboard\\Optuna};
+%             \draw[arr,mineblue]   (study) -- (sug);
+%             \draw[arr,mineblue]   (sug)   -- (eval);
+%             \draw[arr,mineblue]   (eval)  -- (prune);
+%             \draw[arr,mineblue]   (prune) -- (rep);
+%             \draw[arr,minered]    (prune.east) -- ++(0.5,0)
+%                 node[above right,font=\tiny,minered]{Sim (poda)} |- (sug.east);
+%             \draw[arr,mineblue]   (rep.west)  -- ++(-0.7,0)
+%                 node[left,font=\tiny,minegray]{loop} |- (sug.west);
+%             \draw[arr,mineorange] (rep.east)  -- (best.west);
+%             \draw[arr,mineorange] (eval.east) -- (dash.west);
+%         \end{tikzpicture}
+%         \vspace{0.15cm}
+%         \centering\tiny \textit{\faArrowRight\ Colab: experimento Optuna vs Grid Search em dataset real}
+%     \end{columns}
+% \end{frame}
+
+% \begin{frame}{AutoML: Aprendizado de Máquina Automatizado}
+%     \begin{columns}
+%         \column{0.5\textwidth}
+%         \begin{block}{TPOT}
+%             \textbf{Programação Genética} para otimizar automaticamente pipelines de ML\\
+%             Evolui combinações de pré-processamento, transformações e modelos
+%         \end{block}
+%         \begin{block}{Auto-sklearn}
+%             \textbf{Bayesian Optimization} + \textit{meta-learning} + \textit{ensemble}\\
+%             Aprende de resultados em datasets anteriores (warm start)
+%         \end{block}
+%         \column{0.5\textwidth}
+%         \begin{block}{AutoGluon}
+%             \textit{Stacking} multicamadas automático\\
+%             Combina múltiplos modelos em estrutura de ensemble hierárquico
+%         \end{block}
+%         \begin{alertblock}{Consulte}
+%             Material Didático Módulo 5 e Colab para experimentos práticos com AutoML e Optuna. Compare Grid Search e Bayesian Optimization em datasets reais.
+%         \end{alertblock}
+%     \end{columns}
+% \end{frame}
 
 %=============================================================
 \section{Estado da Arte (2020--2024)}
