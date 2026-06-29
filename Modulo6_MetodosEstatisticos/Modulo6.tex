@@ -116,6 +116,286 @@ Um \textbf{teste de hipótese} é um procedimento para decidir, com base em evid
 Ao comparar $k$ classificadores com múltiplos testes de hipótese, a probabilidade de pelo menos um falso positivo é $1-(1-\alpha)^k$. Para 10 comparações com $\alpha=0.05$, isso é $\approx 40\%$! Use correções como \textbf{Bonferroni} ($\alpha' = \alpha/k$) ou o teste de \textbf{Friedman} + post-hoc de Nemenyi para comparações múltiplas.
 \end{atencaobox}
 
+% ============================================================
+\subsubsection*{Exemplo Prático 1 --- Interpretação de Teste de Hipótese}
+% ============================================================
+
+\begin{exemplobox}{Cenário: Comparação de Dois Algoritmos de Classificação}
+Um pesquisador deseja saber se o algoritmo \textbf{Random Forest} (RF) tem acurácia \textbf{superior} ao \textbf{SVM} em um dataset de detecção de spam. Ele executa os dois modelos em 10 folds de validação cruzada e observa as acurácias a seguir.
+\end{exemplobox}
+
+\begin{center}
+\begin{tabular}{ccc}
+\toprule
+Fold & RF (\%) & SVM (\%) \\
+\midrule
+1  & 92{.}1 & 89{.}3 \\
+2  & 88{.}7 & 86{.}0 \\
+3  & 91{.}4 & 90{.}1 \\
+4  & 93{.}0 & 88{.}5 \\
+5  & 89{.}5 & 87{.}9 \\
+6  & 94{.}2 & 91{.}6 \\
+7  & 90{.}3 & 89{.}0 \\
+8  & 88{.}0 & 85{.}5 \\
+9  & 92{.}8 & 90{.}4 \\
+10 & 91{.}0 & 88{.}7 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Passo 1 - Formular as hipóteses:}
+\begin{itemize}
+  \item $H_0$: Não há diferença entre RF e SVM ($\mu_{\text{RF}} = \mu_{\text{SVM}}$).
+  \item $H_1$: RF é melhor que SVM ($\mu_{\text{RF}} > \mu_{\text{SVM}}$) --- teste unilateral.
+  \item Nível de significância: $\alpha = 0{.}05$.
+\end{itemize}
+
+\textbf{Passo 2 - Escolher o teste adequado:}
+
+Como temos dois algoritmos avaliados nos \textit{mesmos} folds (amostras pareadas), utilizamos o \textbf{Teste $t$ pareado}.
+
+\textbf{Passo 3 - Calcular as diferenças e a estatística $t$:}
+
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+Fold & RF & SVM & $d_i = \text{RF} - \text{SVM}$ \\
+\midrule
+1  & 92{.}1 & 89{.}3 & $+2{.}8$ \\
+2  & 88{.}7 & 86{.}0 & $+2{.}7$ \\
+3  & 91{.}4 & 90{.}1 & $+1{.}3$ \\
+4  & 93{.}0 & 88{.}5 & $+4{.}5$ \\
+5  & 89{.}5 & 87{.}9 & $+1{.}6$ \\
+6  & 94{.}2 & 91{.}6 & $+2{.}6$ \\
+7  & 90{.}3 & 89{.}0 & $+1{.}3$ \\
+8  & 88{.}0 & 85{.}5 & $+2{.}5$ \\
+9  & 92{.}8 & 90{.}4 & $+2{.}4$ \\
+10 & 91{.}0 & 88{.}7 & $+2{.}3$ \\
+\midrule
+\multicolumn{3}{r}{\textbf{Média $\bar{d}$}} & $2{.}40$ \\
+\multicolumn{3}{r}{\textbf{Desvio padrão $s_d$}} & $0{.}91$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\[
+  t = \frac{\bar{d}}{s_d / \sqrt{n}} = \frac{2{.}40}{0{.}91 / \sqrt{10}} = \frac{2{.}40}{0{.}288} \approx 8{.}33
+\]
+
+\textbf{Passo 4 - Determinar o valor crítico e o p-valor:}
+
+Com $n-1 = 9$ graus de liberdade e $\alpha = 0{.}05$ (unilateral), o valor crítico é $t_{0{.}05,\,9} = 1{.}833$ (Consultar tabela $t$).
+
+Como $t_{\text{calculado}} = 8{.}33 \gg 1{.}833$, então o p-valor $\approx 0{.}00001$. Logo p-valor $\ll \alpha$.
+
+\begin{exemplobox}{Interpretação dos Resultados}
+\begin{itemize}
+  \item \faIcon{check-circle}\ \textbf{Decisão}: Rejeitamos $H_0$ ($p < \alpha$).
+  \item \faIcon{chart-bar}\ \textbf{Conclusão estatística}: Há evidência estatisticamente significativa de que Random Forest supera SVM neste dataset ($t(9) = 8{.}33$, $p < 0{.}001$).
+  \item \faIcon{lightbulb}\ \textbf{Interpretação prática}: O RF foi, em média, $2{.}4$ pontos percentuais mais acurado que o SVM em todos os 10 folds. A diferença não é aleatória.
+  \item \faIcon{exclamation-triangle}\ \textbf{Atenção}: Significância estatística não implica relevância prática. $2{.}4\%$ pode ou não ser relevante dependendo do custo do erro no domínio da aplicação.
+\end{itemize}
+\end{exemplobox}
+
+% ============================================================
+\subsubsection*{Exemplo Prático 2 - Teste $t$ Pareado (Passo a Passo)}
+% ============================================================
+
+\begin{exemplobox}{Cenário: Acurácia de Rede Neural vs Regressão Logística}
+Um experimento avalia se uma Rede Neural MLP supera a Regressão Logística em 5 folds de validação cruzada em um dataset de diagnóstico médico.
+\end{exemplobox}
+
+\textbf{Dados:}
+
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+Fold & MLP (\%) & Reg.\ Log.\ (\%) & $d_i$ \\
+\midrule
+1 & 85{.}0 & 80{.}0 & $+5{.}0$ \\
+2 & 90{.}0 & 85{.}0 & $+5{.}0$ \\
+3 & 78{.}0 & 80{.}0 & $-2{.}0$ \\
+4 & 92{.}0 & 87{.}0 & $+5{.}0$ \\
+5 & 88{.}0 & 85{.}0 & $+3{.}0$ \\
+\midrule
+\multicolumn{3}{r}{$\bar{d}$} & $3{.}20$ \\
+\multicolumn{3}{r}{$s_d$} & $2{.}77$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Hipóteses:} $H_0: \mu_d = 0$ \quad vs \quad $H_1: \mu_d \neq 0$ (bilateral, $\alpha = 0{.}05$)
+
+\textbf{Estatística $t$:}
+\[
+  \bar{d} = \frac{5+5-2+5+3}{5} = 3{.}20 \qquad
+  s_d = \sqrt{\frac{\sum(d_i-\bar{d})^2}{n-1}} = \sqrt{\frac{(1{.}8)^2+(1{.}8)^2+(5{.}2)^2+(1{.}8)^2+(0{.}2)^2}{4}} \approx 2{.}77
+\]
+\[
+  t = \frac{3{.}20}{2{.}77/\sqrt{5}} = \frac{3{.}20}{1{.}239} \approx 2{.}58
+\]
+
+Valor crítico bilateral com $gl(Grau\ de\ Liberdade) = n-1 =4$: $t_{0{.}025,\,4} = 2{.}776$.
+
+Como $t_{\text{calc}} = 2{.}58 < 2{.}776$, \textbf{não rejeitamos $H_0$} ($p \approx 0{.}06 > 0{.}05$).
+
+\begin{exemplobox}{Interpretações Possíveis}
+\begin{itemize}
+  \item \faIcon{times-circle}\ \textbf{Conclusão}: Não há evidência estatisticamente significativa de que o MLP seja diferente da Regressão Logística com $n=5$ folds.
+  \item \faIcon{exclamation-triangle}\ \textbf{Problema de poder}: Com apenas 5 folds, o poder do teste é baixo. Aumentar para 10 ou 30 folds poderia revelar diferença significativa.
+  \item \faIcon{lightbulb}\ \textbf{Recomendação prática}: O resultado é \textit{borderline} ($p=0{.}06$). Repetir com mais dados antes de descartar o MLP.
+\end{itemize}
+\end{exemplobox}
+
+% ============================================================
+\subsubsection*{Exemplo Prático 3 - ANOVA (Comparação de Três Algoritmos)}
+% ============================================================
+
+\begin{exemplobox}{Cenário: Três Classificadores em Validação Cruzada}
+Três algoritmos: \textbf{KNN}, \textbf{Decision Tree} e \textbf{Naive Bayes} são avaliados em 5 folds. Queremos saber se pelo menos um deles tem desempenho diferente dos demais.
+\end{exemplobox}
+
+\textbf{Dados (acurácia em \%):}
+
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+Fold & KNN & Decision Tree & Naive Bayes \\
+\midrule
+1 & 82{.}0 & 78{.}0 & 75{.}0 \\
+2 & 84{.}0 & 80{.}0 & 76{.}0 \\
+3 & 81{.}0 & 79{.}0 & 74{.}0 \\
+4 & 85{.}0 & 82{.}0 & 77{.}0 \\
+5 & 83{.}0 & 80{.}0 & 73{.}0 \\
+\midrule
+\textbf{Média} $\bar{x}_j$ & $83{.}0$ & $79{.}8$ & $75{.}0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Hipóteses:}
+\[
+  H_0: \mu_{\text{KNN}} = \mu_{\text{DT}} = \mu_{\text{NB}}
+  \qquad H_1: \text{ao menos uma média difere}
+\]
+
+\textbf{Cálculo da ANOVA (One-Way):}
+
+Média global: $\bar{x} = \frac{83{.}0 + 79{.}8 + 75{.}0}{3} = 79{.}27$
+
+\begin{align*}
+  SS_{\text{entre}} &= n\sum_{j=1}^{k}(\bar{x}_j - \bar{x})^2
+    = 5\bigl[(83{-}79{.}27)^2 + (79{.}8{-}79{.}27)^2 + (75{-}79{.}27)^2\bigr] \\
+    &= 5\bigl[13{.}90 + 0{.}28 + 18{.}24\bigr] = 5 \times 32{.}42 = 162{.}1 \\[6pt]
+  SS_{\text{dentro}} &= \sum_{j}\sum_{i}(x_{ij} - \bar{x}_j)^2 \\
+    &= \underbrace{(1+1+4+4+0)}_{\text{KNN}=10} + \underbrace{(3{.}24+0{.}04+0{.}64+4{.}84+0{.}04)}_{\text{DT}=8{.}8}
+       + \underbrace{(0+1+1+4+4)}_{\text{NB}=10} = 28{.}8
+\end{align*}
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Fonte & $SS$ & $gl$ & $MS = SS/gl$ & $F$ \\
+\midrule
+Entre grupos & $162{.}1$ & $k-1=2$ & $81{.}05$ & $F = 81{.}05 / 2{.}40 \approx \mathbf{33{.}77}$ \\
+Dentro grupos & $28{.}8$  & $N-k=12$ & $2{.}40$ & \\
+Total & $190{.}9$ & $14$ & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Valor crítico: $F_{0{.}05,\;2,\;12} = 3{.}89$. Como $F = 33{.}77 \gg 3{.}89$, p-valor $\ll 0{.}001$.
+
+\begin{exemplobox}{Interpretações Possíveis}
+\begin{itemize}
+  \item \faIcon{check-circle}\ \textbf{Decisão}: Rejeitamos $H_0$ - há diferença significativa entre os algoritmos.
+  \item \faIcon{chart-bar}\ \textbf{Conclusão}: A ANOVA indica que pelo menos um algoritmo difere dos demais ($F(2,12)=33{.}77$, $p<0{.}001$). A ANOVA \textit{não} diz quais pares diferem.
+  \item \faIcon{search}\ \textbf{Post-hoc necessário}: Aplicar teste de Tukey HSD ou Bonferroni para comparar pares: KNN vs DT, KNN vs NB, DT vs NB.
+  \item \faIcon{lightbulb}\ \textbf{Interpretação prática}: KNN ($\bar{x}=83\%$) supera NB ($\bar{x}=75\%$) por 8 p.p., diferença praticamente relevante além de estatisticamente significativa.
+\end{itemize}
+\end{exemplobox}
+
+% ============================================================
+\subsubsection*{Exemplo Prático 4 - Teste de Wilcoxon Signed-Rank}
+% ============================================================
+
+\begin{exemplobox}{Cenário: Quando os Dados Não São Normais}
+Um pesquisador compara dois algoritmos em 6 folds, mas os dados têm valores extremos (outliers) que violam a suposição de normalidade do teste $t$. Utiliza-se o \textbf{Teste de Wilcoxon Signed-Rank} como alternativa não-paramétrica.
+\end{exemplobox}
+
+\textbf{Dados (F1-Score em \%):}
+
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+Fold & Alg.\ A & Alg.\ B & $d_i = A - B$ \\
+\midrule
+1 & 88{.}0 & 85{.}0 & $+3{.}0$ \\
+2 & 72{.}0 & 79{.}0 & $-7{.}0$ \\
+3 & 91{.}0 & 88{.}0 & $+3{.}0$ \\
+4 & 95{.}0 & 90{.}0 & $+5{.}0$ \\
+5 & 60{.}0 & 55{.}0 & $+5{.}0$ \\
+6 & 84{.}0 & 83{.}0 & $+1{.}0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Hipóteses:} $H_0$: mediana das diferenças $= 0$ \quad vs \quad $H_1$: mediana $\neq 0$
+
+\textbf{Passo a passo do Wilcoxon:}
+
+\begin{enumerate}
+  \item \textbf{Calcular} $|d_i|$ e \textbf{ranquear} em ordem crescente (excluindo $d_i = 0$):
+
+  \begin{center}
+  \begin{tabular}{ccccc}
+  \toprule
+  Fold & $d_i$ & $|d_i|$ & Rank & Sinal \\
+  \midrule
+  6 & $+1{.}0$ & 1{.}0 & \textbf{1} & $+$ \\
+  1 & $+3{.}0$ & 3{.}0 & \textbf{2,5} & $+$ \\
+  3 & $+3{.}0$ & 3{.}0 & \textbf{2,5} & $+$ \\
+  4 & $+5{.}0$ & 5{.}0 & \textbf{4,5} & $+$ \\
+  5 & $+5{.}0$ & 5{.}0 & \textbf{4,5} & $+$ \\
+  2 & $-7{.}0$ & 7{.}0 & \textbf{6}   & $-$ \\
+  \bottomrule
+  \end{tabular}
+  \end{center}
+
+  \textit{Nota: ranks 2 e 3 são empatados nos $|d_i|=3$, então recebem rank médio $(2+3)/2 = 2{.}5$. Idem para $|d_i|=5$: $(4+5)/2 = 4{.}5$.}
+
+  \item \textbf{Somar ranks por sinal:}
+  \[
+    W^+ = 1 + 2{.}5 + 2{.}5 + 4{.}5 + 4{.}5 = 15 \qquad
+    W^- = 6
+  \]
+
+  \item \textbf{Estatística de teste:} $W = \min(W^+, W^-) = \min(15, 6) = 6$
+
+  \item \textbf{Valor crítico} (tabela, bilateral, $n=6$, $\alpha=0{.}05$): $W_{\text{crítico}} = 2$.
+
+  Como $W = 6 > 2$, \textbf{não rejeitamos $H_0$} ($p \approx 0{.}16 > 0{.}05$).
+\end{enumerate}
+
+\begin{exemplobox}{Interpretações Possíveis}
+\begin{itemize}
+  \item \faIcon{times-circle}\ \textbf{Decisão}: Não rejeitamos $H_0$ $\rightarrow$ não há evidência de diferença mediana entre A e B com $n=6$.
+  \item \faIcon{exclamation-triangle}\ \textbf{Poder baixo}: Com apenas 6 observações, o teste tem poder reduzido. A diferença pode existir mas não ser detectável com amostra tão pequena.
+  \item \faIcon{lightbulb}\ \textbf{Por que Wilcoxon em vez de $t$?}\\
+    O fold 2 apresenta queda atípica ($d_2 = -7{.}0$, possível outlier). O teste $t$ daria $t \approx 1{.}55$ (p$\approx 0{.}18$) $\rightarrow$  resultado similar, porém \textit{menos confiável} por violar a suposição de normalidade das diferenças.
+  \item \faIcon{search}\ \textbf{Quando usar Wilcoxon}:
+    \begin{itemize}
+      \item $n < 30$ e não há garantia de normalidade das diferenças.
+      \item Presença de outliers que distorcem a média.
+      \item Dados ordinais (ex.: scores de ranking de sistemas).
+    \end{itemize}
+\end{itemize}
+\end{exemplobox}
+
+\begin{atencaobox}{Comparações Múltiplas}
+Ao comparar $k$ classificadores com múltiplos testes de hipótese, a probabilidade de pelo menos um falso positivo é $1-(1-\alpha)^k$. Para 10 comparações com $\alpha=0.05$, isso é $\approx 40\%$! Use correções como \textbf{Bonferroni} ($\alpha' = \alpha/k$) ou o teste de \textbf{Friedman} + post-hoc de Nemenyi para comparações múltiplas.
+\end{atencaobox}
+
 \subsection{Correlação e Dependência}
 
 \textbf{Coeficiente de Correlação de Pearson} ($r$): Mede relação linear entre duas variáveis contínuas:
@@ -124,6 +404,120 @@ Ao comparar $k$ classificadores com múltiplos testes de hipótese, a probabilid
   \in [-1, 1]
 \]
 $r = 1$ (correlação positiva perfeita), $r = 0$ (sem correlação linear), $r = -1$ (negativa perfeita).
+
+\subsubsection*{Exemplo Prático --- Correlação de Pearson com Dataset Fictício}
+
+\begin{exemplobox}{Cenário: Horas de Estudo vs Nota na Prova}
+Um professor registra as horas de estudo semanal e a nota final (0--10) de 8 alunos. Queremos saber se há correlação linear entre as duas variáveis.
+\end{exemplobox}
+
+\textbf{Dataset:}
+
+\begin{center}
+\begin{tabular}{cccccc}
+\toprule
+Aluno & Horas ($x_i$) & Nota ($y_i$) & $(x_i - \bar{x})$ & $(y_i - \bar{y})$ & $(x_i-\bar{x})(y_i-\bar{y})$ \\
+\midrule
+1 & 2{.}0 & 4{.}5 & $-3{.}25$ & $-2{.}88$ & $9{.}36$ \\
+2 & 3{.}0 & 5{.}0 & $-2{.}25$ & $-2{.}38$ & $5{.}36$ \\
+3 & 4{.}0 & 5{.}5 & $-1{.}25$ & $-1{.}88$ & $2{.}35$ \\
+4 & 5{.}0 & 6{.}0 & $-0{.}25$ & $-1{.}38$ & $0{.}35$ \\
+5 & 6{.}0 & 7{.}5 & $+0{.}75$ & $+0{.}12$ & $0{.}09$ \\
+6 & 7{.}0 & 8{.}0 & $+1{.}75$ & $+0{.}62$ & $1{.}09$ \\
+7 & 9{.}0 & 9{.}0 & $+3{.}75$ & $+1{.}62$ & $6{.}08$ \\
+8 & 10{.}0 & 9{.}5 & $+4{.}75$ & $+2{.}12$ & $10{.}07$ \\
+\midrule
+\textbf{Média} & $\bar{x}=5{.}25$ & $\bar{y}=7{.}38$ & & & $\sum = 34{.}75$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Cálculo passo a passo:}
+
+\begin{align*}
+  \sum_{i=1}^{8}(x_i-\bar{x})^2
+    &= (-3{.}25)^2+(-2{.}25)^2+(-1{.}25)^2+(-0{.}25)^2+(0{.}75)^2+(1{.}75)^2+(3{.}75)^2+(4{.}75)^2\\
+    &= 10{.}56+5{.}06+1{.}56+0{.}06+0{.}56+3{.}06+14{.}06+22{.}56 = 57{.}50 \\[6pt]
+  \sum_{i=1}^{8}(y_i-\bar{y})^2
+    &= (-2{.}88)^2+(-2{.}38)^2+(-1{.}88)^2+(-1{.}38)^2+(0{.}12)^2+(0{.}62)^2+(1{.}62)^2+(2{.}12)^2\\
+    &= 8{.}29+5{.}66+3{.}53+1{.}90+0{.}01+0{.}38+2{.}62+4{.}49 = 26{.}88
+\end{align*}
+
+\[
+  r = \frac{\sum(x_i-\bar{x})(y_i-\bar{y})}{\sqrt{\sum(x_i-\bar{x})^2 \cdot \sum(y_i-\bar{y})^2}}
+    = \frac{34{.}75}{\sqrt{57{.}50 \times 26{.}88}}
+    = \frac{34{.}75}{\sqrt{1545{.}6}}
+    = \frac{34{.}75}{39{.}31}
+    \approx \mathbf{0{.}884}
+\]
+
+\textbf{Visualização:}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=9cm, height=6cm,
+  xlabel={Horas de Estudo por Semana},
+  ylabel={Nota Final (0--10)},
+  xmin=0.5, xmax=11,
+  ymin=3, ymax=11,
+  grid=major,
+  grid style={dotted,gray!40},
+  axis lines=left,
+  title={\textbf{Horas de Estudo vs Nota ($r = 0{.}884$)}},
+  title style={color=mineblue},
+  xlabel style={font=\small},
+  ylabel style={font=\small},
+  tick label style={font=\small},
+]
+  % Dados
+  \addplot[only marks, mark=*, mineblue, mark size=3.5pt,
+           mark options={fill=mineblue}]
+    coordinates {(2,4.5)(3,5.0)(4,5.5)(5,6.0)(6,7.5)(7,8.0)(9,9.0)(10,9.5)};
+  % Linha de tendência (regressão linear aproximada: y = 0,605x + 4,2)
+  \addplot[minered, thick, domain=1.5:11, samples=2]
+    {0.605*x + 4.2};
+  \node[font=\footnotesize, color=minered] at (axis cs:8.2,6.5) {linha de tendência};
+  % Anotação r
+  \node[font=\small, color=minegreen, align=left] at (axis cs:2.5,10.0)
+      {Correlação forte\\e positiva};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\begin{exemplobox}{Interpretações Possíveis}
+\begin{itemize}
+  \item \faIcon{chart-line}\ \textbf{Magnitude}: $r = 0{.}884$ indica \textbf{correlação positiva forte} entre horas de estudo e nota. Quanto mais o aluno estuda, maior tende a ser sua nota.
+  \item \faIcon{lightbulb}\ \textbf{Escala de interpretação prática} (Cohen, 1988):
+    \begin{itemize}
+      \item $|r| < 0{.}30$: correlação fraca
+      \item $0{.}30 \leq |r| < 0{.}50$: correlação moderada
+      \item $|r| \geq 0{.}50$: correlação forte
+    \end{itemize}
+  \item \faIcon{exclamation-triangle}\ \textbf{Correlação $\neq$ Causalidade}: $r = 0{.}884$ não prova que estudar \textit{causa} nota alta. Um terceiro fator (ex.: dedicação geral do aluno) pode explicar ambas as variáveis.
+  \item \faIcon{search}\ \textbf{Significância estatística}: Para $n=8$ e $r=0{.}884$, a estatística de teste é:
+    \[
+      t = r\sqrt{\frac{n-2}{1-r^2}} = 0{.}884\sqrt{\frac{6}{1-0{.}781}} = 0{.}884 \times 5{.}23 \approx 4{.}62
+    \]
+    Com $gl=6$ e $\alpha=0{.}05$, $t_{\text{crítico}} = 2{.}447$. Como $4{.}62 > 2{.}447$, a correlação é \textbf{estatisticamente significativa} ($p \approx 0{.}004$).
+  \item \faIcon{times-circle}\ \textbf{Limitação}: Pearson só captura relações \textbf{lineares}. Se a relação fosse curvilínea (ex.: rendimento cai após muitas horas por exaustão), Pearson subestimaria a dependência. Use Spearman ou Informação Mútua nesses casos.
+\end{itemize}
+\end{exemplobox}
+
+\begin{center}
+\begin{tabular}{clcc}
+\toprule
+$r$ & Interpretação & Exemplo prático & Uso recomendado \\
+\midrule
+$0{.}90$ a $1{.}00$ & Correlação muito forte positiva & Altura vs envergadura & Previsão direta \\
+$0{.}70$ a $0{.}89$ & Correlação forte positiva & Horas estudo vs nota & Seleção de features \\
+$0{.}50$ a $0{.}69$ & Correlação moderada positiva & Renda vs consumo & Análise exploratória \\
+$0{.}30$ a $0{.}49$ & Correlação fraca positiva & Temperatura vs vendas & Cuidado ao usar \\
+$0{.}00$ a $0{.}29$ & Correlação desprezível & Nº letras nome vs nota & Descartar \\
+$< 0$ & Negativa (mesma escala) & Horas TV vs nota & Idem à positiva \\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \textbf{Correlação de Spearman} ($\rho$): Aplica Pearson nos \textbf{postos} (\textit{ranks}) dos dados. Detecta monotonicidade, não apenas linearidade. Robusta a outliers e útil para dados ordinais.
 
@@ -234,8 +628,8 @@ Inicializar centróides $\boldsymbol{\mu}_1, \ldots, \boldsymbol{\mu}_K$ aleator
 
   \textbf{Exemplo numérico:} Considere o ponto $\mathbf{x} = (5, 3)$ e dois centróides $C_1 = (2, 4)$ e $C_2 = (6, 1)$.
   \begin{align*}
-    d(\mathbf{x}, C_1) &= \sqrt{(5-2)^2 + (3-4)^2} = \sqrt{9+1} = \sqrt{10} \approx 3{,}16 \\
-    d(\mathbf{x}, C_2) &= \sqrt{(5-6)^2 + (3-1)^2} = \sqrt{1+4} = \sqrt{5}  \approx 2{,}24
+    d(\mathbf{x}, C_1) &= \sqrt{(5-2)^2 + (3-4)^2} = \sqrt{9+1} = \sqrt{10} \approx 3{.}16 \\
+    d(\mathbf{x}, C_2) &= \sqrt{(5-6)^2 + (3-1)^2} = \sqrt{1+4} = \sqrt{5}  \approx 2{.}24
   \end{align*}
   Como $d(\mathbf{x}, C_2) < d(\mathbf{x}, C_1)$, o ponto $(5,3)$ é atribuído ao cluster $C_2$.
 
@@ -250,10 +644,10 @@ Inicializar centróides $\boldsymbol{\mu}_1, \ldots, \boldsymbol{\mu}_K$ aleator
     D_1=(3,4),\; D_2=(4,1),\; D_3=(2,3),\; D_4=(2,6),\; D_5=(3,3)
   \]
   \begin{align*}
-    \bar{x} &= \tfrac{1}{5}(3+4+2+2+3) = \tfrac{14}{5} = 2{,}8 \\
-    \bar{y} &= \tfrac{1}{5}(4+1+3+6+3) = \tfrac{17}{5} = 3{,}4
+    \bar{x} &= \tfrac{1}{5}(3+4+2+2+3) = \tfrac{14}{5} = 2{.}8 \\
+    \bar{y} &= \tfrac{1}{5}(4+1+3+6+3) = \tfrac{17}{5} = 3{.}4
   \end{align*}
-  O centróide é movido de sua posição anterior para $(2{,}8,\; 3{,}4)$.
+  O centróide é movido de sua posição anterior para $(2{.}8,\; 3{.}4)$.
 
   \item \textbf{Repetir os Passos 3 e 4 até a convergência.}\\
   O algoritmo itera os passos de atribuição e recálculo até que os centróides não se movam mais (ou a variação seja menor que um limiar $\varepsilon$). Nesse ponto, cada ponto de dados pertence ao mesmo cluster entre iterações consecutivas e o algoritmo converge.
@@ -287,11 +681,11 @@ O Método do Cotovelo consiste em executar o K-Means para diferentes valores de 
 $K$ & WCSS & Redução relativa \\
 \midrule
 1 & 2400 & --- \\
-2 & 1200 & $-50{,}0\%$ \\
-3 & 480  & $-60{,}0\%$ \\
-4 & 420  & $-12{,}5\%$ \\
-5 & 390  & $-7{,}1\%$ \\
-6 & 375  & $-3{,}8\%$ \\
+2 & 1200 & $-50{.}0\%$ \\
+3 & 480  & $-60{.}0\%$ \\
+4 & 420  & $-12{.}5\%$ \\
+5 & 390  & $-7{.}1\%$ \\
+6 & 375  & $-3{.}8\%$ \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -371,27 +765,27 @@ Considere 5 pontos distribuídos em 2 clusters: $C_1 = \{P_1, P_2\}$ e $C_2 = \{
 \toprule
 Ponto & Coordenadas & Cluster & $s(i)$ \\
 \midrule
-$P_1$ & $(1{,}0,\ 1{,}0)$ & $C_1$ & 0{,}74 \\
-$P_2$ & $(1{,}5,\ 2{,}0)$ & $C_1$ & 0{,}69 \\
-$P_3$ & $(3{,}0,\ 4{,}0)$ & $C_2$ & 0{,}61 \\
-$P_4$ & $(4{,}0,\ 4{,}5)$ & $C_2$ & 0{,}66 \\
-$P_5$ & $(3{,}5,\ 5{,}0)$ & $C_2$ & 0{,}63 \\
+$P_1$ & $(1{.}0,\ 1{.}0)$ & $C_1$ & 0{.}74 \\
+$P_2$ & $(1{.}5,\ 2{.}0)$ & $C_1$ & 0{.}69 \\
+$P_3$ & $(3{.}0,\ 4{.}0)$ & $C_2$ & 0{.}61 \\
+$P_4$ & $(4{.}0,\ 4{.}5)$ & $C_2$ & 0{.}66 \\
+$P_5$ & $(3{.}5,\ 5{.}0)$ & $C_2$ & 0{.}63 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-Cálculo passo a passo para $P_1 = (1{,}0,\; 1{,}0)$:
+Cálculo passo a passo para $P_1 = (1{.}0,\; 1{.}0)$:
 \begin{align*}
-  a(P_1) &= d(P_1, P_2) = \sqrt{(1{,}5-1)^2+(2-1)^2} = \sqrt{1{,}25} \approx 1{,}12\\[4pt]
+  a(P_1) &= d(P_1, P_2) = \sqrt{(1{.}5-1)^2+(2-1)^2} = \sqrt{1{.}25} \approx 1{.}12\\[4pt]
   b(P_1) &= \frac{d(P_1,P_3)+d(P_1,P_4)+d(P_1,P_5)}{3}\\
-          &= \frac{\sqrt{(3-1)^2+(4-1)^2}+\sqrt{(4-1)^2+(4{,}5-1)^2}+\sqrt{(3{,}5-1)^2+(5-1)^2}}{3}\\
-          &= \frac{\sqrt{13}+\sqrt{21{,}25}+\sqrt{22{,}25}}{3}
-           \approx \frac{3{,}61+4{,}61+4{,}72}{3} \approx 4{,}31\\[4pt]
-  s(P_1) &= \frac{4{,}31 - 1{,}12}{\max\{1{,}12,\; 4{,}31\}}
-           = \frac{3{,}19}{4{,}31} \approx \mathbf{0{,}74}
+          &= \frac{\sqrt{(3-1)^2+(4-1)^2}+\sqrt{(4-1)^2+(4{.}5-1)^2}+\sqrt{(3{.}5-1)^2+(5-1)^2}}{3}\\
+          &= \frac{\sqrt{13}+\sqrt{21{.}25}+\sqrt{22{.}25}}{3}
+           \approx \frac{3{.}61+4{.}61+4{.}72}{3} \approx 4{.}31\\[4pt]
+  s(P_1) &= \frac{4{.}31 - 1{.}12}{\max\{1{.}12,\; 4{.}31\}}
+           = \frac{3{.}19}{4{.}31} \approx \mathbf{0{.}74}
 \end{align*}
 
-$s(P_1) = 0{,}74$ indica que $P_1$ está bem posicionado dentro de $C_1$ e bem separado de $C_2$.
+$s(P_1) = 0{.}74$ indica que $P_1$ está bem posicionado dentro de $C_1$ e bem separado de $C_2$.
 
 \textbf{Comparação entre valores de $K$ (mesmo dataset):}
 
@@ -400,10 +794,10 @@ $s(P_1) = 0{,}74$ indica que $P_1$ está bem posicionado dentro de $C_1$ e bem s
 \toprule
 $K$ & Silhouette Score médio ($\bar{s}$) & Avaliação \\
 \midrule
-2 & 0{,}71 & \textbf{Ótimo} \\
-3 & 0{,}58 & Aceitável \\
-4 & 0{,}42 & Clusters sobrepostos \\
-5 & 0{,}29 & Agrupamento fraco \\
+2 & 0{.}71 & \textbf{Ótimo} \\
+3 & 0{.}58 & Aceitável \\
+4 & 0{.}42 & Clusters sobrepostos \\
+5 & 0{.}29 & Agrupamento fraco \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -441,7 +835,7 @@ $K$ & Silhouette Score médio ($\bar{s}$) & Avaliação \\
 \begin{dicabox}{Boas Práticas na Escolha de $K$}
 \begin{itemize}
   \item Use \textbf{Método do Cotovelo} e \textbf{Silhouette} em conjunto para maior confiabilidade.
-  \item Silhouette Score $> 0{,}5$ indica clustering de qualidade razoável; $< 0{,}2$ sugere ausência de estrutura.
+  \item Silhouette Score $> 0{.}5$ indica clustering de qualidade razoável; $< 0{.}2$ sugere ausência de estrutura.
   \item O \textbf{Gap Statistic} (Tibshirani et al., 2001) é mais robusto estatisticamente: compara a inércia observada com a esperada sob distribuição uniforme de referência.
   \item Sempre visualize os clusters em 2D (com PCA se necessário) para validação qualitativa.
 \end{itemize}
