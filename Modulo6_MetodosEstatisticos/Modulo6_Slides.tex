@@ -66,7 +66,11 @@
 
 % Roteiro
 \begin{frame}[shrink=5]{Roteiro da Aula}
-    \tableofcontents
+    \tableofcontents[sections={1-2}]
+\end{frame}
+
+\begin{frame}[shrink=5]{Roteiro da Aula}
+   \tableofcontents[sections={3-8}]
 \end{frame}
 
 % ==============================================================================
@@ -76,37 +80,46 @@
 \subsection{Testes de Hipótese}
 
 % --- Frame: O que é Teste de Hipótese ---
-\begin{frame}[shrink=8]{O que é um Teste de Hipótese?}
+\begin{frame}{O que é um Teste de Hipótese?}
+    \begin{block}{Definição}
+        \footnotesize
+        Procedimento para \textbf{decidir}, com base em evidências amostrais, se uma afirmação sobre uma população deve ser aceita ou rejeitada.
+    \end{block}
+    \vspace{-0.3cm}
+    \pause
     \begin{columns}
-        \column{0.55\textwidth}
-        \begin{block}{Definição}
-            \footnotesize
-            Procedimento para \textbf{decidir}, com base em evidências amostrais, se uma afirmação sobre uma população deve ser aceita ou rejeitada.
-        \end{block}
+        \column{0.7\textwidth}
         \begin{block}{Componentes Essenciais}
             \begin{itemize}\footnotesize
-                \item \textbf{$H_0$ (hipótese nula):} posição padrão a testar\\
-                      ex. ``RF e SVM têm mesma acurácia''
+                \item \textbf{$H_0$ (hipótese nula):} posição padrão\\
+                      ex.\ ``RF e SVM têm mesma acurácia''
                 \item \textbf{$H_1$ (alternativa):} o que queremos provar
-                \item \textbf{Nível de significância $\alpha$:} geralmente $0{,}05$
+                \item \textbf{Nível de significância $\alpha$:} geralmente $0{.}05$
+                \begin{itemize}
+                    \item Probabilidade de rejeitar $H_0$ quando $H_0$ é verdadeira (Erro Tipo I)
+                \end{itemize}
                 \item \textbf{p-valor:} rejeita $H_0$ se $p < \alpha$
+                \begin{itemize}
+                    \item Probabilidade de observar os dados assumindo $H_0$ verdadeira
+                \end{itemize}
             \end{itemize}
         \end{block}
+        \pause
         \column{0.45\textwidth}
         \centering
-        \begin{tikzpicture}[scale=0.78,font=\tiny,
+        \begin{tikzpicture}[scale=0.72,font=\tiny,
             box/.style={rectangle,draw=mineblue,fill=mineblue!10,
                         rounded corners,minimum width=2.8cm,
-                        minimum height=0.7cm,align=center,font=\small},
+                        minimum height=0.65cm,align=center},
             arr/.style={-{Stealth[length=5pt]},mineblue,thick}]
             \node[box] (h)   at (0,0)    {Formular $H_0$, $H_1$};
-            \node[box] (d)   at (0,-1.1) {Coletar Dados};
-            \node[box] (t)   at (0,-2.2) {Calcular estatística};
-            \node[box] (p)   at (0,-3.3) {Calcular p-valor};
+            \node[box] (d)   at (0,-1.0) {Coletar Dados};
+            \node[box] (t)   at (0,-2.0) {Calcular estatística};
+            \node[box] (p)   at (0,-3.0) {Calcular p-valor};
             \node[box,fill=minegreen!15,draw=minegreen]
-                       (dec) at (0,-4.4) {Decisão: $p < \alpha$?};
-            \node[font=\tiny,minered]  (rej) at ( 1.8,-5.2) {Rejeitar $H_0$};
-            \node[font=\tiny,minegreen](nrj) at (-1.8,-5.2) {Não rejeitar $H_0$};
+                       (dec) at (0,-4.0) {Decisão: $p < \alpha$?};
+            \node[font=\tiny,minered]  (rej) at ( 1.8,-4.9) {Rejeitar $H_0$};
+            \node[font=\tiny,minegreen](nrj) at (-1.8,-4.9) {Não rejeitar $H_0$};
             \draw[arr] (h)--(d); \draw[arr] (d)--(t);
             \draw[arr] (t)--(p); \draw[arr] (p)--(dec);
             \draw[arr,minered]   (dec.south east) -- (rej.north);
@@ -116,40 +129,45 @@
 \end{frame}
 
 % --- Frame: Tipos de Erro ---
-\begin{frame}[shrink=5]{Tipos de Erro e Poder do Teste}
-    \begin{columns}
-        \column{0.5\textwidth}
-        \begin{block}{Tipos de Erro}
-            \begin{center}
-            \begin{tabular}{lcc}
-            \toprule
-            & $H_0$ verdadeira & $H_0$ falsa \\
-            \midrule
-            Não rejeitar & \textcolor{minegreen}{\faCheck\ Correto} & \textcolor{minered}{Erro Tipo II ($\beta$)} \\
-            Rejeitar     & \textcolor{minered}{Erro Tipo I ($\alpha$)} & \textcolor{minegreen}{\faCheck\ Poder ($1-\beta$)} \\
-            \bottomrule
-            \end{tabular}
-            \end{center}
-        \end{block}
-        \begin{alertblock}{Atenção}
-            \footnotesize Reduzir $\alpha$ aumenta $\beta$. Há um \textbf{trade-off} entre os dois tipos de erro. O poder do teste aumenta com maior $n$ (mais dados).
-        \end{alertblock}
-        \column{0.5\textwidth}
-        \begin{block}{Testes Relevantes em Mineração de Dados}
-            \begin{itemize}\footnotesize
-                \item \textbf{Teste $t$ pareado:} compara 2 classificadores nos mesmos folds
-                \item \textbf{ANOVA:} compara 3 ou mais classificadores simultaneamente
-                \item \textbf{Wilcoxon Signed-Rank:} alternativa não-paramétrica ao teste $t$
-                \item \textbf{McNemar:} compara classificadores pelas matrizes de confusão
-            \end{itemize}
-        \end{block}
-        \vspace{0.1cm}
-        \centering\tiny \faArrowRight\ Consulte o Material Didático Módulo 6 para exemplos detalhados
-    \end{columns}
+\begin{frame}{Tipos de Erro e Poder do Teste}
+    \begin{block}{Tabela de Decisão}
+        \begin{center}\footnotesize
+        \begin{tabular}{lcc}
+        \toprule
+        & $H_0$ verdadeira & $H_0$ falsa \\
+        \midrule
+        Não rejeitar & \textcolor{minegreen}{\faCheck\ Correto} & \textcolor{minered}{Erro Tipo II ($\beta$)} \\
+        Rejeitar     & \textcolor{minered}{Erro Tipo I ($\alpha$)} & \textcolor{minegreen}{\faCheck\ Poder ($1-\beta$)} \\
+        \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+    \pause
+    \begin{alertblock}{Erros}
+        \footnotesize
+        \begin{itemize}
+            \item \textbf{Erro Tipo I ($\alpha$):} rejeitar $H_0$ quando $H_0$ é verdadeira
+            \item \textbf{Erro Tipo II ($\beta$):} não rejeitar $H_0$ quando $H_0$ é falsa
+            \item \textbf{Poder do teste ($1-\beta$):} probabilidade de rejeitar $H_0$ quando $H_0$ é falsa
+        \end{itemize}
+    \end{alertblock}
+    
 \end{frame}
 
-% --- Frame: Teste t Pareado ---
-\begin{frame}[shrink=5]{Teste $t$ Pareado: Comparando Dois Algoritmos}
+\begin{frame}{Tipos de Erro e Poder do Teste}
+    
+    \begin{block}{Testes Relevantes em Mineração de Dados}
+        \begin{itemize}\footnotesize
+            \item \textbf{Teste $t$ pareado:} compara 2 classificadores nos mesmos folds
+            \item \textbf{ANOVA:} compara 3 ou mais classificadores simultaneamente
+            \item \textbf{Wilcoxon Signed-Rank:} alternativa não-paramétrica ao teste $t$
+            \item \textbf{McNemar:} compara classificadores pelas matrizes de confusão
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+% --- Frame: Teste t Pareado --- Fórmula e quando usar ---
+\begin{frame}{Teste $t$ Pareado: Fórmula e Quando Usar}
     \begin{columns}
         \column{0.5\textwidth}
         \begin{block}{Fórmula}
@@ -157,136 +175,495 @@
               t = \frac{\bar{d}}{s_d / \sqrt{n}}, \quad
               \bar{d} = \frac{1}{n}\sum_{i=1}^{n}(a_i - b_i)
             \]
+            \footnotesize $\bar{d}$: média das diferenças por fold; $s_d$: desvio padrão.
         \end{block}
-        \begin{block}{Exemplo: RF vs SVM (10 folds)}
-            \footnotesize
-            $\bar{d} = 2{,}40\%$, $s_d = 0{,}91$, $n=10$
-            \[
-              t = \frac{2{,}40}{0{,}91/\sqrt{10}} \approx 8{,}33
-            \]
-            $t_{\text{crítico}}(gl=9, \alpha=0{,}05) = 1{,}833$\\[4pt]
-            Como $8{,}33 \gg 1{,}833$: \textbf{rejeitamos $H_0$}\\
-            RF é estatisticamente superior ao SVM $(p < 0{,}001)$
-        \end{block}
-        \column{0.5\textwidth}
-        \begin{block}{Quando usar}
+        \pause
+        \begin{block}{Quando Usar}
             \begin{itemize}\footnotesize
-                \item Dois algoritmos avaliados nos \textit{mesmos} folds (amostras pareadas)
+                \item Dois algoritmos nos \textit{mesmos} folds (amostras pareadas)
                 \item Diferenças aproximadamente normais
-                \item Para $n < 30$ verificar normalidade das diferenças
+                \item Para $n < 30$, verificar normalidade das diferenças
             \end{itemize}
         \end{block}
-        \begin{alertblock}{Significância $\neq$ Relevância Prática}
-            \footnotesize $p < 0{,}05$ indica que a diferença provavelmente não é aleatória, mas $\Delta = 2{,}4\%$ pode ou não ser relevante dependendo do custo do erro na aplicação.
-        \end{alertblock}
-        \centering\tiny \faArrowRight\ Exemplo completo: Material Didático e Colab Módulo 6
+        \column{0.5\textwidth}
+        \pause
+        \begin{block}{Passos}
+            \begin{enumerate}\footnotesize
+                \item Formular $H_0$, $H_1$ e escolher $\alpha$
+                \item Calcular $d_i = a_i - b_i$ para cada fold
+                \item Calcular $\bar{d}$, $s_d$ e a estatística $t$
+                \item Comparar com $t_{\text{crítico}}(gl=n-1,\;\alpha)$
+            \end{enumerate}
+        \end{block}
+ 
     \end{columns}
 \end{frame}
 
-% --- Frame: ANOVA ---
-\begin{frame}[shrink=6]{ANOVA: Comparando Três ou Mais Algoritmos}
+% --- FRAME 1: O Determinante ---
+\begin{frame}{O que determina o tipo de teste?}
+    \begin{block}{A Hipótese Alternativa ($H_1$)}
+        A escolha é definida \textbf{antes} da coleta de dados, baseada na pergunta de pesquisa:
+    \end{block}
+    
+    \begin{itemize}
+        \item \textbf{Teste Bilateral (Two-tailed):} Quando queremos detectar qualquer diferença, sem direção preferencial.
+        \begin{itemize}
+            \item $H_1: \mu \neq \mu_0$
+        \end{itemize}
+        \vspace{0.3cm}
+        \item \textbf{Teste Unilateral (One-tailed):} Quando a teoria indica que o efeito só pode (ou só interessa) ocorrer em um sentido.
+        \begin{itemize}
+            \item $H_1: \mu > \mu_0$ (Direita) ou $H_1: \mu < \mu_0$ (Esquerda)
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% --- FRAME 2: Diferenças Fundamentais ---
+\begin{frame}{Diferenças: Bilateral vs. Unilateral}
+    \begin{table}[]
+        \small
+        \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{Característica} & \textbf{Bilateral} & \textbf{Unilateral} \\ \hline
+        \textbf{Direção} & Indiferente ($\neq$) & Específica ($>$ ou $<$) \\ \hline
+        \textbf{Distribuição $\alpha$} & Dividido ($\alpha/2$ cada lado) & Total em uma cauda \\ \hline
+        \textbf{Rigor} & Mais conservador & Menos conservador \\ \hline
+        \textbf{Poder} & Menor poder estatístico & Maior poder (na direção certa) \\ \hline
+        \end{tabular}
+    \end{table}
+    
+    \begin{alertblock}{Importante}
+        No teste bilateral, o valor crítico de $t$ ou $z$ é sempre \textbf{maior}, pois a área de rejeição é empurrada para os extremos.
+    \end{alertblock}
+\end{frame}
+
+
+
+% --- Frame: Exemplo 1 — RF vs SVM — Dados e Hipóteses ---
+\begin{frame}[shrink=5]{Exemplo 1 — RF vs SVM: Dados e Hipóteses}
+    \begin{block}{Cenário}
+        \footnotesize
+        \textbf{Random Forest} vs \textbf{SVM} em detecção de spam --- 10 folds de validação cruzada.
+    \end{block}
+    \pause
     \begin{columns}
-        \column{0.52\textwidth}
-        \begin{block}{Objetivo}
-            \footnotesize Comparar \textbf{simultaneamente} $k \geq 3$ algoritmos.\\
-            $H_0$: todas as médias são iguais.\\
-            $H_1$: pelo menos uma difere.
-        \end{block}
-        \begin{block}{Exemplo: KNN vs DT vs NaiveBayes}
+        \column{0.42\textwidth}
+        \begin{center}\footnotesize
+        \begin{tabular}{ccc}
+        \toprule
+        Fold & RF (\%) & SVM (\%) \\
+        \midrule
+        1  & 92{.}1 & 89{.}3 \\
+        2  & 88{.}7 & 86{.}0 \\
+        3  & 91{.}4 & 90{.}1 \\
+        4  & 93{.}0 & 88{.}5 \\
+        5  & 89{.}5 & 87{.}9 \\
+        6  & 94{.}2 & 91{.}6 \\
+        7  & 90{.}3 & 89{.}0 \\
+        8  & 88{.}0 & 85{.}5 \\
+        9  & 92{.}8 & 90{.}4 \\
+        10 & 91{.}0 & 88{.}7 \\
+        \bottomrule
+        \end{tabular}
+        \end{center}
+        \column{0.58\textwidth}
+        \pause
+        \begin{block}{Hipóteses (unilateral)}
             \footnotesize
-            \begin{center}
-            \begin{tabular}{lccc}
-            \toprule
-            & KNN & DT & NB \\
-            \midrule
-            Média & 83\% & 79{,}8\% & 75\% \\
-            \bottomrule
-            \end{tabular}
-            \end{center}
-            $F = MS_{\text{entre}}/MS_{\text{dentro}} = 81{,}05/2{,}40 \approx 33{,}77$\\
-            $F_{\text{crit}}(2,12) = 3{,}89$: \textbf{rejeita $H_0$} $(p < 0{,}001)$
+            \begin{itemize}
+                \item $H_0$: $\mu_{\text{RF}} = \mu_{\text{SVM}}$
+                \item $H_1$: $\mu_{\text{RF}} > \mu_{\text{SVM}}$ (RF é melhor)
+                \item $\alpha = 0{.}05$
+            \end{itemize}
         \end{block}
-        \column{0.48\textwidth}
-        \begin{alertblock}{Pós-ANOVA}
-            \footnotesize ANOVA diz que \textit{alguma} diferença existe, mas não \textit{qual par} difere. Use:
-            \begin{itemize}\footnotesize
-                \item \textbf{Tukey HSD} ou \textbf{Bonferroni} para comparações de pares
-                \item \textbf{Friedman + Nemenyi} para abordagem não-paramétrica em $k$ algoritmos
-            \end{itemize}
-        \end{alertblock}
-        \begin{block}{Wilcoxon Signed-Rank}
-            \footnotesize Alternativa ao teste $t$ quando:
-            \begin{itemize}\footnotesize
-                \item $n < 30$ sem garantia de normalidade
-                \item Presença de \textbf{outliers} nos dados
-                \item Dados \textbf{ordinais} (scores de ranking)
-            \end{itemize}
-            Ranqueia $|d_i|$ e testa se a mediana das diferenças é zero.
+        \pause
+        \begin{block}{Teste Escolhido}
+            \footnotesize
+            Mesmos folds $\Rightarrow$ \textbf{Teste $t$ pareado} (amostras dependentes).
         \end{block}
     \end{columns}
 \end{frame}
+
+% --- Frame: Exemplo 1 — Cálculo de t ---
+\begin{frame}[shrink=10]{Exemplo 1 - RF vs SVM: Cálculo de $t$}
+    \begin{center}\footnotesize
+    \begin{tabular}{cccc}
+    \toprule
+    Fold & RF & SVM & $d_i = \text{RF}-\text{SVM}$ \\
+    \midrule
+    1  & 92{.}1 & 89{.}3 & $+2{.}8$ \\
+    2  & 88{.}7 & 86{.}0 & $+2{.}7$ \\
+    3  & 91{.}4 & 90{.}1 & $+1{.}3$ \\
+    4  & 93{.}0 & 88{.}5 & $+4{.}5$ \\
+    5  & 89{.}5 & 87{.}9 & $+1{.}6$ \\
+    6  & 94{.}2 & 91{.}6 & $+2{.}6$ \\
+    7  & 90{.}3 & 89{.}0 & $+1{.}3$ \\
+    8  & 88{.}0 & 85{.}5 & $+2{.}5$ \\
+    9  & 92{.}8 & 90{.}4 & $+2{.}4$ \\
+    10 & 91{.}0 & 88{.}7 & $+2{.}3$ \\
+    \midrule
+    \multicolumn{3}{r}{\textbf{Média $\bar{d}$}} & $2{.}40$ \\
+    \multicolumn{3}{r}{\textbf{Desvio padrão $s_d$}} & $0{.}91$ \\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+    \pause
+    \[
+      t = \frac{\bar{d}}{s_d/\sqrt{n}} = \frac{2{.}40}{0{.}91/\sqrt{10}} = \frac{2{.}40}{0{.}288} \approx \mathbf{8{.}33}
+    \]
+    \pause
+    \begin{alertblock}{Decisão}
+        \footnotesize $t_{\text{crítico}}(gl=9,\;\alpha=0{.}05) = 1{.}833$.\quad Como $8{.}33 \gg 1{.}833$ e $p < 0{.}001 (computado)$ $\rightarrow$ \textbf{rejeitamos $H_0$} $(p <\alpha)$.\\
+        RF é estatisticamente superior ao SVM. $\Delta = 2{.}4\%$, logo avalie relevância prática no domínio.
+    \end{alertblock}
+\end{frame}
+
+% --- Frame: Exemplo 2 — MLP vs Reg. Log. ---
+\begin{frame}[shrink=8]{Exemplo 2 — MLP vs Reg.\ Log.: Baixo Poder com $n=5$}
+    \begin{block}{Cenário}
+        \footnotesize MLP vs Regressão Logística, 5 folds, diagnóstico médico.\\
+        $H_0: \mu_d = 0$ \; vs \; $H_1: \mu_d \neq 0$ \; (bilateral, $\alpha=0{.}05$)
+    \end{block}
+    \pause
+    \begin{columns}
+        \column{0.42\textwidth}
+        \begin{center}\footnotesize
+        \begin{tabular}{cccc}
+        \toprule
+        Fold & MLP & Reg.\ Log. & $d_i$ \\
+        \midrule
+        1 & 85{.}0 & 80{.}0 & $+5{.}0$ \\
+        2 & 90{.}0 & 85{.}0 & $+5{.}0$ \\
+        3 & 78{.}0 & 80{.}0 & $-2{.}0$ \\
+        4 & 92{.}0 & 87{.}0 & $+5{.}0$ \\
+        5 & 88{.}0 & 85{.}0 & $+3{.}0$ \\
+        \midrule
+        & $\bar{d}$ & & $3{.}20$ \\
+        & $s_d$     & & $2{.}77$ \\
+        \bottomrule
+        \end{tabular}
+        \end{center}
+        \column{0.58\textwidth}
+        \pause
+        \[
+          t = \frac{3{.}20}{2{.}77/\sqrt{5}} \approx 2{.}58
+        \]
+        \pause
+        \begin{alertblock}{Resultado}
+            \footnotesize $t_{\text{crit}}(gl=4,\;\alpha=0{.}025)=2{.}776$.\\
+            $2{.}58 < 2{.}776$: \textbf{não rejeitamos $H_0$} $(p\approx0{.}06)$.
+        \end{alertblock}
+        \pause
+        \begin{block}{Lição: Poder do Teste}
+            \footnotesize Com apenas $n=5$ folds, o teste tem \textbf{poder reduzido}. O resultado é \textit{borderline}, repetir com 10+ folds pode revelar diferença significativa.
+        \end{block}
+    \end{columns}
+\end{frame}
+
+% --- Frame: Exemplo 3 — ANOVA — Dados ---
+\begin{frame}[shrink=6]{Exemplo 3 — ANOVA: KNN vs DT vs Naive Bayes}
+    \begin{block}{Cenário e Hipóteses}
+        \footnotesize
+        Três algoritmos, 5 folds. Existe diferença entre eles?\\
+        $H_0: \mu_{\text{KNN}} = \mu_{\text{DT}} = \mu_{\text{NB}}$ \quad $H_1$: ao menos uma média difere.
+    \end{block}
+    \pause
+    \begin{center}\footnotesize
+    \begin{tabular}{ccccc}
+    \toprule
+    Fold & KNN & Decision Tree & Naive Bayes \\
+    \midrule
+    1 & 82{.}0 & 78{.}0 & 75{.}0 \\
+    2 & 84{.}0 & 80{.}0 & 76{.}0 \\
+    3 & 81{.}0 & 79{.}0 & 74{.}0 \\
+    4 & 85{.}0 & 82{.}0 & 77{.}0 \\
+    5 & 83{.}0 & 80{.}0 & 73{.}0 \\
+    \midrule
+    \textbf{Média} $\bar{x}_j$ & $83{.}0$ & $79{.}8$ & $75{.}0$ \\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+    \pause
+    \begin{block}{}
+        \footnotesize Média global: $\bar{x} = (83{.}0 + 79{.}8 + 75{.}0)/3 = 79{.}27$
+    \end{block}
+\end{frame}
+
+% --- Frame: Exemplo 3 — ANOVA — Cálculo F ---
+\begin{frame}[shrink=5]{Exemplo 3 — ANOVA: Cálculo da Estatística $F$}
+    \footnotesize
+    \[
+      SS_{\text{entre}} = n\sum_{j}(\bar{x}_j-\bar{x})^2
+        = 5\bigl[(83{-}79{.}27)^2 + (79{.}8{-}79{.}27)^2 + (75{-}79{.}27)^2\bigr] = 162{.}1
+    \]
+    \pause
+    \[
+      SS_{\text{dentro}} = \sum_j\sum_i(x_{ij}-\bar{x}_j)^2
+        = \underbrace{10}_{\text{KNN}} + \underbrace{8{.}8}_{\text{DT}} + \underbrace{10}_{\text{NB}} = 28{.}8
+    \]
+    \pause
+    \begin{center}\footnotesize
+    \begin{tabular}{lcccc}
+    \toprule
+    Fonte & $SS$ & $gl$ & $MS$ & $F$ \\
+    \midrule
+    Entre grupos & $162{.}1$ & $2$ & $81{.}05$ & $\mathbf{33{.}77}$ \\
+    Dentro grupos & $28{.}8$  & $12$ & $2{.}40$ & \\
+    Total & $190{.}9$ & $14$ & & \\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+    \pause
+    \begin{alertblock}{Decisão e Post-hoc}
+        \footnotesize $F_{\text{crit}}(2,12) = 3{.}89$. Como $F = 33{.}77 \gg 3{.}89$: \textbf{rejeitamos $H_0$} $(p < 0{.}001)$.\\
+        ANOVA indica diferença, mas \textbf{não diz qual par} difere. Use \textbf{Tukey HSD} ou \textbf{Bonferroni}.\\
+        KNN ($83\%$) supera NB ($75\%$) por 8 p.p.\ Diferença estatística \textit{e} prática.
+    \end{alertblock}
+\end{frame}
+
+% % --- Frame: Exemplo 4 — Wilcoxon ---
+% \begin{frame}[shrink=5]{Exemplo 4 — Wilcoxon Signed-Rank: Dados Não Normais}
+%     \begin{block}{Quando usar}
+%         \footnotesize $n < 30$ sem garantia de normalidade, presença de outliers, ou dados ordinais.
+%     \end{block}
+%     \pause
+%     \begin{columns}
+%         \column{0.48\textwidth}
+%         \begin{center}\footnotesize
+%         \begin{tabular}{ccccc}
+%         \toprule
+%         Fold & $d_i$ & $|d_i|$ & Rank & Sinal \\
+%         \midrule
+%         6 & $+1{.}0$ & 1{.}0 & \textbf{1}   & $+$ \\
+%         1 & $+3{.}0$ & 3{.}0 & \textbf{2,5} & $+$ \\
+%         3 & $+3{.}0$ & 3{.}0 & \textbf{2,5} & $+$ \\
+%         4 & $+5{.}0$ & 5{.}0 & \textbf{4,5} & $+$ \\
+%         5 & $+5{.}0$ & 5{.}0 & \textbf{4,5} & $+$ \\
+%         2 & $-7{.}0$ & 7{.}0 & \textbf{6}   & $-$ \\
+%         \bottomrule
+%         \end{tabular}
+%         \end{center}
+%         \footnotesize \textit{Empates recebem rank médio.}
+%         \column{0.52\textwidth}
+%         \pause
+%         \begin{block}{Somas e Estatística}
+%             \footnotesize
+%             $W^+ = 1+2{.}5+2{.}5+4{.}5+4{.}5 = 15$\\
+%             $W^- = 6$\\[4pt]
+%             $W = \min(W^+,\;W^-) = 6$
+%         \end{block}
+%         \pause
+%         \begin{alertblock}{Decisão}
+%             \footnotesize $W_{\text{crit}}(n=6,\;\alpha=0{.}05) = 2$.\\
+%             $W=6 > 2$: \textbf{não rejeitamos $H_0$} $(p \approx 0{.}16)$.\\
+%             Amostra pequena $\Rightarrow$ poder reduzido.
+%         \end{alertblock}
+%     \end{columns}
+% \end{frame}
+
+% % --- Frame: McNemar e Comparações Múltiplas ---
+% \begin{frame}{McNemar e Comparações Múltiplas}
+%     \begin{columns}
+%         \column{0.5\textwidth}
+%         \begin{block}{McNemar's Test}
+%             \footnotesize
+%             Compara dois classificadores pela matriz de confusão:
+%             \[
+%               \chi^2 = \frac{(b-c)^2}{b+c}
+%             \]
+%             $b$ = A acerta, B erra;\quad $c$ = B acerta, A erra.\\[4pt]
+%             Adequado para comparação em um único conjunto de teste.
+%         \end{block}
+%         \pause
+%         \column{0.5\textwidth}
+%         \begin{alertblock}{Comparações Múltiplas}
+%             \footnotesize
+%             Com $k$ testes ao nível $\alpha$:\\
+%             $P(\geq 1\text{ falso positivo}) = 1-(1-\alpha)^k$\\
+%             Para $k=10$, $\alpha=0{.}05$: $\approx 40\%$!
+%         \end{alertblock}
+%         \pause
+%         \begin{block}{Soluções}
+%             \begin{itemize}\footnotesize
+%                 \item \textbf{Bonferroni:} $\alpha' = \alpha/k$ (conservador)
+%                 \item \textbf{Friedman + Nemenyi:} não-paramétrico para $k \geq 3$ algoritmos em múltiplos datasets
+%             \end{itemize}
+%         \end{block}
+%     \end{columns}
+% \end{frame}
 
 % ==============================================================================
 \subsection{Correlação e Dependência}
 % ==============================================================================
 
-% --- Frame: Pearson ---
-\begin{frame}[shrink=8]{Correlação de Pearson}
+% --- Frame: Pearson — Definição ---
+\begin{frame}{Correlação de Pearson: Definição}
+    \begin{block}{Fórmula}
+        \[
+          r = \frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
+                   {\sqrt{\sum_{i=1}^{n}(x_i-\bar{x})^2 \cdot \sum_{i=1}^{n}(y_i-\bar{y})^2}}
+          \in [-1,\;1]
+        \]
+    \end{block}
+    \pause
     \begin{columns}
         \column{0.5\textwidth}
-        \begin{block}{Definição}
-            \[
-              r = \frac{\sum(x_i-\bar{x})(y_i-\bar{y})}
-                       {\sqrt{\sum(x_i-\bar{x})^2 \cdot \sum(y_i-\bar{y})^2}}
-              \in [-1,1]
-            \]
-        \end{block}
         \begin{block}{Escala de Interpretação}
             \begin{center}\footnotesize
             \begin{tabular}{cc}
             \toprule
             $|r|$ & Interpretação \\
             \midrule
-            $0{,}90$--$1{,}00$ & Muito forte \\
-            $0{,}70$--$0{,}89$ & Forte \\
-            $0{,}50$--$0{,}69$ & Moderada \\
-            $0{,}30$--$0{,}49$ & Fraca \\
-            $< 0{,}30$        & Desprezível \\
+            $0{.}90$--$1{.}00$ & Muito forte \\
+            $0{.}70$--$0{.}89$ & Forte \\
+            $0{.}50$--$0{.}69$ & Moderada \\
+            $0{.}30$--$0{.}49$ & Fraca \\
+            $< 0{.}30$        & Desprezível \\
             \bottomrule
             \end{tabular}
             \end{center}
         \end{block}
         \column{0.5\textwidth}
+        \pause
+        \begin{alertblock}{Limitações}
+            \footnotesize
+            \begin{itemize}
+                \item Mede apenas relação \textbf{linear}
+                \item Sensível a outliers
+                \item \textbf{Correlação $\neq$ Causalidade}
+                \item Para relações não-lineares: use Spearman ou Informação Mútua
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+% --- Frame: Pearson — Exemplo com dados ---
+\begin{frame}[shrink=10]{Exemplo — Pearson: Horas de Estudo vs Nota Final}
+    \begin{block}{Cenário}
+        \footnotesize 8 alunos. Existe correlação linear entre horas de estudo semanal e nota final (0--10)?
+    \end{block}
+    \pause
+    \begin{center}\tiny
+    \begin{tabular}{cccccc}
+    \toprule
+    Aluno & $x_i$ (h) & $y_i$ (nota) & $(x_i-\bar{x})$ & $(y_i-\bar{y})$ & $(x_i-\bar{x})(y_i-\bar{y})$ \\
+    \midrule
+    1 & 2{.}0  & 4{.}5 & $-3{.}25$ & $-2{.}88$ & $9{.}36$ \\
+    2 & 3{.}0  & 5{.}0 & $-2{.}25$ & $-2{.}38$ & $5{.}36$ \\
+    3 & 4{.}0  & 5{.}5 & $-1{.}25$ & $-1{.}88$ & $2{.}35$ \\
+    4 & 5{.}0  & 6{.}0 & $-0{.}25$ & $-1{.}38$ & $0{.}35$ \\
+    5 & 6{.}0  & 7{.}5 & $+0{.}75$ & $+0{.}12$ & $0{.}09$ \\
+    6 & 7{.}0  & 8{.}0 & $+1{.}75$ & $+0{.}62$ & $1{.}09$ \\
+    7 & 9{.}0  & 9{.}0 & $+3{.}75$ & $+1{.}62$ & $6{.}08$ \\
+    8 & 10{.}0 & 9{.}5 & $+4{.}75$ & $+2{.}12$ & $10{.}07$ \\
+    \midrule
+    \textbf{Média} & $\bar{x}=5{.}25$ & $\bar{y}=7{.}38$ & & & $\sum = 34{.}75$ \\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+\end{frame}
+
+% --- Frame: Pearson — Cálculo ---
+\begin{frame}{Pearson — Cálculo Passo a Passo}
+    \footnotesize
+    \[
+      \sum(x_i-\bar{x})^2 = 10{.}56+5{.}06+1{.}56+0{.}06+0{.}56+3{.}06+14{.}06+22{.}56 = 57{.}50
+    \]
+    \pause
+    \[
+      \sum(y_i-\bar{y})^2 = 8{.}29+5{.}66+3{.}53+1{.}90+0{.}01+0{.}38+2{.}62+4{.}49 = 26{.}88
+    \]
+    \pause
+    \[
+      r = \frac{34{.}75}{\sqrt{57{.}50 \times 26{.}88}}
+        = \frac{34{.}75}{39{.}31}
+        \approx \mathbf{0{.}884} \quad \text{(correlação forte positiva)}
+    \]
+    \pause
+    \begin{block}{Significância estatística}
+        \footnotesize
+        \[
+          t = r\sqrt{\frac{n-2}{1-r^2}} = 0{.}884 \times \sqrt{\frac{6}{1-0{.}781}} \approx 4{.}62
+        \]
+        $t_{\text{crit}}(gl=6,\;\alpha=0{.}05) = 2{.}447$. Como $4{.}62 > 2{.}447$: \textbf{correlação estatisticamente significativa} $(p \approx 0{.}004)$.
+    \end{block}
+\end{frame}
+
+% --- Frame: Pearson — Visualização ---
+\begin{frame}[shrink=5]{Pearson — Visualização e Interpretação}
+    \begin{columns}
+        \column{0.55\textwidth}
         \centering
         \begin{tikzpicture}[scale=0.72,font=\tiny]
         \begin{axis}[
-            width=7cm, height=5.5cm,
+            width=8cm, height=6cm,
             xlabel={Horas de Estudo},
             ylabel={Nota Final},
             xmin=0.5, xmax=11, ymin=3, ymax=11,
             grid=major, grid style={dotted,gray!40},
             axis lines=left,
-            title={\small \textbf{Horas de Estudo vs Nota ($r=0{,}88$)}},
+            title={\small \textbf{Horas de Estudo vs Nota ($r=0{.}884$)}},
             title style={color=mineblue},
             xlabel style={font=\tiny},
             ylabel style={font=\tiny},
             tick label style={font=\tiny},
         ]
-            \addplot[only marks,mark=*,mineblue,mark size=2.5pt,
+            \addplot[only marks,mark=*,mineblue,mark size=3pt,
                      mark options={fill=mineblue}]
               coordinates {(2,4.5)(3,5.0)(4,5.5)(5,6.0)(6,7.5)(7,8.0)(9,9.0)(10,9.5)};
             \addplot[minered,thick,domain=1.5:11,samples=2] {0.605*x+4.2};
-            \node[font=\tiny,minered] at (axis cs:7.5,6.3) {tendência};
+            \node[font=\tiny,minered] at (axis cs:7.5,6.1) {tendência};
+            \node[font=\tiny,minegreen,align=left] at (axis cs:2.5,10.2)
+                {Correlação\\forte e positiva};
         \end{axis}
         \end{tikzpicture}
-        \begin{alertblock}{}
-            \footnotesize \textbf{Correlação $\neq$ Causalidade.} Pearson mede apenas relação \textbf{linear}. Para relações não lineares, use Spearman ou Informação Mútua.
+        \column{0.45\textwidth}
+        \pause
+        \begin{block}{Interpretação}
+            \begin{itemize}\footnotesize
+                \item $r = 0{.}884$ $\Rightarrow$ \textbf{correlação forte} positiva
+                \item Quanto mais horas de estudo, maior tende a ser a nota
+                \item Correlação é significativa ($p = 0{.}004$)
+            \end{itemize}
+        \end{block}
+        \pause
+        \begin{alertblock}{Atenção}
+            \footnotesize \textbf{Correlação $\neq$ Causalidade.}\\
+            Outro fator (dedicação geral) pode explicar ambas as variáveis.\\
+            Pearson não detecta relações curvilíneas.
         \end{alertblock}
     \end{columns}
 \end{frame}
 
-% --- Frame: Spearman e Informação Mútua ---
-\begin{frame}[shrink=6]{Spearman, Kendall e Informação Mútua}
+% --- Frame: Tabela prática de correlação ---
+\begin{frame}{Tabela de Interpretação Prática}
+    \begin{center}\footnotesize
+    \begin{tabular}{clcc}
+    \toprule
+    $r$ & Interpretação & Exemplo & Uso \\
+    \midrule
+    $0{.}90$--$1{.}00$ & Muito forte positiva & Altura vs envergadura & Previsão direta \\
+    $0{.}70$--$0{.}89$ & Forte positiva & Horas estudo vs nota & Seleção de features \\
+    $0{.}50$--$0{.}69$ & Moderada positiva & Renda vs consumo & Análise exploratória \\
+    $0{.}30$--$0{.}49$ & Fraca positiva & Temperatura vs vendas & Usar com cuidado \\
+    $0{.}00$--$0{.}29$ & Desprezível & N° letras vs nota & Descartar \\
+    $< 0$ & Negativa & Horas TV vs nota & Mesma escala \\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+    \pause
+    \begin{alertblock}{Regras Práticas para Seleção de Features}
+        \footnotesize
+        \begin{itemize}
+            \item Remova features com $|r| < 0{.}10$ em relação ao alvo (sinal fraco)
+            \item Features com $|r| > 0{.}95$ entre si são redundantes, mantenha apenas uma
+            \item Pearson é pré-filtro rápido; confirme com Informação Mútua para relações não-lineares
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+
+% --- Frame: Spearman, Kendall, IM ---
+\begin{frame}[shrink=5]{Spearman, Kendall e Informação Mútua}
     \begin{columns}
         \column{0.5\textwidth}
         \begin{block}{Correlação de Spearman ($\rho$)}
@@ -295,18 +672,20 @@
             \begin{itemize}\footnotesize
                 \item Detecta relações \textbf{monotônicas} (não só lineares)
                 \item Robusta a outliers
-                \item Indicada para dados ordinais ou com distribuição assimétrica
+                \item Indicada para dados ordinais ou distribuição assimétrica
             \end{itemize}
         \end{block}
+        \pause
         \begin{block}{Tau de Kendall ($\tau$)}
             \footnotesize
             Baseado em pares \textbf{concordantes/discordantes}.
             \begin{itemize}\footnotesize
-                \item Mais robusto que Spearman para amostras pequenas
+                \item Mais robusto que Spearman para $n$ pequeno
                 \item Interpretação probabilística direta
             \end{itemize}
         \end{block}
         \column{0.5\textwidth}
+        \pause
         \begin{block}{Informação Mútua $I(X;Y)$}
             \[
               I(X;Y) = \sum_{x,y} p(x,y)\log\frac{p(x,y)}{p(x)\,p(y)}
@@ -314,13 +693,39 @@
             \begin{itemize}\footnotesize
                 \item Mede dependência \textbf{geral} (não apenas linear)
                 \item $I(X;Y) = 0$ somente se $X$ e $Y$ são independentes
-                \item Amplamente usado em \textbf{seleção de features} (MRMR)
+                \item Usado em seleção de features: \textbf{MRMR}
                 \item Captura relações complexas que Pearson ignora
             \end{itemize}
         \end{block}
-        \vspace{0.2cm}
-        \centering\tiny \faArrowRight\ Consulte Material Didático para exemplo prático com cálculo de Pearson
+        \pause
+        \begin{alertblock}{}
+            \footnotesize Prefira Spearman ou IM quando há suspeita de relação não-linear ou presença de outliers.
+        \end{alertblock}
     \end{columns}
+\end{frame}
+
+% --- Frame: Distribuições Relevantes ---
+\begin{frame}[shrink=8]{Distribuições Relevantes em Mineração de Dados}
+    \begin{center}\footnotesize
+    \renewcommand{\arraystretch}{1.35}
+    \begin{tabular}{>{\bfseries}lp{3.2cm}p{4.8cm}}
+    \toprule
+    Distribuição & Suporte & Uso em DM \\
+    \midrule
+    Normal & $\mathbb{R}$ & Ruído, GMM, testes paramétricos \\
+    Bernoulli & $\{0,1\}$ & Classificação binária, Naive Bayes \\
+    Binomial & $\{0,\ldots,n\}$ & Contagem de acertos, limiar de confiança \\
+    Poisson & $\mathbb{N}_0$ & Contagem de eventos raros, anomalias \\
+    Exponencial & $[0,+\infty)$ & Tempo entre eventos, outliers \\
+    $t$-Student & $\mathbb{R}$ & Testes estatísticos com amostras pequenas \\
+    Qui-Quadrado & $[0,+\infty)$ & Teste de independência (tabelas de contingência) \\
+    \bottomrule
+    \end{tabular}
+    \end{center}
+    \pause
+    \begin{alertblock}{Antes de Aplicar Testes Paramétricos}
+        \footnotesize Verifique normalidade com \textbf{Shapiro-Wilk} ou \textbf{Q-Q plot}. Se $n > 30$, o Teorema Central do Limite garante aproximação normal, mesmo sem normalidade das populações.
+    \end{alertblock}
 \end{frame}
 
 % ==============================================================================
@@ -353,8 +758,8 @@
             \foreach \x/\y in {1.0/2.0,1.3/2.5,1.6/1.8,0.8/1.5,1.5/2.8}{
                 \fill[mineblue,opacity=0.8] (\x,\y) circle (4pt);
             }
-            \draw[mineblue,dashed,thick] (1.2,2.1) circle (0.85);
-            \node[mineblue,font=\small\bfseries] at (1.2,0.8) {Cluster 1};
+            \draw[mineblue,dashed,thick] (1.2,2.1) circle (0.92);
+            \node[mineblue,font=\small\bfseries] at (0.8,0.8) {Cluster 1};
             % Cluster 2 (laranja)
             \foreach \x/\y in {3.5/3.2,3.8/2.8,4.1/3.5,3.3/3.0,4.0/2.5}{
                 \fill[mineorange,opacity=0.8] (\x,\y) circle (4pt);
@@ -366,7 +771,7 @@
                 \fill[minegreen,opacity=0.8] (\x,\y) circle (4pt);
             }
             \draw[minegreen,dashed,thick] (2.5,0.5) circle (0.65);
-            \node[minegreen,font=\small\bfseries] at (2.5,1.4) {Cluster 3};
+            \node[minegreen,font=\small\bfseries] at (2.8,1.4) {Cluster 3};
             % Ponto anômalo
             \fill[minered] (0.2,3.8) circle (4pt);
             \node[minered,font=\tiny] at (0.6,4.0) {outlier?};
@@ -423,8 +828,8 @@
             Centróides iniciais: $C_1=(2,4)$ e $C_2=(6,1)$\\[4pt]
             \textbf{Passo 3: Atribuição}
             \begin{align*}
-              d(\mathbf{x},C_1) &= \sqrt{9+1} \approx 3{,}16 \\
-              d(\mathbf{x},C_2) &= \sqrt{1+4} \approx 2{,}24
+              d(\mathbf{x},C_1) &= \sqrt{9+1} \approx 3{.}16 \\
+              d(\mathbf{x},C_2) &= \sqrt{1+4} \approx 2{.}24
             \end{align*}
             $\Rightarrow$ atribuir $(5,3)$ ao cluster $C_2$
         \end{block}
@@ -432,7 +837,7 @@
             \footnotesize
             Pontos em $C_1$: $(3,4),(4,1),(2,3),(2,6),(3,3)$
             \[
-              \boldsymbol{\mu}_1 = \tfrac{1}{5}(14,\,17) = (2{,}8,\; 3{,}4)
+              \boldsymbol{\mu}_1 = \tfrac{1}{5}(14,\,17) = (2{.}8,\; 3{.}4)
             \]
         \end{block}
         \column{0.5\textwidth}
@@ -454,9 +859,9 @@
                 node[right,minered] {$C_2$};
             % Seta distâncias
             \draw[minered,dashed] (5,3)--(2,4)
-                node[midway,above,minered] {$3{,}16$};
+                node[midway,above,minered] {$3{.}16$};
             \draw[minered,dashed] (5,3)--(6,1)
-                node[midway,right,minered] {$2{,}24$};
+                node[midway,right,minered] {$2{.}24$};
             % Novo centróide C1
             \fill[minegreen,opacity=0.9] (2.8,3.4) circle (5pt)
                 node[right,minegreen] {\textbf{novo} $\mu_1$};
@@ -548,7 +953,7 @@
                 \item $s \approx +1$: ponto bem dentro do cluster
                 \item $s \approx 0$: ponto na fronteira
                 \item $s \approx -1$: ponto no cluster errado
-                \item $\bar{s} > 0{,}5$: clustering de qualidade
+                \item $\bar{s} > 0{.}5$: clustering de qualidade
             \end{itemize}
         \end{block}
         \column{0.50\textwidth}
@@ -639,12 +1044,13 @@
                 \item \textbf{Divisivo (top-down):} começa com um cluster e divide recursivamente
             \end{itemize}
         \end{block}
+        \vspace{-0.25cm}
         \begin{block}{Critérios de Ligação}
             \begin{itemize}\footnotesize
                 \item \textbf{Single:} distância mínima, sensível a outliers
                 \item \textbf{Complete:} distância máxima, clusters compactos
                 \item \textbf{Average (UPGMA):} equilíbrio entre os dois
-                \item \textbf{Ward:} minimiza variância intra-cluster (mais popular)
+                \item \textbf{Ward:} minimiza variância intra-cluster (+popular)
             \end{itemize}
         \end{block}
         \column{0.50\textwidth}
@@ -898,9 +1304,9 @@
             \footnotesize
             5 transações. Para $\{\text{leite}\} \Rightarrow \{\text{pão}\}$:
             \begin{align*}
-              \text{sup}  &= 3/5 = 0{,}60\\
-              \text{conf} &= 0{,}60/0{,}80 = 0{,}75\\
-              \text{lift} &= 0{,}75/0{,}60 = 1{,}25
+              \text{sup}  &= 3/5 = 0{.}60\\
+              \text{conf} &= 0{.}60/0{.}80 = 0{.}75\\
+              \text{lift} &= 0{.}75/0{.}60 = 1{.}25
             \end{align*}
             \faCheck\ Correlação positiva: comprar leite favorece comprar pão.
         \end{block}
@@ -1000,7 +1406,7 @@
         \begin{block}{Métodos Estatísticos}
             \begin{itemize}\footnotesize
                 \item \textbf{Z-score:} anomalia se $|z| > 3$. Assume distribuição Gaussiana.
-                \item \textbf{Boxplot:} outlier se $> Q_3 + 1{,}5 \cdot \text{IQR}$ ou $< Q_1 - 1{,}5 \cdot \text{IQR}$
+                \item \textbf{Boxplot:} outlier se $> Q_3 + 1{.}5 \cdot \text{IQR}$ ou $< Q_1 - 1{.}5 \cdot \text{IQR}$
                 \item \textbf{Grubbs Test:} teste formal para outlier único em amostra normal
             \end{itemize}
         \end{block}
