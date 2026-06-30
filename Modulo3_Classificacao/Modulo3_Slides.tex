@@ -631,6 +631,7 @@ Imagine 100 pacientes (10 doentes, 90 saudáveis):
 \end{frame}
 
 \begin{frame}{Quando Usar Cada Métrica?}
+\footnotesize
 \begin{center}
 \begin{tabular}{>{\bfseries\color{mineblue}}p{3cm}p{3.5cm}p{5cm}}
 \toprule
@@ -645,13 +646,431 @@ Alta desbalanceamento & AUC-PR & Fraude, doenças raras \\[4pt]
 \bottomrule
 \end{tabular}
 \end{center}
+
+\end{frame}
+
+% --- Frame: Curva de Aprendizado ---
+\begin{frame}[t]{Curva de Aprendizado: O que o Modelo Aprende?}
+\footnotesize
+\begin{columns}[T]
+\column{0.60\textwidth}
 \vspace{0.3em}
-\begin{exampleblock}{Regra prática}
-  Para dados \textbf{desbalanceados}: prefira F1-Score, AUC-PR ou MCC no lugar da acurácia.
+\begin{block}{O que é?}
+  Plota o desempenho (acurácia) em função do \textbf{tamanho do conjunto de treino}.\\[4pt]
+  Avalia se o modelo está \textbf{aprendendo de fato} ou apenas memorizando dados.
+\end{block}
+\vspace{0.4em}
+\begin{itemize}\small
+  \item \textbf{Curva de treino:} desempenho nos dados de treino
+  \item \textbf{Curva de validação:} desempenho em dados novos
+\end{itemize}
+\vspace{0.4em}
+\begin{alertblock}{Diagnóstico pelo gap}
+  O \textbf{gap} entre as duas curvas revela se há overfitting, underfitting ou aprendizado saudável.
+\end{alertblock}
+\column{0.60\textwidth}
+\vspace{-0.2em}
+\begin{center}
+\scalebox{0.82}{%
+\begin{tikzpicture}
+\begin{axis}[
+  width=8cm, height=5.5cm,
+  xlabel={Tamanho do Treino},
+  ylabel={Acurácia},
+  xmin=50,xmax=500,ymin=0.50,ymax=1.02,
+  xtick={100,200,300,400,500},
+  ytick={0.6,0.7,0.8,0.9,1.0},
+  yticklabels={60\%,70\%,80\%,90\%,100\%},
+  grid=major, grid style={dotted,minegray!40},
+  axis lines=left,
+  tick label style={font=\tiny},
+  label style={font=\small},
+  legend style={font=\tiny,at={(0.98,0.32)},anchor=east},
+]
+\addplot[minered,very thick,smooth] coordinates {
+  (50,0.99)(100,0.97)(150,0.95)(200,0.93)(300,0.91)(400,0.90)(500,0.89)};
+\addlegendentry{Treino (overfit)}
+\addplot[minered,dashed,thick,smooth] coordinates {
+  (50,0.60)(100,0.65)(150,0.68)(200,0.70)(300,0.71)(400,0.72)(500,0.73)};
+\addlegendentry{Validação (overfit)}
+\addplot[mineblue,very thick,smooth] coordinates {
+  (50,0.95)(100,0.91)(150,0.89)(200,0.87)(300,0.86)(400,0.85)(500,0.85)};
+\addlegendentry{Treino (bom)}
+\addplot[mineblue,dashed,thick,smooth] coordinates {
+  (50,0.65)(100,0.74)(150,0.79)(200,0.82)(300,0.84)(400,0.85)(500,0.85)};
+\addlegendentry{Validação (bom)}
+\draw[<->,mineorange,thick] (axis cs:500,0.89) -- (axis cs:500,0.73)
+  node[midway,right,font=\tiny,mineorange]{gap grande};
+\end{axis}
+\end{tikzpicture}
+}
+\end{center}
+\end{columns}
+\end{frame}
+
+% --- Frame: Diagnóstico da Curva de Aprendizado ---
+\begin{frame}[shrink=5]{Curva de Aprendizado: Três Cenários}
+\begin{center}
+\scalebox{0.72}{%
+\begin{tikzpicture}
+
+% ---- OVERFITTING ----
+\node[font=\bfseries\small,minered] at (2.2,5.0) {Overfitting};
+\node[font=\tiny,minered] at (2.2,4.6) {(Alta Variância)};
+\begin{axis}[
+  at={(0cm,0cm)},
+  width=5.5cm,height=4.5cm,
+  xmin=0,xmax=10,ymin=0.40,ymax=1.05,
+  xtick=\empty,
+  ytick={0.5,0.75,1.0},yticklabels={50\%,75\%,100\%},
+  tick label style={font=\tiny},
+  axis lines=left,
+  grid=major,grid style={dotted,minegray!30},
+]
+\addplot[minered,very thick,smooth] coordinates
+  {(1,0.99)(3,0.97)(5,0.95)(7,0.93)(10,0.92)};
+\addplot[minered,dashed,thick,smooth] coordinates
+  {(1,0.55)(3,0.60)(5,0.63)(7,0.65)(10,0.66)};
+\draw[<->,mineorange,thin] (axis cs:8,0.92) -- (axis cs:8,0.66)
+  node[midway,right,font=\tiny]{gap};
+\end{axis}
+\node[font=\tiny,align=center,minered,text width=4.5cm] at (2.2,-0.8)
+  {Treino ótimo, validação baixa\\ \textbf{Solução:} mais dados, regularização,\\ menos features};
+
+% ---- UNDERFITTING ----
+\node[font=\bfseries\small,mineorange] at (9.7,5.0) {Underfitting};
+\node[font=\tiny,mineorange] at (9.7,4.6) {(Alto Viés)};
+\begin{axis}[
+  at={(7.5cm,0cm)},
+  width=5.5cm,height=4.5cm,
+  xmin=0,xmax=10,ymin=0.40,ymax=1.05,
+  xtick=\empty,
+  ytick={0.5,0.75,1.0},yticklabels=\empty,
+  tick label style={font=\tiny},
+  axis lines=left,
+  grid=major,grid style={dotted,minegray!30},
+]
+\addplot[mineorange,very thick,smooth] coordinates
+  {(1,0.72)(3,0.70)(5,0.69)(7,0.68)(10,0.67)};
+\addplot[mineorange,dashed,thick,smooth] coordinates
+  {(1,0.65)(3,0.66)(5,0.66)(7,0.67)(10,0.67)};
+\end{axis}
+\node[font=\tiny,align=center,mineorange,text width=4.5cm] at (9.7,-0.8)
+  {Ambas as curvas baixas, gap pequeno\\ \textbf{Solução:} modelo mais complexo,\\ mais features, menos regularização};
+
+% ---- BOM MODELO ----
+\node[font=\bfseries\small,minegreen] at (17.2,5.0) {Modelo Ideal};
+\node[font=\tiny,minegreen] at (17.2,4.6) {(Balanceado)};
+\begin{axis}[
+  at={(15cm,0cm)},
+  width=5.5cm,height=4.5cm,
+  xmin=0,xmax=10,ymin=0.40,ymax=1.05,
+  xtick=\empty,
+  ytick={0.5,0.75,1.0},yticklabels=\empty,
+  tick label style={font=\tiny},
+  axis lines=left,
+  grid=major,grid style={dotted,minegray!30},
+]
+\addplot[minegreen,very thick,smooth] coordinates
+  {(1,0.90)(3,0.87)(5,0.86)(7,0.85)(10,0.85)};
+\addplot[minegreen,dashed,thick,smooth] coordinates
+  {(1,0.65)(3,0.75)(5,0.81)(7,0.84)(10,0.85)};
+\end{axis}
+\node[font=\tiny,align=center,minegreen,text width=4.5cm] at (17.2,-0.8)
+  {Curvas convergem em valor alto\\ Gap pequeno ao final\\ \textbf{Generaliza bem!}};
+
+% Legenda
+\draw[black,very thick] (6.5,3.8) -- (7.2,3.8) node[right,font=\tiny]{Treino};
+\draw[black,dashed,thick] (6.5,3.3) -- (7.2,3.3) node[right,font=\tiny]{Validação};
+\end{tikzpicture}
+}
+\end{center}
+\end{frame}
+
+% --- Frame: Curva ROC ---
+\begin{frame}[t]{}
+\vspace{-0.83cm}
+\begin{columns}[T]
+\column{0.42\textwidth}
+\vspace{0.2em}
+\begin{block}{O que é a Curva ROC?}
+  Plota a \textbf{Taxa de Verdadeiros Positivos} (Recall/Sensibilidade) contra a \textbf{Taxa de Falsos Positivos} para \textit{todos os possíveis limiares} de decisão.
+\end{block}
+\vspace{0.2em}
+\begin{itemize}\small
+  \item $TVP = \dfrac{VP}{VP+FN}$ \quad (eixo Y)
+  \vspace{0.2em}
+  \item $TFP = \dfrac{FP}{FP+VN}$ \quad (eixo X)
+\end{itemize}
+\vspace{0.3em}
+\begin{block}{AUC: Área Sob a Curva}
+  \begin{itemize}\small
+    \item AUC $= 1.0$: modelo \textbf{perfeito}
+    \item AUC $= 0.5$: modelo \textbf{aleatório}
+    \item AUC $< 0.5$: pior que o acaso
+  \end{itemize}
+\end{block}
+
+\column{0.58\textwidth}
+\begin{center}
+\scalebox{0.85}{%
+\begin{tikzpicture}
+\begin{axis}[
+  width=7.5cm, height=6.5cm,
+  xlabel={Taxa de Falsos Positivos (TFP)},
+  ylabel={Taxa de Verdadeiros Positivos (TVP)},
+  xmin=0,xmax=1,ymin=0,ymax=1.05,
+  xtick={0,0.2,0.4,0.6,0.8,1.0},
+  ytick={0,0.2,0.4,0.6,0.8,1.0},
+  xticklabels={0,20\%,40\%,60\%,80\%,100\%},
+  yticklabels={0,20\%,40\%,60\%,80\%,100\%},
+  grid=major, grid style={dotted,minegray!40},
+  axis lines=left,
+  tick label style={font=\tiny},
+  label style={font=\small},
+  legend style={font=\tiny,at={(0.98,0.20)},anchor=east},
+]
+\addplot[minegray,dashed,thick] coordinates {(0,0)(1,1)};
+\addlegendentry{Aleatório (AUC=0.50)}
+\addplot[mineorange,thick,smooth] coordinates {
+  (0,0)(0.05,0.40)(0.10,0.60)(0.20,0.72)(0.30,0.80)(0.50,0.88)(0.70,0.93)(1.0,1.0)};
+\addlegendentry{Modelo B (AUC=0.82)}
+\addplot[mineblue,very thick,smooth] coordinates {
+  (0,0)(0.02,0.60)(0.05,0.80)(0.10,0.88)(0.20,0.93)(0.40,0.97)(0.70,0.99)(1.0,1.0)};
+\addlegendentry{Modelo A (AUC=0.95)}
+\addplot[minegreen,thick] coordinates {(0,0)(0,1)(1,1)};
+\addlegendentry{Perfeito (AUC=1.00)}
+\filldraw[mineblue] (axis cs:0.10,0.88) circle(2.5pt)
+  node[above right,font=\tiny,mineblue]{limiar escolhido};
+\end{axis}
+\end{tikzpicture}
+}
+\end{center}
+\end{columns}
+\end{frame}
+
+% --- Frame: AUC-ROC Exemplo Prático ---
+\begin{frame}{}
+  \vspace{-0.75cm}
+\begin{block}{Cenário}
+  \footnotesize
+  Classificador atribui probabilidade de spam a 10 e-mails (5 spam, 5 legítimos). Variando o limiar, calculamos os pontos da curva ROC.
+\end{block}
+\vspace{0.3em}
+\begin{columns}[T]
+\column{0.50\textwidth}
+\begin{center}\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Limiar} & \textbf{VP} & \textbf{FP} & \textbf{TVP} & \textbf{TFP} \\
+\midrule
+0.9 & 2 & 0 & 0.40 & 0.00 \\
+0.7 & 3 & 1 & 0.60 & 0.20 \\
+\rowcolor{mineblue!12}
+0.5 & 4 & 1 & 0.80 & 0.20 \\
+0.3 & 5 & 2 & 1.00 & 0.40 \\
+0.1 & 5 & 5 & 1.00 & 1.00 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.2em}
+\begin{alertblock}{}
+  \footnotesize
+  \textbf{Limiar baixo:} captura mais spam (TVP$\uparrow$), mas bloqueia mais legítimos (TFP$\uparrow$).\\[3pt]
+  O ponto azul na tabela (limiar 0.5) equilibra os erros.
+\end{alertblock}
+\column{0.50\textwidth}
+\begin{block}{AUC-ROC vs AUC-PR}
+  \begin{itemize}\footnotesize
+    \item \textbf{AUC-ROC:} ideal para classes \textbf{balanceadas}; avalia separação geral entre classes
+    \item \textbf{AUC-PR} (Precisão $\times$ Recall): preferível em dados \textbf{muito desbalanceados} (fraude, doenças raras)
+  \end{itemize}
+\end{block}
+\vspace{0.3em}
+\begin{exampleblock}{Referência rápida}
+  \footnotesize
+  AUC $\geq 0.90$: excelente\\
+  AUC $\geq 0.80$: bom\\
+  AUC $\geq 0.70$: aceitável\\
+  AUC $< 0.60$: rever o modelo
 \end{exampleblock}
+\end{columns}
+\end{frame}
+
+% --- Frame: Cálculo detalhado passo-a-passo ---
+\begin{frame}[shrink=5]{ROC Spam: Passo a Passo — Como Calcular TVP e TFP}
+\begin{block}{10 e-mails classificados (5 spam \textcolor{minered}{$\bullet$}, 5 legítimos \textcolor{mineblue}{$\circ$})}
+  \footnotesize
+  O modelo atribui uma probabilidade de spam a cada e-mail. Ordenamos do maior ao menor:
+  \begin{center}
+  \renewcommand{\arraystretch}{1.15}
+  \begin{tabular}{cccccc}
+  \toprule
+  \textbf{E-mail} & \textbf{P(spam)} & \textbf{Rótulo Real} & \textbf{VP acum.} & \textbf{FP acum.} & \textbf{TVP / TFP} \\
+  \midrule
+  $e_1$ & 0.95 & \textcolor{minered}{\textbf{Spam}}   & 1 & 0 & 0.20 / 0.00 \\
+  $e_2$ & 0.88 & \textcolor{minered}{\textbf{Spam}}   & 2 & 0 & 0.40 / 0.00 \\
+  $e_3$ & 0.80 & \textcolor{mineblue}{Legítimo}        & 2 & 1 & 0.40 / 0.20 \\
+  $e_4$ & 0.75 & \textcolor{minered}{\textbf{Spam}}   & 3 & 1 & 0.60 / 0.20 \\
+  $e_5$ & 0.65 & \textcolor{minered}{\textbf{Spam}}   & 4 & 1 & 0.80 / 0.20 \\
+  $e_6$ & 0.55 & \textcolor{mineblue}{Legítimo}        & 4 & 2 & 0.80 / 0.40 \\
+  $e_7$ & 0.40 & \textcolor{minered}{\textbf{Spam}}   & 5 & 2 & 1.00 / 0.40 \\
+  $e_8$ & 0.30 & \textcolor{mineblue}{Legítimo}        & 5 & 3 & 1.00 / 0.60 \\
+  $e_9$ & 0.20 & \textcolor{mineblue}{Legítimo}        & 5 & 4 & 1.00 / 0.80 \\
+  $e_{10}$ & 0.10 & \textcolor{mineblue}{Legítimo}     & 5 & 5 & 1.00 / 1.00 \\
+  \bottomrule
+  \end{tabular}
+  \end{center}
+\end{block}
+\vspace{0.2em}
+\begin{columns}[T]
+\column{0.50\textwidth}
+\begin{exampleblock}{Fórmula aplicada}
+  \footnotesize
+  $TVP = \dfrac{\text{VP acumulado}}{5 \text{ spams}} \qquad TFP = \dfrac{\text{FP acumulado}}{5 \text{ legítimos}}$\\[4pt]
+  Cada linha = um ponto na curva ROC ao usar aquela prob.\ como limiar.
+\end{exampleblock}
+\column{0.50\textwidth}
+\begin{alertblock}{Leitura da tabela}
+  \footnotesize
+  \textbf{Limiar 0.65} (linha $e_5$): captura 4 dos 5 spams (TVP=80\%) errando apenas 1 legítimo (TFP=20\%). Ótimo ponto de operação!
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+% --- Frame: Curva ROC plotada do exemplo ---
+\begin{frame}{ROC Spam: Curva Plotada com os 10 Pontos}
+  \vspace{-0.8cm}
+\begin{columns}[T]
+\column{0.45\textwidth}
+\vspace{0.3em}
+\begin{block}{Pontos da Curva}
+  \footnotesize
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{cccc}
+  \toprule
+  \textbf{Pt} & \textbf{Limiar} & \textbf{TFP} & \textbf{TVP} \\
+  \midrule
+  $p_0$ & — & 0.00 & 0.00 \\
+  $p_1$ & 0.95 & 0.00 & 0.20 \\
+  $p_2$ & 0.88 & 0.00 & 0.40 \\
+  $p_3$ & 0.80 & 0.20 & 0.40 \\
+  $p_4$ & 0.75 & 0.20 & 0.60 \\
+  \rowcolor{minegreen!15}
+  $p_5$ & 0.65 & 0.20 & 0.80 \\
+  $p_6$ & 0.55 & 0.40 & 0.80 \\
+  $p_7$ & 0.40 & 0.40 & 1.00 \\
+  $p_8$ & 0.30 & 0.60 & 1.00 \\
+  $p_9$ & 0.20 & 0.80 & 1.00 \\
+  $p_{10}$ & 0.10 & 1.00 & 1.00 \\
+  \bottomrule
+  \end{tabular}
+\end{block}
+
+\column{0.55\textwidth}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=7.2cm, height=6.8cm,
+  xlabel={Taxa de Falsos Positivos (TFP)},
+  ylabel={Taxa de Verdadeiros Positivos (TVP)},
+  xmin=-0.02,xmax=1.05,ymin=-0.02,ymax=1.08,
+  xtick={0,0.2,0.4,0.6,0.8,1.0},
+  ytick={0,0.2,0.4,0.6,0.8,1.0},
+  xticklabels={0\%,20\%,40\%,60\%,80\%,100\%},
+  yticklabels={0\%,20\%,40\%,60\%,80\%,100\%},
+  grid=major,grid style={dotted,minegray!40},
+  axis lines=left,
+  tick label style={font=\tiny},
+  label style={font=\small},
+]
+% Diagonal aleatório
+\addplot[minegray,dashed,thick] coordinates {(0,0)(1,1)};
+% Área sob a curva (preenchida)
+\addplot[mineblue!20,fill=mineblue!15] coordinates {
+  (0,0)(0,0.2)(0,0.4)(0.2,0.4)(0.2,0.6)(0.2,0.8)(0.4,0.8)(0.4,1.0)(0.6,1.0)(0.8,1.0)(1.0,1.0)(1.0,0)(0,0)
+} -- cycle;
+% Curva ROC
+\addplot[mineblue,very thick] coordinates {
+  (0,0)(0,0.2)(0,0.4)(0.2,0.4)(0.2,0.6)(0.2,0.8)(0.4,0.8)(0.4,1.0)(0.6,1.0)(0.8,1.0)(1.0,1.0)
+};
+% Pontos
+\addplot[mineblue,only marks,mark=*,mark size=2.5pt] coordinates {
+  (0,0)(0,0.2)(0,0.4)(0.2,0.4)(0.2,0.6)(0.2,0.8)(0.4,0.8)(0.4,1.0)(0.6,1.0)(0.8,1.0)(1.0,1.0)
+};
+% Ponto ideal destacado (limiar 0.65, p5)
+\filldraw[minegreen,thick] (axis cs:0.2,0.8) circle(4pt);
+\node[above right,font=\tiny,minegreen] at (axis cs:0.2,0.8) {$p_5$ (limiar 0.65)};
+% AUC label
+\node[font=\small\bfseries,mineblue] at (axis cs:0.65,0.35) {AUC $\approx 0.88$};
+% Labels nos eixos extremos
+\node[font=\tiny,minegray] at (axis cs:0.5,0.45) {aleatório};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\end{columns}
+\end{frame}
+
+% --- Frame: Por que usar AUC? ---
+\begin{frame}{}
+  \vspace{-0.8cm}
+  \footnotesize
+\begin{columns}[T]
+\column{0.50\textwidth}
+
+\begin{block}{\faThumbsUp\ Benefícios da AUC-ROC}
+  \begin{itemize}
+    \item \textbf{Independente do limiar:} avalia o modelo para \textit{todos} os limiares de decisão simultaneamente, sem fixar um valor de corte
+    \vspace{0.2em}
+    \item \textbf{Invariante à escala:} não depende dos valores absolutos das probabilidades preditas, apenas da ordenação
+    \vspace{0.2em}
+    \item \textbf{Robusta a classes balanceadas:} compara modelos sem viés causado pela proporção entre classes
+    \vspace{0.2em}
+    \item \textbf{Comparação direta:} um número único (0 a 1) para comparar modelos diferentes de forma objetiva
+    \vspace{0.2em}
+    \item \textbf{Interpretação probabilística:} AUC = probabilidade de o modelo ranquear um positivo aleatório acima de um negativo aleatório
+  \end{itemize}
+\end{block}
+
+\column{0.50\textwidth}
+
+\begin{exampleblock}{Interpretação Probabilística (resumida)}
+  \footnotesize
+  $\text{AUC} = P(\hat{p}_{\text{spam}} > \hat{p}_{\text{legítimo}})$\\[6pt]
+  \textbf{AUC = 0.88} significa: em 88\% dos pares (spam, legítimo) sorteados aleatoriamente, o modelo atribui probabilidade \textit{maior} ao spam, mesmo sem definir nenhum limiar.
+\end{exampleblock}
+
+\vspace{0.4em}
+
+\begin{alertblock}{\faWarning\ Limitações da AUC-ROC}
+  \begin{itemize}\footnotesize
+    \item \textbf{Classes muito desbalanceadas:} muitos negativos inflam TFP e mascaram desempenho real → prefira \textbf{AUC-PR}
+    \item \textbf{Não informa o limiar ideal:} é necessária análise adicional (curva, custo de erro) para escolher o ponto de operação
+    \item \textbf{Não é suficiente sozinha:} AUC alta não garante bom desempenho em um limiar específico relevante ao negócio
+  \end{itemize}
+\end{alertblock}
+
+\vspace{0.3em}
+\begin{center}
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Situação} & \textbf{Use} & \textbf{Por quê} \\
+\midrule
+Classes balanceadas & AUC-ROC & Avalia ranqueamento geral \\
+Classes desbalanceadas & AUC-PR & Foca na classe minoritária \\
+Custo assimétrico & Curva ROC & Escolhe limiar pelo custo \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{columns}
 \end{frame}
 
 \begin{frame}{Validação Cruzada (k-fold)}
+  \footnotesize
+
 \begin{columns}[T]
 \column{0.55\textwidth}
 \begin{block}{Como funciona? (k=5)}

@@ -1,4 +1,4 @@
-\documentclass[aspectratio=169]{beamer}
+\documentclass[]{beamer}
 \setbeamerfont{headline}{size=\footnotesize}
 
 \mode<presentation>{
@@ -67,541 +67,435 @@
     \tableofcontents
 \end{frame}
 
-% ============================================================
-\section{O Problema de Regressão}
-% ============================================================
-
-\begin{frame}{Classificação vs.\ Regressão}
-\begin{columns}
-\column{0.55\textwidth}
-\begin{table}
-\centering\small
-\begin{tabular}{>{\bfseries}p{2.0cm}p{2.0cm}p{2.0cm}}
-\toprule
-Aspecto & Classificação & Regressão \\
-\midrule
-Saída & Discreta & Contínua \\
-Exemplo & Spam/Ham & Preço \\
-Métrica & Acurácia, F1 & RMSE, R² \\
-Perda & Cross-entropy & MSE, MAE \\
-\bottomrule
-\end{tabular}
-\end{table}
-\column{0.42\textwidth}
-\begin{block}{Exemplos Práticos}
-\begin{itemize}\small
-  \item \textbf{Preço de imóvel}: área, localização
-  \item \textbf{Temperatura}: dados climáticos
-  \item \textbf{Demanda}: estoque e logística
-  \item \textbf{Risco financeiro}: spreads, VaR
-  \item \textbf{Dosagem médica}: peso, idade
-\end{itemize}
-\end{block}
-\end{columns}
-\vspace{0.3em}
-\begin{alertblock}{}
-\centering\small
-A saída é \textbf{contínua}: $y \in \mathbb{R}$, não uma classe discreta.
-\end{alertblock}
-\end{frame}
-
-\begin{frame}{Tipos de Regressão}
-\begin{columns}
-\column{0.5\textwidth}
-\begin{block}{Modelos Lineares}
-\begin{itemize}
-  \item \textbf{Linear Simples}: $\hat{y} = \beta_0 + \beta_1 x$
-  \item \textbf{Múltipla}: $\hat{y} = \boldsymbol{\beta}^T\mathbf{x}$
-  \item \textbf{Polinomial}: inclui $x^2, x^3, \ldots$
-\end{itemize}
-\end{block}
-\vspace{0.5em}
-\begin{block}{Regularizada}
-\begin{itemize}
-  \item \textbf{Ridge}: penalidade L2
-  \item \textbf{LASSO}: penalidade L1 (esparsidade)
-  \item \textbf{ElasticNet}: L1 + L2
-\end{itemize}
-\end{block}
-\column{0.47\textwidth}
-\begin{exampleblock}{Não-Linear / Ensemble}
-\begin{itemize}
-  \item \textbf{SVR}: kernel trick
-  \item \textbf{Random Forest}: média de árvores
-  \item \textbf{XGBoost / LightGBM}: boosting
-  \item \textbf{Redes Neurais}: MLP com saída linear
-\end{itemize}
-\end{exampleblock}
-\vspace{0.5em}
-\begin{alertblock}{\small Consulte o Material Didático}
-\small Módulo 4, Seções 1 e 2
-\end{alertblock}
-\end{columns}
-\end{frame}
-
-% ============================================================
-\section{Regressão Linear}
-% ============================================================
-
-\begin{frame}[t]{Regressão Linear Simples}
-\begin{columns}
-\column{0.42\textwidth}
-\small
-\textbf{Objetivo:} encontrar a reta que melhor ajusta os dados.
-
-\vspace{0.5em}
-$\hat{y} = \beta_0 + \beta_1 x$
-
-\vspace{0.4em}
-Estimadores OLS (Mínimos Quadrados):
-\[
-  \hat{\beta}_1 = \frac{S_{xy}}{S_{xx}}, \quad \hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x}
-\]
-
-\vspace{0.4em}
-Minimiza $\displaystyle\sum_i (y_i - \hat{y}_i)^2$
-
-\vspace{0.4em}
-\begin{exampleblock}{\small Resíduos}
-\small $\varepsilon_i = y_i - \hat{y}_i$ (linhas laranjas)
-\end{exampleblock}
-
-\column{0.56\textwidth}
-\begin{tikzpicture}
-\begin{axis}[
-  width=8cm, height=5cm,
-  xlabel={$x$}, ylabel={$y$},
-  title={\small Regressão Linear Simples com Resíduos},
-  grid=major, grid style={minegray!25},
-  xmin=0, xmax=11, ymin=0, ymax=20,
-  title style={font=\small}
-]
-\addplot[only marks, mineblue, mark size=2.5pt] coordinates {
-  (1,2.1)(2,3.8)(3,5.2)(4,7.1)(5,8.9)(6,10.5)(7,12.1)(8,14.3)(9,15.7)(10,17.5)
-  (1.5,3.0)(3.5,6.5)(5.5,9.8)(7.5,13.0)(9.5,16.5)
-};
-\addplot[thick, minered, domain=0.5:10.5, samples=50] {1.8*x + 0.3};
-\addlegendentry{$\hat{y} = 1{,}8x + 0{,}3$}
-\addplot[dashed, mineorange, thin] coordinates {(3,5.2)(3,5.7)};
-\addplot[dashed, mineorange, thin] coordinates {(7,12.1)(7,12.9)};
-\addplot[dashed, mineorange, thin] coordinates {(5,8.9)(5,9.3)};
-\node[font=\tiny, mineorange] at (axis cs:3.5,5.45) {$\varepsilon_i$};
-\end{axis}
-\end{tikzpicture}
-\end{columns}
-\end{frame}
-
-\begin{frame}[shrink=5]{Métricas de Avaliação}
-\begin{table}
-\centering\small
-\begin{tabular}{>{\bfseries}p{2.0cm}p{4.5cm}p{4.0cm}}
-\toprule
-Métrica & Fórmula & Quando usar \\
-\midrule
-MSE  & $\frac{1}{n}\sum(y_i-\hat{y}_i)^2$ & Penaliza outliers; otimização \\
-RMSE & $\sqrt{MSE}$ & Mesma unidade de $y$ \\
-MAE  & $\frac{1}{n}\sum|y_i-\hat{y}_i|$ & Robusto a outliers \\
-R²   & $1 - \frac{\sum(y_i-\hat{y}_i)^2}{\sum(y_i-\bar{y})^2}$ & Proporção da variância explicada \\
-R² Ajust. & $1-(1-R^2)\frac{n-1}{n-p-1}$ & Penaliza features desnecessárias \\
-\bottomrule
-\end{tabular}
-\end{table}
-\vspace{0.3em}
-\begin{columns}
-\column{0.48\textwidth}
-\begin{alertblock}{\small Atenção ao R²}
-\small Sempre cresce com mais features! Use R² ajustado para comparar modelos com diferente número de variáveis.
-\end{alertblock}
-\column{0.48\textwidth}
-\begin{exampleblock}{\small Dica Prática}
-\small MAE é preferível quando há outliers. RMSE é preferível quando erros grandes são muito custosos.
-\end{exampleblock}
-\end{columns}
-\end{frame}
-
-% ============================================================
-\section{Regularização}
-% ============================================================
-
-\begin{frame}{Por que Regularizar?}
-\begin{columns}
-\column{0.55\textwidth}
-\begin{block}{O Problema: Overfitting}
-\begin{itemize}
-  \item Modelo complexo memoriza os dados de treino
-  \item Erro baixo no treino, alto no teste
-  \item Coeficientes muito grandes, tornando-os instáveis
-\end{itemize}
-\end{block}
-\vspace{0.5em}
-\begin{alertblock}{Solução: Penalidade}
-Adicionar um termo à função de perda que \textbf{penaliza coeficientes grandes}:
-\[
-\text{Perda} + \lambda \cdot \text{Penalidade}(\boldsymbol{\beta})
-\]
-\end{alertblock}
-\column{0.42\textwidth}
-\begin{exampleblock}{Benefícios}
-\begin{itemize}\small
-  \item Generalização melhor
-  \item Reduz variância
-  \item LASSO: seleção de features
-  \item Ridge: lida com multicolinearidade
-\end{itemize}
-\end{exampleblock}
-\vspace{0.5em}
-\begin{block}{\small $\lambda$: hiperparâmetro}
-\small $\lambda \uparrow$ mais regularização\\
-$\lambda = 0$: sem penalidade (OLS)\\
-Escolher via validação cruzada
-\end{block}
-\end{columns}
-\end{frame}
-
-\begin{frame}[t]{Ridge vs.\ LASSO}
-\begin{columns}
-\column{0.38\textwidth}
-\small
-\begin{block}{Ridge (L2)}
-\small $\|\mathbf{y}-X\boldsymbol{\beta}\|^2 + \lambda\|\boldsymbol{\beta}\|_2^2$\\[0.3em]
-\textbf{Efeito:} encolhe todos os coeficientes, mas \textbf{nenhum é zerado exatamente}
-\end{block}
-\vspace{0.4em}
-\begin{block}{LASSO (L1)}
-\small $\|\mathbf{y}-X\boldsymbol{\beta}\|^2 + \lambda\|\boldsymbol{\beta}\|_1$\\[0.3em]
-\textbf{Efeito:} produz \textbf{soluções esparsas}: alguns coeficientes $= 0$ (seleção de features)
-\end{block}
-\column{0.6\textwidth}
+\section{Fundamentos de Regressão}
+\begin{frame}
 \centering
-\scalebox{0.75}{%
-\begin{tikzpicture}[scale=1.4]
-% L2 ball
-\begin{scope}[xshift=-2.8cm]
-  \draw[mineblue, thick, fill=mineblue!10] (0,0) circle (1);
-  \draw[->, minegray, thin] (-1.4,0) -- (1.4,0) node[right,font=\tiny]{$\beta_1$};
-  \draw[->, minegray, thin] (0,-1.4) -- (0,1.4) node[above,font=\tiny]{$\beta_2$};
-  \draw[minered, dashed, thin] (0.7, 0.714) ellipse (0.5 and 0.35);
-  \draw[minered, dashed, thin] (0.7, 0.714) ellipse (0.85 and 0.6);
-  \filldraw[minered] (0.7, 0.714) circle(0.05) node[above right,font=\tiny,minered]{ótimo};
-  \node[below,font=\tiny,align=center] at (0,-1.6) {\textbf{Ridge (L2)}\\$\|\beta\|_2 \leq t$};
-\end{scope}
-% L1 diamond
-\begin{scope}[xshift=2.0cm]
-  \draw[mineorange, thick, fill=mineorange!10] (1,0)--(0,1)--(-1,0)--(0,-1)--cycle;
-  \draw[->, minegray, thin] (-1.4,0) -- (1.4,0) node[right,font=\tiny]{$\beta_1$};
-  \draw[->, minegray, thin] (0,-1.4) -- (0,1.4) node[above,font=\tiny]{$\beta_2$};
-  \draw[minered, dashed, thin] (0.3, 1) ellipse (0.65 and 0.45);
-  \draw[minered, dashed, thin] (0.3, 1) ellipse (1.1 and 0.8);
-  \filldraw[minered] (0, 1) circle(0.05) node[right,font=\tiny,minered,align=left]{ótimo\\(esparsidade!)};
-  \node[below,font=\tiny,align=center] at (0,-1.6) {\textbf{LASSO (L1)}\\$\|\beta\|_1 \leq t$};
-\end{scope}
-\end{tikzpicture}%
-}
-
-\vspace{0.2em}
-\tiny O ótimo do LASSO toca o losango num \textbf{vértice} onde $\beta_1=0$, gerando esparsidade.
-\end{columns}
+\Huge
+\textbf{Regressão}
 \end{frame}
 
-\begin{frame}{ElasticNet e Quando Usar Cada Método}
-\begin{block}{ElasticNet = Ridge + LASSO}
-\[
-\hat{\boldsymbol{\beta}}_{EN} = \arg\min_{\boldsymbol{\beta}} \left\{ \|\mathbf{y}-X\boldsymbol{\beta}\|^2 + \lambda_1\|\boldsymbol{\beta}\|_1 + \lambda_2\|\boldsymbol{\beta}\|_2^2 \right\}
-\]
-\end{block}
-\vspace{0.3em}
-\begin{table}
-\centering\small
-\begin{tabular}{>{\bfseries}p{2.5cm}p{4.0cm}p{4.0cm}}
-\toprule
-Método & Use quando\ldots & Vantagem \\
-\midrule
-Ridge & Muitas features correlacionadas & Coeficientes estáveis \\
-LASSO & Quer seleção automática de features & Modelo esparso / interpretável \\
-ElasticNet & Grupos de features correlacionadas & Combina estabilidade + esparsidade \\
-\bottomrule
-\end{tabular}
-\end{table}
-\vspace{0.3em}
-\begin{exampleblock}{\small Dica}
-\small Sempre escolha $\lambda$ por validação cruzada (\texttt{RidgeCV}, \texttt{LassoCV}, \texttt{ElasticNetCV} no scikit-learn).
-\end{exampleblock}
+\begin{frame}{}
+\footnotesize
+  \begin{block}{Definição}
+    Modelo estatístico para prever uma variável contínua \( y \) a partir de uma ou mais variáveis de entrada \( X \).
+    \[
+    y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n + \varepsilon
+    \]
+  \end{block}
+
+  \begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[scale=0.7]
+      \begin{axis}[
+          xlabel=\( x \),
+          ylabel=\( y \),
+          axis lines=left,
+          scatter/classes={%
+            a={mark=*, draw=black, fill=blue!50}},
+          ]
+        \addplot[scatter, only marks, scatter src=explicit symbolic]
+        coordinates {
+          (1, 2) [a] (2, 3) [a] (3, 5) [a] (4, 4) [a] (5, 6) [a]
+        };
+        \addplot[thick, red] {1.2*x + 0.5};
+        \node at (axis cs: 3,7) {Reta de regressão};
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Exemplo de regressão linear.}
+  \end{figure}
 \end{frame}
 
-% ============================================================
-\section{Trade-off Viés-Variância}
-% ============================================================
+\begin{frame}{Regressão vs. Classificação}
+\vspace*{-1cm}
+\footnotesize
+  \begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|l|l|}
+      \hline
+      \textbf{Característica} & \textbf{Regressão} & \textbf{Classificação} \\
+      \hline
+      Saída & Contínua (\( \mathbb{R} \)) & Discreta (rótulos) \\
+      Exemplo & Preço de imóveis & Diagnóstico médico (doente/saudável) \\
+      Métricas & MSE, \( R^2 \) & Acurácia, F1-Score \\
+      \hline
+    \end{tabular}
+  \end{table}
 
-\begin{frame}[t]{Trade-off Viés-Variância}
-\begin{columns}
-\column{0.4\textwidth}
-\small
-\textbf{Decomposição do erro:}
-\[
-\text{Erro} = \text{Viés}^2 + \text{Variância} + \sigma^2
-\]
 
-\vspace{0.4em}
-\begin{itemize}\small
-  \item \textbf{Underfitting:} modelo simples, alto viés, baixa variância
-  \item \textbf{Overfitting:} modelo complexo, baixo viés, alta variância
-  \item \textbf{Ótimo:} ponto que minimiza o erro total
-\end{itemize}
-
-\vspace{0.4em}
-\begin{alertblock}{\small Implicação}
-\small Regularização aumenta o viés mas reduz a variância, melhorando a generalização em geral.
-\end{alertblock}
-
-\column{0.58\textwidth}
-\begin{tikzpicture}
-\begin{axis}[
-  width=8cm, height=5cm,
-  xlabel={Complexidade do Modelo},
-  ylabel={Erro},
-  title={\small Trade-off Viés-Variância},
-  grid=major, grid style={minegray!20},
-  xmin=0, xmax=10, ymin=0, ymax=6,
-  xtick={0,...,10}, ytick={0,1,...,6},
-  xticklabels={,,Simples,,,,,,,,Complexo},
-  legend pos=north east,
-  legend style={font=\tiny},
-  title style={font=\small}
-]
-\addplot[thick, mineblue, smooth, domain=0.5:9.5] {5/(x^0.7 + 1)};
-\addlegendentry{Viés$^2$}
-\addplot[thick, mineorange, smooth, domain=0.5:9.5] {0.05 * x^1.8};
-\addlegendentry{Variância}
-\addplot[thick, minegreen, smooth, dashed, domain=0.5:9.5] {5/(x^0.7+1) + 0.05*x^1.8 + 0.5};
-\addlegendentry{Erro Total}
-\addplot[only marks, minered, mark=*, mark size=3pt] coordinates {(4.2, 2.3)};
-\node[font=\tiny, minered, above right] at (axis cs:4.2,2.3) {Ótimo};
-\addplot[gray, dashed, domain=0:10] {0.5};
-\node[font=\tiny, gray, right] at (axis cs:9.5,0.5) {Ruído};
-\end{axis}
-\end{tikzpicture}
-\end{columns}
 \end{frame}
 
-% ============================================================
-\section{Regressão Polinomial}
-% ============================================================
+\begin{frame}{Variáveis Independentes vs. Dependentes}
+  \begin{columns}
+    \column{0.5\textwidth}
+    \begin{block}{Formulação Matemática}
+      \[
+      \mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}
+      \]
+      Onde:
+      \begin{itemize}
+        \item \( \mathbf{X} \in \mathbb{R}^{n \times p} \): Matriz de features
+        \item \( \boldsymbol{\beta} \in \mathbb{R}^p \): Vetor de coeficientes
+        \item \( \boldsymbol{\varepsilon} \in \mathbb{R}^n \): Erro aleatório
+      \end{itemize}
+    \end{block}
+
+    \column{0.5\textwidth}
+    \begin{tikzpicture}[
+        node distance=1cm,
+        var/.style={rectangle, draw=blue!50, fill=blue!10, minimum width=2cm}
+      ]
+      \node (X) [var] {Variáveis Independentes (\( X \))};
+      \node (model) [below=of X, ellipse, draw=red!50, fill=red!10] {Modelo (\( f \))};
+      \node (y) [below=of model, var] {Variável Dependente (\( y \))};
+
+      \draw[->] (X) -- (model) node[midway, right] {\( \mathbf{X}\boldsymbol{\beta} \)};
+      \draw[->] (model) -- (y) node[midway, right] {\( \hat{y} \)};
+    \end{tikzpicture}
+  \end{columns}
+\end{frame}
+
+\subsection{Tipos de Modelos de Regressão}
+
+\begin{frame}{Regressão Linear Simples}
+\footnotesize
+  \begin{block}{Definição}
+    Modela a relação linear entre uma variável independente \( x \) e uma variável dependente \( y \):
+    \[
+    y = \beta_0 + \beta_1 x + \varepsilon
+    \]
+    Onde:
+    \begin{itemize}
+      \item \( \beta_0 \): Intercepto (valor de \( y \) quando \( x = 0 \)).
+      \item \( \beta_1 \): Coeficiente angular (inclinação da reta).
+      \item \( \varepsilon \): Erro aleatório.
+    \end{itemize}
+  \end{block}
+    \centering
+\vspace*{-0.1cm}
+   \begin{tikzpicture}[scale=0.4]
+      \begin{axis}[
+          xlabel=\( x \),
+          ylabel=\( y \),
+          axis lines=left,
+          scatter/classes={%
+            a={mark=*, draw=black, fill=blue!50}},
+          ]
+        \addplot[scatter, only marks, scatter src=explicit symbolic]
+        coordinates {
+          (1, 2) [a] (2, 3) [a] (3, 5) [a] (4, 4) [a] (5, 6) [a]
+        };
+        \addplot[thick, red] {1.2*x + 0.5};
+        \node at (axis cs: 3,7) {Reta de regressão};
+      \end{axis}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Regressão Linear Múltipla}
+\footnotesize
+
+  \begin{block}{Definição}
+    Estende a regressão linear para múltiplas variáveis independentes:
+    \[
+    y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n + \varepsilon
+    \]
+    Em forma matricial:
+    \[
+    \mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}
+    \]
+    Onde:
+    \begin{itemize}
+      \item \( \mathbf{X} \): Matriz de features (\( n \times p \)).
+      \item \( \boldsymbol{\beta} \): Vetor de coeficientes (\( p \times 1 \)).
+    \end{itemize}
+  \end{block}
+
+  \begin{tikzpicture}[overlay, remember picture]
+    \node[anchor=south east, xshift=-20pt, yshift=45pt] at (current page.south east) {
+      \begin{tikzpicture}[scale=0.5]
+        \draw[->] (-1,0) -- (3,0) node[right] {\( x_1 \)};
+        \draw[->] (0,-1) -- (0,3) node[above] {\( x_2 \)};
+        \draw[->] (2,2) -- (2.5,2.5) node[right] {\( y \)};
+        \foreach \x/\y in {0.5/1, 1/1.5, 2/2.5, 1.5/3}
+          \fill[blue] (\x,\y) circle (2pt);
+      \end{tikzpicture}
+    };
+  \end{tikzpicture}
+\end{frame}
 
 \begin{frame}{Regressão Polinomial}
-\begin{columns}
-\column{0.5\textwidth}
-\begin{block}{Ideia}
-Adicionar $x^2, x^3, \ldots$ como novas features:
-\[
-\phi(\mathbf{x}) = [1,\; x,\; x^2,\; \ldots,\; x^d]^T
-\]
-O modelo é \textbf{linear nos parâmetros}, resolvido por OLS.
-\end{block}
+\footnotesize
+  \begin{block}{Definição}
+    Modela relações não lineares usando polinômios:
+    \[
+    y = \beta_0 + \beta_1 x + \beta_2 x^2 + \cdots + \beta_n x^n + \varepsilon
+    \]
+    Exemplo: \( y = \beta_0 + \beta_1 x + \beta_2 x^2 \).
+  \end{block}
 
-\vspace{0.4em}
-\begin{block}{Grau $d$: como escolher?}
-\begin{itemize}\small
-  \item Grau baixo: underfitting (alto viés)
-  \item Grau alto: overfitting (alta variância)
-  \item \textbf{Solução:} validação cruzada
-\end{itemize}
-\end{block}
+  \begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[scale=0.6]
+      \begin{axis}[
+          xlabel=\( x \),
+          ylabel=\( y \),
+          axis lines=left,
+          scatter/classes={%
+            a={mark=*, draw=black, fill=blue!50}},
+          ]
+        \addplot[scatter, only marks, scatter src=explicit symbolic]
+        coordinates {
+          (1, 2) [a] (2, 3) [a] (3, 5) [a] (4, 4) [a] (5, 6) [a]
+        };
+        \addplot[thick, red] {0.5*x^2 - 1.5*x + 3};
+        \node at (axis cs: 3,7) {Curva de regressão polinomial};
+      \end{axis}
+    \end{tikzpicture}
 
-\column{0.47\textwidth}
-\begin{alertblock}{Risco com Grau Alto}
-Polinômio de grau $n-1$ interpola \textbf{todos} os pontos do treino com erro zero, mas generaliza pessimamente!
-
-\vspace{0.3em}
-\small Oscilações de Runge: o polinômio oscila violentamente entre os pontos de treino.
-\end{alertblock}
-
-\vspace{0.4em}
-\begin{exampleblock}{\small Alternativa}
-\small Usar regularização Ridge/LASSO junto com termos polinomiais: controla as oscilações.
-\end{exampleblock}
-\end{columns}
+  \end{figure}
 \end{frame}
 
-% ============================================================
-\section{Métodos Ensemble para Regressão}
-% ============================================================
+\begin{frame}{Regressão Regularizada}
+\footnotesize
+  \begin{block}{Objetivo}
+    Penalizar coeficientes grandes para evitar overfitting:
+    \begin{itemize}
+      \item Ridge (L2):
+        \[
+        \text{Minimizar } \|\mathbf{y} - \mathbf{X}\boldsymbol{\beta}\|^2 + \lambda \|\boldsymbol{\beta}\|^2
+        \]
+      \item Lasso (L1):
+        \[
+        \text{Minimizar } \|\mathbf{y} - \mathbf{X}\boldsymbol{\beta}\|^2 + \lambda \|\boldsymbol{\beta}\|_1
+        \]
+      \item Elastic Net:
+        \[
+        \text{Minimizar } \|\mathbf{y} - \mathbf{X}\boldsymbol{\beta}\|^2 + \lambda_1 \|\boldsymbol{\beta}\|_1 + \lambda_2 \|\boldsymbol{\beta}\|^2
+        \]
+    \end{itemize}
+  \end{block}
 
-\begin{frame}{Random Forest Regressor}
-\begin{columns}
-\column{0.5\textwidth}
-\begin{block}{Como funciona}
-\begin{itemize}\small
-  \item Treina $T$ árvores de regressão (CART) com bootstrap
-  \item Cada árvore usa subconjunto aleatório de features
-  \item Predição final: \textbf{média} das árvores
-\end{itemize}
-\[
-\hat{y}(\mathbf{x}) = \frac{1}{T}\sum_{t=1}^T h_t(\mathbf{x})
-\]
-\end{block}
-\vspace{0.4em}
-\begin{exampleblock}{OOB Error}
-\small $\approx 36,8\%$ dos exemplos não são sorteados em cada bootstrap --- usados como \textbf{validação gratuita} (Out-of-Bag Error), sem necessidade de conjunto de validação separado.
-\end{exampleblock}
-\column{0.47\textwidth}
-\begin{block}{Vantagens}
-\begin{itemize}\small
-  \item Robusto a outliers
-  \item Pouco ajuste de hiperparâmetros
-  \item Importância de features nativa
-  \item Paralelo por natureza
-\end{itemize}
-\end{block}
-\vspace{0.4em}
-\begin{alertblock}{\small Consulte o Colab}
-\small Módulo 4, Notebook com implementação, importância de features e comparação de métricas.
-\end{alertblock}
-\end{columns}
 \end{frame}
 
-\begin{frame}{XGBoost / LightGBM para Regressão}
-\begin{columns}
-\column{0.42\textwidth}
-\begin{block}{Ideia do Boosting}
-\small Constrói árvores \textbf{sequencialmente}: cada nova árvore aprende com os erros (resíduos) da anterior.
-\[
-F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \nu \cdot h_m(\mathbf{x})
-\]
-\small $\nu$ = taxa de aprendizado (shrinkage)
-\end{block}
-\vspace{0.4em}
-\begin{exampleblock}{\small Vantagem prática}
-\small Em dados tabulares com $n < 100k$, XGBoost/LightGBM tipicamente superam redes neurais.
-\end{exampleblock}
-\column{0.55\textwidth}
-\begin{table}
-\centering\scriptsize
-\begin{tabular}{>{\ttfamily\small}p{3.2cm}p{3.5cm}}
-\toprule
-\normalfont\textbf{Hiperparâmetro} & \normalfont\textbf{Efeito} \\
-\midrule
-n\_estimators & Nº de árvores (+ early stop) \\
-learning\_rate & $\nu$: menor $\Rightarrow$ mais robusto \\
-max\_depth & Profundidade (3--6 ideal) \\
-subsample & Fração de exemplos/árvore \\
-colsample\_bytree & Fração de features/árvore \\
-reg\_alpha (L1) & Regularização nos pesos \\
-reg\_lambda (L2) & Regularização nos pesos \\
-\bottomrule
-\end{tabular}
-\end{table}
-\begin{alertblock}{\small Colab, Módulo 4}
-\small Tuning com Optuna: \texttt{XGBRegressor} e \texttt{LGBMRegressor} com early stopping.
-\end{alertblock}
-\end{columns}
+\begin{frame}{Regressão Logística (Contexto de Regressão)}
+\footnotesize
+  \begin{block}{Definição}
+    Usada para problemas de classificação binária, mas fundamentada em regressão:
+    \[
+    P(y=1 | \mathbf{x}) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_1 + \cdots + \beta_n x_n)}}
+    \]
+    Onde:
+    \begin{itemize}
+      \item \( P(y=1 | \mathbf{x}) \): Probabilidade de \( y = 1 \).
+      \item Função logística: \( \sigma(z) = \frac{1}{1 + e^{-z}} \).
+    \end{itemize}
+  \end{block}
+
+  \begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[scale=0.4]
+      \begin{axis}[
+          xlabel=\( z \),
+          ylabel=\( \sigma(z) \),
+          axis lines=left,
+          ]
+        \addplot[thick, red, domain=-5:5] {1/(1+exp(-x))};
+      \end{axis}
+    \end{tikzpicture}
+
+  \end{figure}
 \end{frame}
 
-% ============================================================
-\section{Diagnóstico de Modelos}
-% ============================================================
+\subsection{Métricas de Avaliação}
 
-\begin{frame}[t]{Gráficos Diagnósticos}
-\centering
-\resizebox{0.88\textwidth}{!}{%
-\begin{tikzpicture}
-% ── TOP-LEFT: Resíduos vs. Ajustados ─────────────────────────
-\begin{scope}[xshift=-2cm, yshift=7.8cm]
-  \draw[->,minegray!80,thick] (0,-1.7) -- (5.2,-1.7)
-    node[right,font=\tiny]{Val.\ Ajustados};
-  \draw[->,minegray!80,thick] (0,-1.7) -- (0,1.9)
-    node[above,font=\tiny]{Resíduos};
-  \draw[mineblue!50, dashed, thick] (0,0) -- (5.2,0);
-  \foreach \x/\y in {0.3/0.7,0.7/-1.0,1.1/1.1,1.5/-0.8,2.0/0.5,
-                     2.5/-0.7,3.0/1.0,3.5/-0.5,4.0/0.8,4.5/-0.6}
-    \filldraw[minegray!70] (\x,\y) circle(0.08);
-  \node[font=\small\bfseries,color=mineblue] at (2.6,2.0)
-    {Resíduos vs.\ Ajustados};
-  \node[font=\tiny,color=minegreen!70!black] at (2.6,-2.0)
-    {$\checkmark$ Ideal: dispersão aleatória em torno de zero};
-\end{scope}
-% ── TOP-RIGHT: Q-Q Plot ──────────────────────────────────────
-\begin{scope}[xshift=6.8cm, yshift=7.8cm]
-  \draw[->,minegray!80,thick] (0,-1.7) -- (5.2,-1.7)
-    node[right,font=\tiny]{Quantis Teóricos};
-  \draw[->,minegray!80,thick] (0,-1.7) -- (0,1.9)
-    node[above,font=\tiny]{Quantis Amostrais};
-  \draw[mineorange, thick] (0.3,-1.5) -- (4.9,1.7);
-  \foreach \x/\y in {0.4/-1.45,0.9/-0.95,1.4/-0.50,1.9/-0.05,
-                     2.4/0.40,2.9/0.85,3.5/1.20,4.0/1.50,4.6/1.65}
-    \filldraw[mineblue!80] (\x,\y) circle(0.08);
-  \node[font=\small\bfseries,color=mineblue] at (2.6,2.0) {Q-Q Plot};
-  \node[font=\tiny,color=minegreen!70!black] at (2.6,-2.0)
-    {$\checkmark$ Ideal: pontos alinhados sobre a reta};
-\end{scope}
-% ── BOTTOM-LEFT: Scale-Location ──────────────────────────────
-\begin{scope}[xshift=-2cm, yshift=0cm]
-  \draw[->,minegray!80,thick] (0,0) -- (5.2,0)
-    node[right,font=\tiny]{Val.\ Ajustados};
-  \draw[->,minegray!80,thick] (0,0) -- (0,3.5)
-    node[above,font=\tiny]{$\sqrt{|e_i|}$};
-  \draw[minegreen!70, dashed, thick] (0,1.8) -- (5.2,1.8);
-  \foreach \x/\y in {0.3/1.7,0.8/1.9,1.3/1.75,1.8/1.8,2.3/1.85,
-                     2.9/1.75,3.4/1.8,3.9/1.85,4.5/1.8}
-    \filldraw[minegray!70] (\x,\y) circle(0.08);
-  \node[font=\small\bfseries,color=mineblue] at (2.6,3.4) {Scale-Location};
-  \node[font=\tiny,color=minegreen!70!black] at (2.6,-0.45)
-    {$\checkmark$ Ideal: linha aproximadamente horizontal};
-\end{scope}
-% ── BOTTOM-RIGHT: Distância de Cook ──────────────────────────
-\begin{scope}[xshift=6.8cm, yshift=0cm]
-  \draw[->,minegray!80,thick] (0,0) -- (5.2,0)
-    node[right,font=\tiny]{Índice};
-  \draw[->,minegray!80,thick] (0,0) -- (0,3.5)
-    node[above,font=\tiny]{Dist.\ de Cook};
-  \draw[minered!80, dashed, thick] (0,2.5) -- (5.2,2.5);
-  \node[font=\tiny,minered,right] at (5.2,2.5) {limiar};
-  \foreach \x/\y in {0.4/0.20,0.9/0.35,1.4/0.18,1.9/0.28,
-                     2.4/0.60,2.9/0.22,3.4/0.32,4.0/0.26}
-    \draw[mineblue!70,line width=1.5pt] (\x,0) -- (\x,\y);
-  \draw[minered, line width=2.5pt] (4.7,0) -- (4.7,2.9);
-  \node[font=\tiny\bfseries,minered,above] at (4.7,2.9) {influente!};
-  \node[font=\small\bfseries,color=mineblue] at (2.6,3.4) {Distância de Cook};
-  \node[font=\tiny] at (2.6,-0.45) {Detecta observações influentes};
-\end{scope}
-\end{tikzpicture}%
-}
+% Slide sobre MSE
+\begin{frame}{Erro Quadrático Médio (MSE)}
+    \textbf{Definição:}
+    O Erro Quadrático Médio é uma métrica que mede a média dos erros ao quadrado entre os valores reais ($y_i$) e os valores preditos ($\hat{y}_i$):
+    \begin{equation}
+        \text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+    \end{equation}
+    \textbf{Interpretação:} Quanto menor o MSE, melhor a performance do modelo.
+
+    \vspace{0.3cm}
+    \textbf{Visualização:}
+    \begin{tikzpicture}[scale=0.4]
+        \draw[->] (0,0) -- (6,0) node[right] {$\hat{y}_i$};
+        \draw[->] (0,0) -- (0,4) node[above] {$y_i$};
+        \draw[dashed, red] (1,1) -- (1,2.5) node[midway, left] {$(y_i - \hat{y}_i)^2$};
+        \draw[fill] (1,1) circle (2pt) node[below right] {$\hat{y}_i$};
+        \draw[fill] (1,2.5) circle (2pt) node[above right] {$y_i$};
+    \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{O que Procurar em Cada Gráfico}
-\begin{columns}
-\column{0.48\textwidth}
-\begin{block}{Resíduos vs.\ Ajustados}
-\begin{itemize}\small
-  \item \textcolor{minegreen}{$\checkmark$} Pontos dispersos aleatoriamente
-  \item \textcolor{minered}{$\times$} Padrão em funil $\Rightarrow$ heterocedasticidade
-  \item \textcolor{minered}{$\times$} Padrão curvo $\Rightarrow$ não-linearidade não capturada
-\end{itemize}
-\end{block}
-\vspace{0.3em}
-\begin{block}{Q-Q Plot}
-\begin{itemize}\small
-  \item \textcolor{minegreen}{$\checkmark$} Pontos sobre a reta $\Rightarrow$ normalidade
-  \item \textcolor{minered}{$\times$} Desvios nas caudas $\Rightarrow$ assimetria / caudas pesadas
-\end{itemize}
-\end{block}
-\column{0.48\textwidth}
-\begin{block}{Scale-Location}
-\begin{itemize}\small
-  \item \textcolor{minegreen}{$\checkmark$} Linha horizontal $\Rightarrow$ variância constante
-  \item \textcolor{minered}{$\times$} Linha crescente $\Rightarrow$ heterocedasticidade
-  \item Solução: transformar $y$ (ex.: $\log y$)
-\end{itemize}
-\end{block}
-\vspace{0.3em}
-\begin{block}{Distância de Cook}
-\begin{itemize}\small
-  \item \textcolor{minegreen}{$\checkmark$} Todos abaixo do limiar
-  \item \textcolor{minered}{$\times$} Pontos acima $\Rightarrow$ influentes (investigar)
-  \item Limiar usual: $4/n$
-\end{itemize}
-\end{block}
-\end{columns}
+
+% Slide sobre RMSE
+\begin{frame}{Raiz do Erro Quadrático Médio (RMSE)}
+    \textbf{Definição:}
+    A Raiz do Erro Quadrático Médio é simplesmente a raiz quadrada do MSE:
+    \begin{equation}
+        \text{RMSE} = \sqrt{\text{MSE}} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2}
+    \end{equation}
+    \textbf{Interpretação:} É uma métrica na mesma unidade dos dados originais, tornando sua interpretação mais intuitiva.
 \end{frame}
+
+% Slide sobre MAE
+\begin{frame}{Erro Absoluto Médio (MAE)}
+    \textbf{Definição:}
+    O Erro Absoluto Médio mede a média das diferenças absolutas entre os valores reais e preditos:
+    \begin{equation}
+        \text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
+    \end{equation}
+    \textbf{Interpretação:} Valores menores indicam que o modelo está mais próximo dos valores reais em média.
+\end{frame}
+
+% Slide sobre R² e R² Ajustado
+\begin{frame}{Coeficiente de Determinação ($R^2$) e $R^2$ Ajustado}
+    \textbf{Coeficiente de Determinação ($R^2$):}
+    \begin{itemize}
+        \item Mede a proporção da variância explicada pelo modelo.
+        \item Fórmula:
+        \begin{equation}
+            R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2}
+        \end{equation}
+        \item Intervalo: $0 \leq R^2 \leq 1$ (quanto mais próximo de 1, melhor).
+    \end{itemize}
+
+    \textbf{$R^2$ Ajustado:}
+    \begin{itemize}
+        \item Penaliza a adição de variáveis irrelevantes ao modelo.
+        \item Fórmula:
+        \begin{equation}
+            R^2_{\text{ajustado}} = 1 - \left(1 - R^2\right) \frac{n - 1}{n - p - 1}
+        \end{equation}
+        \item Onde $p$ é o número de variáveis explicativas.
+    \end{itemize}
+\end{frame}
+
+
+\subsection{Suposições da Regressão Linear}
+
+\begin{frame}{Linearidade}
+    \textbf{Definição:}
+    A relação entre a variável dependente ($y$) e a variável independente ($X$) deve ser linear.
+
+    \vspace{0.5cm}
+    \textbf{Representação Matemática:}
+    \begin{equation}
+        y = \beta_0 + \beta_1X + \epsilon
+    \end{equation}
+    Onde:
+    \begin{itemize}
+        \item $\beta_0$ é o intercepto;
+        \item $\beta_1$ é o coeficiente angular;
+        \item $\epsilon$ representa o termo de erro.
+    \end{itemize}
+
+    \hspace{3cm}
+    \begin{tikzpicture}[scale=0.35]
+        \draw[->] (0,0) -- (6,0) node[right] {$X$};
+        \draw[->] (0,0) -- (0,4) node[above] {$y$};
+        \draw[thick, blue] (0.5,1) -- (5.5,3.5) node[midway, above,xshift=60pt] {$y = \beta_0 + \beta_1X$};
+        \foreach \x in {1, 2, 3, 4, 5} {
+            \node[fill, circle, inner sep=1.5pt] at (\x, {0.5*\x+0.5+rand*0.3-0.15}) {};
+        }
+    \end{tikzpicture}
+\end{frame}
+
+% Slide sobre Independência dos Resíduos
+\begin{frame}{Independência dos Resíduos}
+\footnotesize
+    \textbf{Definição:}
+    Os resíduos ($\epsilon_i$) não devem estar correlacionados entre si.
+
+    \vspace{0.5cm}
+    \textbf{Teste Comum:} Teste de Durbin-Watson
+    \begin{equation}
+        DW = \frac{\sum_{i=2}^{n} (\epsilon_i - \epsilon_{i-1})^2}{\sum_{i=1}^{n} \epsilon_i^2}
+    \end{equation}
+    Valores próximos de 2 indicam independência.
+
+    \vspace{0.5cm}
+    \textbf{Visualização:}
+    \begin{tikzpicture}[scale=0.5]
+         \draw[->] (0,0) -- (6,0) node[right] {Observações};
+        \draw[->] (0,-2) -- (0,2) node[above] {Resíduos ($\epsilon$)};
+        \foreach \x in {1, 2, 3, 4, 5} {
+            \node[fill, circle, inner sep=1.5pt] at (\x, {rand*0.5-0.25}) {};
+        }
+        \node at (3,-2.5) {Pontos aleatórios indicam independência};
+    \end{tikzpicture}
+\end{frame}
+
+% Slide sobre Homocedasticidade
+\begin{frame}{Homocedasticidade}
+    \textbf{Definição:}
+    A variância dos resíduos deve ser constante para todos os valores de $X$.
+
+    \vspace{0.5cm}
+    \textbf{Visualização:}
+    \begin{tikzpicture}
+        \draw[->] (0,0) -- (6,0) node[right] {$X$};
+        \draw[->] (0,-2) -- (0,2) node[above] {Resíduos ($\epsilon$)};
+        \foreach \x in {1, 2, 3, 4, 5} {
+            \node[fill, circle, inner sep=1.5pt] at (\x, {rand*0.5-0.25}) {};
+            \draw[dashed] (\x, -1) -- (\x, 1);
+        }
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Homocedasticidade}
+    \textbf{Interpretacao:}
+    A ausência de padrões nos resíduos (em torno do eixo x) indica que o modelo atende à suposição de homocedasticidade.
+
+    \vspace{0.5cm}
+    \textbf{Visualização:}
+    \begin{tikzpicture}
+        \draw[->] (0,0) -- (6,0) node[right] {$X$};
+        \draw[->] (0,-2) -- (0,2) node[above] {Resíduos ($\epsilon$)};
+        \foreach \x in {1, 2, 3, 4, 5} {
+            \node[fill, circle, inner sep=1.5pt] at (\x, {rand*0.5-0.25}) {};
+            \draw[dashed] (\x, -1) -- (\x, 1);
+        }
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Normalidade dos Resíduos}
+    \textbf{Definição:}
+    Os resíduos devem seguir uma distribuição aproximadamente normal.
+
+    \vspace{0.5cm}
+    \textbf{Teste Comum:} Teste de Shapiro-Wilk
+
+    \vspace{0.5cm}
+    \textbf{Visualização:}
+    \begin{tikzpicture}
+        \draw[->] (0,0) -- (6,0) node[right] {Resíduos ($\epsilon$)};
+        \draw[->] (0,0) -- (0,3) node[above] {Frequência};
+        \draw[thick, blue, domain=0:6, samples=50] plot (\x, {2*exp(-0.5*(\x-3)^2)});
+    \end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}{Ausência de Multicolinearidade}
+    \textbf{Definição:}
+    As variáveis independentes não devem ser altamente correlacionadas entre si.
+
+    \vspace{0.5cm}
+    \textbf{Teste Comum:} Fator de Inflacionamento da Variância (VIF)
+    \begin{equation}
+        \text{VIF}_j = \frac{1}{1 - R_j^2}
+    \end{equation}
+    Onde $R_j^2$ é o coeficiente de determinação da regressão da variável $j$ contra as demais.
+
+    \vspace{0.5cm}
+    \textbf{Interpretação:} VIF $>$ 10 indica alta multicolinearidade.
+\end{frame}
+
+
+
+
+
+
 
 % ============================================================
 % REFERÊNCIAS
