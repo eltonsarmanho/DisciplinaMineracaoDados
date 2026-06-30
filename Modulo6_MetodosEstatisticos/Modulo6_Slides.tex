@@ -1148,6 +1148,7 @@
 
 % --- Frame: HDBSCAN ---
 \begin{frame}{HDBSCAN: Extensão Hierárquica do DBSCAN}
+    \vspace{-0.68cm}
     \begin{columns}
         \column{0.5\textwidth}
         \begin{block}{Limitação do DBSCAN}
@@ -1169,7 +1170,7 @@
             \footnotesize
             Abordagem moderna para dados de alta dimensão:
             \begin{center}
-            \begin{tikzpicture}[scale=0.85,font=\small,
+            \begin{tikzpicture}[scale=1.3,font=\small,
                 box/.style={rectangle,draw=mineblue,fill=mineblue!10,
                             rounded corners,minimum width=2.5cm,
                             minimum height=0.65cm,align=center},
@@ -1189,52 +1190,52 @@
     \end{columns}
 \end{frame}
 
-% ==============================================================================
-\subsection{Modelos de Mistura Gaussiana (GMM)}
-% ==============================================================================
+% % ==============================================================================
+% \subsection{Modelos de Mistura Gaussiana (GMM)}
+% % ==============================================================================
 
-% --- Frame: GMM ---
-\begin{frame}{Modelos de Mistura Gaussiana (GMM)}
-    \begin{columns}
-        \column{0.52\textwidth}
-        \begin{block}{Modelo}
-            \footnotesize
-            Os dados são gerados por uma \textbf{mistura} de $K$ Gaussianas:
-            \[
-              p(\mathbf{x}) = \sum_{k=1}^{K} \pi_k\,
-              \mathcal{N}(\mathbf{x} \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)
-            \]
-            $\pi_k$: peso da componente $k$ ($\sum_k \pi_k = 1$)
-        \end{block}
-        \begin{block}{Treinamento: Algoritmo EM}
-            \begin{enumerate}\footnotesize
-                \item \textbf{E-step:} calcular responsabilidades $r_{ik}$ (probabilidade de $\mathbf{x}_i$ pertencer ao cluster $k$)
-                \item \textbf{M-step:} atualizar $\pi_k$, $\boldsymbol{\mu}_k$ e $\boldsymbol{\Sigma}_k$
-                \item Repetir até convergência da log-verossimilhança
-            \end{enumerate}
-        \end{block}
-        \column{0.48\textwidth}
-        \begin{block}{GMM vs K-Means}
-            \begin{center}\footnotesize
-            \begin{tabular}{lcc}
-            \toprule
-            Aspecto & K-Means & GMM \\
-            \midrule
-            Atribuição & Dura & Suave \\
-            Forma cluster & Esférica & Elipsoidal \\
-            Pertencimento & 0/1 & Probabilidade \\
-            Seleção de $K$ & Elbow/Sil & BIC/AIC \\
-            Parâmetros & Poucos & Mais \\
-            \bottomrule
-            \end{tabular}
-            \end{center}
-        \end{block}
-        \begin{alertblock}{Seleção de $K$ no GMM}
-            \footnotesize Minimize o \textbf{BIC} (Bayesian Information Criterion):
-            $\text{BIC} = -2\log\hat{L} + p\log N$
-        \end{alertblock}
-    \end{columns}
-\end{frame}
+% % --- Frame: GMM ---
+% \begin{frame}{Modelos de Mistura Gaussiana (GMM)}
+%     \begin{columns}
+%         \column{0.52\textwidth}
+%         \begin{block}{Modelo}
+%             \footnotesize
+%             Os dados são gerados por uma \textbf{mistura} de $K$ Gaussianas:
+%             \[
+%               p(\mathbf{x}) = \sum_{k=1}^{K} \pi_k\,
+%               \mathcal{N}(\mathbf{x} \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)
+%             \]
+%             $\pi_k$: peso da componente $k$ ($\sum_k \pi_k = 1$)
+%         \end{block}
+%         \begin{block}{Treinamento: Algoritmo EM}
+%             \begin{enumerate}\footnotesize
+%                 \item \textbf{E-step:} calcular responsabilidades $r_{ik}$ (probabilidade de $\mathbf{x}_i$ pertencer ao cluster $k$)
+%                 \item \textbf{M-step:} atualizar $\pi_k$, $\boldsymbol{\mu}_k$ e $\boldsymbol{\Sigma}_k$
+%                 \item Repetir até convergência da log-verossimilhança
+%             \end{enumerate}
+%         \end{block}
+%         \column{0.48\textwidth}
+%         \begin{block}{GMM vs K-Means}
+%             \begin{center}\footnotesize
+%             \begin{tabular}{lcc}
+%             \toprule
+%             Aspecto & K-Means & GMM \\
+%             \midrule
+%             Atribuição & Dura & Suave \\
+%             Forma cluster & Esférica & Elipsoidal \\
+%             Pertencimento & 0/1 & Probabilidade \\
+%             Seleção de $K$ & Elbow/Sil & BIC/AIC \\
+%             Parâmetros & Poucos & Mais \\
+%             \bottomrule
+%             \end{tabular}
+%             \end{center}
+%         \end{block}
+%         \begin{alertblock}{Seleção de $K$ no GMM}
+%             \footnotesize Minimize o \textbf{BIC} (Bayesian Information Criterion):
+%             $\text{BIC} = -2\log\hat{L} + p\log N$
+%         \end{alertblock}
+%     \end{columns}
+% \end{frame}
 
 % ==============================================================================
 \subsection{Avaliação de Agrupamentos}
@@ -1277,6 +1278,65 @@
 
 \subsection{Conceitos Fundamentais}
 
+% --- Frame: Medidas de Interesse (Explicação) ---
+
+
+
+\begin{frame}{Medidas de Interesse em Regras de Associação}
+    \begin{block}{O que é uma Regra? $A \Rightarrow B$}
+        \footnotesize
+        Uma implicação entre dois itemsets: \textbf{se o cliente compra A, qual é a probabilidade de também comprar B?}
+    \end{block}
+    \pause
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{\textbf{Suporte} (frequência absoluta)}
+            \footnotesize
+            $\text{sup}(A \Rightarrow B) = \frac{|\{T: A \cup B \subseteq T\}|}{|\mathcal{T}|}$\\[4pt]
+            Proporção de transações contendo \textbf{tanto A quanto B}.\\[4pt]
+            \textbf{Filtro:} elimina regras raras; regras úteis têm sup $> 1\%$ tipicamente.
+        \end{block}      
+        \column{0.5\textwidth}
+        \pause
+        \begin{block}{\textbf{Lift} (correlação)}
+            \footnotesize
+            $\text{lift}(A \Rightarrow B) = \frac{\text{conf}(A \Rightarrow B)}{\text{sup}(B)}$\\[4pt]
+            Quanto a presença de A \textbf{amplifica} a probabilidade de B.\\[4pt]
+            \begin{itemize}\footnotesize
+                \item lift $= 1$: A e B são independentes
+                \item lift $> 1$: \textit{associação positiva} (correlação favorável)
+                \item lift $< 1$: \textit{associação negativa} (correlação desfavorável)
+            \end{itemize}
+        \end{block}
+       
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Medidas de Interesse em Regras de Associação}
+    \begin{block}{O que é uma Regra? $A \Rightarrow B$}
+        \footnotesize
+        Uma implicação entre dois itemsets: \textbf{se o cliente compra A, qual é a probabilidade de também comprar B?}
+    \end{block}
+    \pause
+    \begin{columns}
+        \column{0.5\textwidth}
+        
+        \begin{block}{\textbf{Confiança} (probabilidade condicional)}
+            \footnotesize
+            $\text{conf}(A \Rightarrow B) = \frac{\text{sup}(A \cup B)}{\text{sup}(A)}$\\[4pt]
+            \textbf{P(B $|$ A)} de quem compra A, quantos também compram B.\\[4pt]
+            Intervalo: [0, 1]. Regras úteis têm conf $> 50\%$ tipicamente.
+        \end{block}
+        \column{0.5\textwidth}
+        
+        \begin{block}{\textbf{Convicção}}
+            \footnotesize
+            $\text{conv}(A \Rightarrow B) = \frac{1 - \text{sup}(B)}{1 - \text{conf}(A \Rightarrow B)}$\\[4pt]
+            Força da implicação: quanto a regra contradiz a independência.\\[4pt]
+            Conv $\to \infty$: relação quase determinística.
+        \end{block}
+    \end{columns}
+\end{frame}
 % --- Frame: Medidas de Interesse ---
 \begin{frame}[shrink=5]{Regras de Associação: Conceitos}
     \begin{columns}
@@ -1315,47 +1375,47 @@
     \end{columns}
 \end{frame}
 
-% ==============================================================================
-\subsection{Apriori e FP-Growth}
-% ==============================================================================
+% % ==============================================================================
+% \subsection{Apriori e FP-Growth}
+% % ==============================================================================
 
-% --- Frame: Apriori ---
-\begin{frame}[shrink=8]{Algoritmo Apriori}
-    \begin{columns}
-        \column{0.5\textwidth}
-        \begin{block}{Princípio Anti-Monótono}
-            \footnotesize
-            Se um itemset é \textbf{infrequente}, todos os seus superconjuntos também são. Isso permite \textbf{podar} o espaço de busca.
-        \end{block}
-        \begin{block}{Etapas}
-            \begin{enumerate}\footnotesize
-                \item Gerar itemsets frequentes de tamanho 1 ($L_1$)
-                \item Gerar candidatos de tamanho $k+1$ a partir de $L_k$
-                \item Varrer transações e contar suporte
-                \item Filtrar candidatos com suporte $\geq$ minsup
-                \item Repetir até $L_k = \emptyset$
-                \item Gerar regras com confiança $\geq$ minconf
-            \end{enumerate}
-        \end{block}
-        \column{0.5\textwidth}
-        \begin{block}{Limitações do Apriori}
-            \begin{itemize}\footnotesize
-                \item Múltiplas varridas na base de dados ($O(|\mathcal{I}|)$ varridas)
-                \item Grande número de candidatos em datasets densos
-                \item Ineficiente para bases muito grandes
-            \end{itemize}
-        \end{block}
-        \begin{block}{FP-Growth (Han et al., 2000)}
-            \begin{itemize}\footnotesize
-                \item Apenas \textbf{2 varridas} na base de dados
-                \item Constrói uma \textbf{FP-Tree} (árvore compacta) que compartilha prefixos
-                \item Sem geração explícita de candidatos
-                \item Muito mais eficiente que Apriori em datasets grandes
-            \end{itemize}
-        \end{block}
-        \centering\tiny \faArrowRight\ Implemente Apriori e FP-Growth no Colab do Módulo 6
-    \end{columns}
-\end{frame}
+% % --- Frame: Apriori ---
+% \begin{frame}[shrink=8]{Algoritmo Apriori}
+%     \begin{columns}
+%         \column{0.5\textwidth}
+%         \begin{block}{Princípio Anti-Monótono}
+%             \footnotesize
+%             Se um itemset é \textbf{infrequente}, todos os seus superconjuntos também são. Isso permite \textbf{podar} o espaço de busca.
+%         \end{block}
+%         \begin{block}{Etapas}
+%             \begin{enumerate}\footnotesize
+%                 \item Gerar itemsets frequentes de tamanho 1 ($L_1$)
+%                 \item Gerar candidatos de tamanho $k+1$ a partir de $L_k$
+%                 \item Varrer transações e contar suporte
+%                 \item Filtrar candidatos com suporte $\geq$ minsup
+%                 \item Repetir até $L_k = \emptyset$
+%                 \item Gerar regras com confiança $\geq$ minconf
+%             \end{enumerate}
+%         \end{block}
+%         \column{0.5\textwidth}
+%         \begin{block}{Limitações do Apriori}
+%             \begin{itemize}\footnotesize
+%                 \item Múltiplas varridas na base de dados ($O(|\mathcal{I}|)$ varridas)
+%                 \item Grande número de candidatos em datasets densos
+%                 \item Ineficiente para bases muito grandes
+%             \end{itemize}
+%         \end{block}
+%         \begin{block}{FP-Growth (Han et al., 2000)}
+%             \begin{itemize}\footnotesize
+%                 \item Apenas \textbf{2 varridas} na base de dados
+%                 \item Constrói uma \textbf{FP-Tree} (árvore compacta) que compartilha prefixos
+%                 \item Sem geração explícita de candidatos
+%                 \item Muito mais eficiente que Apriori em datasets grandes
+%             \end{itemize}
+%         \end{block}
+%         \centering\tiny \faArrowRight\ Implemente Apriori e FP-Growth no Colab do Módulo 6
+%     \end{columns}
+% \end{frame}
 
 % ==============================================================================
 \section{Detecção de Anomalias}
