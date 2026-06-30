@@ -505,6 +505,8 @@
 % Slide: Contribuições detalhadas por disciplina
 % ============================================================
 \begin{frame}{Contribuições de Cada Disciplina}
+    \footnotesize
+    \vspace{-0.57cm}
     \begin{block}{\textcolor{mineblue}{\faLineChart\ Estatística}}
         Arcabouço teórico para inferência: distribuições de probabilidade, testes de hipótese, regressão e intervalos de confiança. Diferença-chave: a estatística parte de hipóteses \textit{a priori}; a DM é \textbf{predominantemente exploratória}.
     \end{block}
@@ -526,8 +528,9 @@
 \section{Ferramentas}
 % ==============================================================================
 
-\begin{frame}{Ecossistema Python para Mineração de Dados}
-    \scriptsize
+\begin{frame}{}
+    \footnotesize
+    \vspace{-0.5cm}
     \begin{tabular}{>{\bfseries\color{mineblue}}p{2.4cm} p{3.8cm} p{4.4cm}}
         \hline
         \rowcolor{mineblue!15}
@@ -548,14 +551,15 @@
         PyTorch / TensorFlow & Deep Learning & Imagens, texto, séries temporais \\
         \hline
         SHAP & Explicabilidade (Shapley values) & Interpretação de predições \\
-        \hline
-        PyCaret & AutoML low-code & Comparação rápida de modelos \\
+        
         \hline
     \end{tabular}
 \end{frame}
 
 \begin{frame}{Ferramentas com Interface Gráfica (GUI)}
-    \begin{block}{\faUniversity\ WEKA (Univ.\ de Waikato, NZ)}
+     \footnotesize
+    \vspace{-0.5cm}
+    \begin{block}{\faUniversity\ WEKA}
         Centenas de algoritmos de classificação, regressão, clustering e seleção de atributos. Ideal para uso \textbf{acadêmico e pedagógico}.
     \end{block}
     \vspace{0.18cm}
@@ -567,7 +571,7 @@
         Plataforma drag-and-drop (versão community). Rápida construção de pipelines de DM \textbf{sem necessidade de código}.
     \end{block}
     \vspace{0.18cm}
-    \begin{block}{\faLeaf\ Orange (Univ.\ de Ljubljana)}
+    \begin{block}{\faLeaf\ Orange }
         Open-source. Interface visual excelente para ensino. Extensões para bioinformática e text mining.
     \end{block}
 \end{frame}
@@ -596,7 +600,7 @@
     \end{block}
     \vspace{0.2cm}
     \begin{itemize}
-        \item \textbf{SHAP} (Lundberg \& Lee, 2017): baseado na teoria dos jogos cooperativos. Atribui contribuições individuais a cada \textit{feature} para uma predição. Agnóstico ao modelo e matematicamente consistente.
+        \item \textbf{SHAP} (Lundberg \& Lee, 2017): baseado na teoria dos jogos cooperativos. Atribui contribuições individuais a cada \textit{feature} para uma predição. 
         \item \textbf{LIME} (Ribeiro et al., 2016): aproxima qualquer modelo caixa-preta por um modelo interpretável localmente, em torno de uma instância específica.
         \item \textbf{Grad-CAM}: para visão computacional, destaca as regiões da imagem que mais influenciaram a predição.
         \item \textbf{Counterfactual Explanations}: responde ``o que teria que mudar para obter uma predição diferente?''
@@ -651,7 +655,7 @@
     \end{block}
     \vspace{0.15cm}
     \begin{block}{\faLock\ Privacidade de Dados}
-        Dados pessoais sensíveis exigem \textbf{anonimização eficaz}, consentimento informado e minimização do uso --- princípios centrais da LGPD.
+        Dados pessoais sensíveis exigem \textbf{anonimização eficaz}, consentimento informado e minimização do uso que são princípios centrais da LGPD.
     \end{block}
 \end{frame}
 
@@ -659,6 +663,7 @@
 % Slide: LGPD e Transparência
 % ============================================================
 \begin{frame}{LGPD e Transparência Algorítmica}
+    
     \begin{block}{\faGavel\ LGPD --- Lei Geral de Proteção de Dados (Lei 13.709/2018)}
         Inspirada no GDPR europeu. Estabelece:
         \begin{itemize}
@@ -667,7 +672,7 @@
             \item \textbf{Penalidades:} multas de até 2\% do faturamento (R\$~50 milhões por infração)
         \end{itemize}
     \end{block}
-    \vspace{0.2cm}
+    \vspace{-0.4cm}
     \begin{block}{\faEye\ Transparência Algorítmica}
         O ``direito de explicação'' impõe restrições ao uso de modelos caixa-preta em contextos de alto impacto.
         Decisões automatizadas significativas \textbf{devem poder ser explicadas} aos titulares afetados.
@@ -679,7 +684,8 @@
 % Slide: Fairness e Accountability
 % ============================================================
 \begin{frame}{\textit{Fairness} e Responsabilidade (\textit{Accountability})}
-    \begin{block}{\textit{Fairness} em ML --- Métricas de Equidade}
+    \vspace{-0.6cm}
+    \begin{block}{\textit{Fairness} em ML: Métricas de Equidade}
         \begin{itemize}
             \item \textbf{Demographic Parity:} taxa de predições positivas deve ser igual entre grupos demográficos
             \item \textbf{Equalized Odds:} TVP e TFP iguais entre grupos protegidos (gênero, raça, etc.)
@@ -688,7 +694,7 @@
         \vspace{0.1cm}
         \textit{\small Atenção: algumas dessas métricas são matematicamente incompatíveis entre si (impossibilidade de Fairness).}
     \end{block}
-    \vspace{0.2cm}
+    
     \begin{alertblock}{\faQuestion\ Responsabilidade (\textit{Accountability})}
         Quando um modelo causa dano, quem é responsável: o \textbf{desenvolvedor} do algoritmo, a \textbf{empresa} que o implantou ou o \textbf{usuário} que tomou a decisão final?
         A ausência de frameworks claros é uma lacuna ética e legal importante que o profissional de dados deve considerar.
@@ -715,11 +721,7 @@
         \bibitem{mcmahan2017}
         \tiny McMAHAN, B. et al. Communication-Efficient Learning of Deep Networks from Decentralized Data. \textit{AISTATS}, 2017.
     \end{thebibliography}
-    \vspace{0.2cm}
-    \begin{block}{\faBook\ Material Didático}
-        \textbf{Módulo 1: Introdução à Mineração de Dados e KDD}
-        --- definições completas, exercícios práticos, código Python comentado e algoritmos detalhados.
-    \end{block}
+    
 \end{frame}
 
 \end{document}
