@@ -1105,8 +1105,10 @@
         \begin{block}{Tipos de Pontos}
             \begin{itemize}\footnotesize
                 \item \textcolor{mineblue}{\textbf{Núcleo:}} $\geq$ MinPts vizinhos em raio $\varepsilon$
-                \item \textcolor{minegreen}{\textbf{Fronteira:}} dentro do raio de um núcleo, mas não é núcleo
-                \item \textcolor{minered}{\textbf{Ruído:}} não é núcleo nem fronteira
+                      
+                \item \textcolor{minegreen}{\textbf{Fronteira:}} distância $\leq \varepsilon$ de um ponto núcleo,
+                      mas não é núcleo (tem $<$ MinPts vizinhos)
+                \item \textcolor{minered}{\textbf{Ruído:}} não é núcleo nem fronteira (isolado)
             \end{itemize}
         \end{block}
         \begin{alertblock}{Vantagem sobre K-Means}
