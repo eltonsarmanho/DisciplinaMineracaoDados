@@ -1364,15 +1364,68 @@
         \end{block}
         \begin{block}{Exemplo: Cesta de Mercado}
             \footnotesize
-            5 transações. Para $\{\text{leite}\} \Rightarrow \{\text{pão}\}$:
-            \begin{align*}
-              \text{sup}  &= 3/5 = 0{.}60\\
-              \text{conf} &= 0{.}60/0{.}80 = 0{.}75\\
-              \text{lift} &= 0{.}75/0{.}60 = 1{.}25
-            \end{align*}
-            \faCheck\ Correlação positiva: comprar leite favorece comprar pão.
+            5 transações. Para $\{\text{leite}\} \Rightarrow \{\text{pão}\}$ vamos verificar as associações
+            \faCheck\ Será que há correlação positiva: comprar leite favorece comprar pão ?
         \end{block}
     \end{columns}
+\end{frame}
+
+% --- Frame: Exemplo Detalhado ---
+\begin{frame}[shrink=3]{Exemplo Detalhado: Cesta de Mercado}
+    \begin{block}{Base de Transações (5 transações)}
+        \begin{center}\footnotesize
+        \begin{tabular}{ccccc}
+        \toprule
+        $T_1$ & $T_2$ & $T_3$ & $T_4$ & $T_5$ \\
+        \midrule
+        \textcolor{mineblue}{\textbf{Leite}} & \textcolor{mineblue}{\textbf{Leite}} & Manteiga & \textcolor{mineblue}{\textbf{Leite}} & Queijo \\
+        \textcolor{mineorange}{\textbf{Pão}} & Manteiga & \textcolor{mineorange}{\textbf{Pão}} & \textcolor{mineorange}{\textbf{Pão}} & \\
+        & & Queijo & & \\
+        \bottomrule
+        \end{tabular}
+        \end{center}
+    \end{block}
+    \pause
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{block}{Contagens}
+            \footnotesize
+            \begin{itemize}
+                \item Transações com \textbf{Leite} $(A)$: $T_1, T_2, T_4$ → 3 transações
+                \item Transações com \textbf{Pão} $(B)$: $T_1, T_3, T_4$ → 3 transações
+                \item Transações com \textbf{Leite E Pão} $(A \cup B)$: $T_1, T_4$ → 2 transações
+                \item Total: 5 transações
+            \end{itemize}
+        \end{block}
+        \pause
+        \begin{block}{Cálculo de Suporte}
+            \footnotesize
+            $\text{sup}(A \Rightarrow B) = \frac{|\{T: \text{Leite} \cap \text{Pão}\}|}{|\mathcal{T}|}$\\[6pt]
+            $= \frac{2}{5} = \boxed{0{.}40}$\\[6pt]
+            \textit{40\% das transações contêm leite \textbf{e} pão}
+        \end{block}
+        \column{0.5\textwidth}
+        \pause
+        \begin{block}{Cálculo de Confiança}
+            \footnotesize
+            $\text{conf}(A \Rightarrow B) = \frac{\text{sup}(A \cap B)}{\text{sup}(A)}$\\[6pt]
+            $= \frac{2/5}{3/5} = \frac{2}{3} = \boxed{0{.}67}$\\[6pt]
+            \textit{De quem compra leite, 67\% também compram pão}
+        \end{block}
+        \pause
+        \begin{block}{Cálculo de Lift}
+            \footnotesize
+            $\text{lift}(A \Rightarrow B) = \frac{\text{conf}(A \Rightarrow B)}{\text{sup}(B)}$\\[6pt]
+            $= \frac{0{.}67}{3/5} = \frac{2/3}{0{.}60} = \boxed{1{.}11}$\\[6pt]
+            \textit{Comprar leite aumenta a probabilidade de pão em 11\%}
+        \end{block}
+    \end{columns}
+    \pause
+    \begin{alertblock}{Interpretação Integrada}
+        \footnotesize
+        A regra $\{\text{Leite}\} \Rightarrow \{\text{Pão}\}$ tem \textbf{suporte baixo} (40\%, menos de 50\%), \textbf{confiança moderada} (67\%) e \textbf{lift positivo} (1.11).
+        A conclusão: \textbf{leite e pão são positivamente correlacionados}, mas a regra não é frequente o bastante para ser considerada de alto suporte em um cenário real.
+    \end{alertblock}
 \end{frame}
 
 % % ==============================================================================
