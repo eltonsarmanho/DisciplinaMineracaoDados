@@ -1,0 +1,229 @@
+\documentclass[aspectratio=169]{beamer}
+\setbeamerfont{headline}{size=\footnotesize}
+
+\mode<presentation>{
+    \usetheme{Montpellier}
+    \setbeamercovered{transparent}
+    \usecolortheme{beaver}
+}
+
+\usepackage[english,brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fontawesome}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{colortbl}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,backgrounds,shapes.multipart,shapes,arrows,calc}
+\usepackage{ragged2e}
+
+\definecolor{mineblue}{RGB}{0,90,180}
+\definecolor{mineorange}{RGB}{230,115,0}
+\definecolor{minegreen}{RGB}{34,139,34}
+\definecolor{minered}{RGB}{180,20,40}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\newcommand{\reflexao}[1]{\begin{alertblock}{Reflexão}#1\end{alertblock}}
+\newcommand{\key}[1]{\underline{#1}}
+
+\title[Mineração de Dados]{Disciplina de Mineração de Dados}
+\subtitle{Ementa, Organização e Avaliação}
+\author[Elton Sarmanho]{
+    Prof. Elton Sarmanho\inst{1}\\
+    \footnotesize \href{mailto:eltonss@ufpa.br}{eltonss@ufpa.br}
+}
+\institute[UFPA]{
+    \inst{1} Faculdade de Sistemas de Informação - UFPA Campus Cametá
+}
+\date{\today}
+
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse, fill=red!20, node distance=3cm, minimum height=2em]
+\tikzstyle{decision} = [diamond, draw, fill=green!20, text width=4.5em, text badly centered, inner sep=0pt]
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+    \begin{center}
+        \tiny \faGithub \ \href{https://github.com/eltonsarmanho}{github.com/eltonsarmanho} \quad
+        \faLinkedinSquare \ \href{https://www.linkedin.com/in/elton-sarmanho-836553185/}{Elton Sarmanho}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Roteiro da Apresentação}
+    \tableofcontents
+\end{frame}
+
+\section{Visão Geral}
+
+\begin{frame}{Objetivos da Disciplina}
+    \begin{itemize}
+        \item Compreender o processo de descoberta de conhecimento em bases de dados (KDD).
+        \item Preparar, explorar e visualizar dados para apoiar análises confiáveis.
+        \item Aplicar técnicas de aprendizado de máquina em problemas reais.
+        \item Interpretar resultados e comunicar descobertas de forma objetiva.
+        \item Desenvolver soluções práticas de mineração de dados com foco em impacto.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Por que estudar Mineração de Dados?}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{Competências Desenvolvidas}
+            \begin{itemize}
+                \item Pensamento analítico
+                \item Limpeza e integração de dados
+                \item Visualização e comunicação
+                \item Modelagem preditiva
+                \item Avaliação de desempenho
+            \end{itemize}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{alertblock}{Aplicações}
+            \begin{itemize}
+                \item Saúde
+                \item Educação
+                \item Governo digital
+                \item Comércio eletrônico
+                \item Automação inteligente
+            \end{itemize}
+        \end{alertblock}
+    \end{columns}
+\end{frame}
+
+\section{Ementa do Curso}
+
+\begin{frame}{Ementa do Curso}
+    \small
+    \begin{enumerate}
+        \item Introdução à mineração de dados, KDD e CRISP-DM.
+        \item Tipos de dados, qualidade, limpeza e transformação.
+        \item Análise exploratória e visualização de dados.
+        \item Técnicas de classificação e regressão.
+        \item Métodos estatísticos, agrupamento e descoberta de padrões.
+        \item Inteligência computacional aplicada à mineração de dados.
+        \item Avaliação de modelos e interpretação de resultados.
+        \item Aplicações com bases reais e desenvolvimento de projetos.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Estrutura dos Conteúdos}
+    \small
+    \begin{tabular}{>{\bfseries}p{2.3cm} p{7.8cm}}
+        \hline
+        Módulo 1 & Introdução à Mineração de Dados e processo KDD \\
+        \hline
+        Módulo 2 & Pré-processamento, qualidade, dados ausentes e transformação \\
+        \hline
+        Módulo 3 & Técnicas de classificação \\
+        \hline
+        Módulo 4 & Técnicas de regressão \\
+        \hline
+        Módulo 5 & Inteligência computacional aplicada à mineração de dados \\
+        \hline
+        Módulo 6 & Métodos estatísticos, clustering e análise de padrões \\
+        \hline
+        Módulo 8 & Técnicas de visualização de dados \\
+        \hline
+    \end{tabular}
+\end{frame}
+
+\section{Metodologia}
+
+\begin{frame}{Como vamos trabalhar na disciplina}
+    \begin{itemize}
+        \item Aulas expositivas com discussão de conceitos fundamentais.
+        \item Demonstrações práticas com Python e bases de dados reais.
+        \item Estudos de caso voltados para problemas do mundo real.
+        \item Desenvolvimento de trabalhos aplicados ao longo do semestre.
+        \item Ênfase em interpretação, visualização e comunicação dos resultados.
+    \end{itemize}
+\end{frame}
+
+\section{Avaliação}
+
+\begin{frame}{Avaliação da Disciplina}
+    \begin{block}{Composição}
+        A avaliação será orientada por \textbf{projetos práticos}, incentivando preparação de dados, análise, modelagem e comunicação de resultados.
+    \end{block}
+
+    \vspace{0.2cm}
+    \begin{itemize}
+        \item Trabalho 1: Limpeza dos dados Word Gen com visualização de dados.
+        \item Trabalho 2: Aplicação de ML em base do portal \href{https://dados.gov.br/home}{dados.gov.br}.
+        \item Projeto Final: Chat bot para minerar dados de 100 artigos a partir de um tema.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Trabalho 1: Limpeza e Visualização}
+    \small
+    \begin{block}{Tema}
+        Limpeza dos dados \textbf{Word Gen} com construção de visualizações para evidenciar padrões, inconsistências e insights.
+    \end{block}
+
+    \begin{itemize}
+        \item Identificar problemas de qualidade: nulos, duplicatas, ruídos e inconsistências.
+        \item Realizar tratamento e documentar as decisões adotadas.
+        \item Produzir visualizações comparando dados brutos e dados tratados.
+        \item Entregar notebook ou relatório com conclusões objetivas.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Trabalho 2: ML com Dados Governamentais}
+    \small
+    \begin{block}{Tema}
+        Aplicar técnicas de aprendizado de máquina em uma base obtida no portal \href{https://dados.gov.br/home}{dados.gov.br/home}.
+    \end{block}
+
+    \begin{itemize}
+        \item Escolher uma base pública relevante e justificar sua seleção.
+        \item Definir problema de classificação, regressão ou agrupamento.
+        \item Construir pipeline com pré-processamento, treinamento e avaliação.
+        \item Interpretar resultados e discutir limitações da base e do modelo.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Projeto Final: Chat Bot Minerador de Artigos}
+    \small
+    \begin{alertblock}{Desafio}
+        Desenvolver um \textbf{chat bot} capaz de minerar informações de \textbf{100 artigos} a partir de um tema definido.
+    \end{alertblock}
+
+    \begin{itemize}
+        \item Coletar e organizar os artigos relacionados ao tema.
+        \item Extrair palavras-chave, tópicos, tendências e relações relevantes.
+        \item Permitir consulta em linguagem natural sobre o conjunto analisado.
+        \item Apresentar evidências, sínteses e exemplos de uso do sistema.
+    \end{itemize}
+\end{frame}
+
+\section{Resultados Esperados}
+
+\begin{frame}{Ao final da disciplina, o estudante deverá}
+    \begin{itemize}
+        \item Preparar bases de dados para análise com qualidade.
+        \item Construir visualizações para exploração e comunicação.
+        \item Aplicar algoritmos de ML de forma justificada.
+        \item Avaliar modelos e relatar resultados com clareza.
+        \item Desenvolver soluções de mineração de dados orientadas a problemas reais.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Referências Bibliográficas}
+    \begin{thebibliography}{99}
+        \bibitem{fayyad} FAYYAD, U.; PIATETSKY-SHAPIRO, G.; SMYTH, P. \textit{From Data Mining to Knowledge Discovery in Databases}. AI Magazine.
+        \bibitem{han} HAN, J.; KAMBER, M.; PEI, J. \textit{Data Mining: Concepts and Techniques}. Morgan Kaufmann.
+        \bibitem{tan} TAN, P.-N.; STEINBACH, M.; KUMAR, V. \textit{Introduction to Data Mining}. Pearson.
+        \bibitem{james} JAMES, G. et al. \textit{An Introduction to Statistical Learning}. Springer.
+    \end{thebibliography}
+\end{frame}
+
+\end{document}
