@@ -92,6 +92,7 @@ ipywidgets>=8.0.0
 # ── Ferramentas Jupyter ────────────────────────────────────
 nbformat>=5.7.0
 ipykernel>=6.17.0
+chardet
 
 # ============================================================
 # INSTRUÇÕES DE INSTALAÇÃO
